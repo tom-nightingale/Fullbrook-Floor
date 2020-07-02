@@ -1,0 +1,10 @@
+<div class="w-full p-4 lg:p-6 md:w-1/2 lg:w-1/3">
+
+  <a href="{{post.link}}" class="block bg-white">
+    <img class="bg-gray-100 lazyload" data-src="{{post.thumbnail.src|resize('400')}}" alt="{{post.title}} title image">
+    <p class="text-xl font-bold">{{post.title}}</p>
+    <p>{{post.preview.length(15).read_more(false)}}</p>
+    <a href="{{post.link}}" class="inline-block mt-2 btn btn-primary">Read more</a>
+  </a>
+
+</div>

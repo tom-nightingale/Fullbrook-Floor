@@ -1,15 +1,15 @@
 <?php
 /* ========================================================================================================================
 
-Register Resource Categories Tax
+Register Help & Advice Categories Tax
 
 ======================================================================================================================== */
-function register_resource_categories() {
+function register_help_advice_cats() {
 
 	$labels = array(
-		'name'                       => _x( 'Resource Categories', 'Taxonomy General Name', 'text_domain' ),
-		'singular_name'              => _x( 'Resource Category', 'Taxonomy Singular Name', 'text_domain' ),
-		'menu_name'                  => __( 'Resource Categories', 'text_domain' ),
+		'name'                       => _x( 'Help & Advice Categories', 'Taxonomy General Name', 'text_domain' ),
+		'singular_name'              => _x( 'Help & Advice Category', 'Taxonomy Singular Name', 'text_domain' ),
+		'menu_name'                  => __( 'Help & Advice Categories', 'text_domain' ),
 		'all_items'                  => __( 'All Categories', 'text_domain' ),
 		'parent_item'                => __( 'Parent Categories', 'text_domain' ),
 		'parent_item_colon'          => __( 'Parent Category:', 'text_domain' ),
@@ -38,9 +38,9 @@ function register_resource_categories() {
     'show_tagcloud'              => true,
     'rewrite'               => [ 'with_front' => false ],
 	);
-	register_taxonomy( 'resource-categories', array( 'resources' ), $args );
+	register_taxonomy( 'help-advice-categories', array( 'help-advice' ), $args );
 
 }
-add_action( 'init', 'register_resource_categories', 0 );
+add_action( 'init', 'register_help_advice_cats', 0 );
 
 ?>
