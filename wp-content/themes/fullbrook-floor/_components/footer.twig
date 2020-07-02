@@ -2,47 +2,48 @@
 
 	<div class="container flex-wrap lg:flex">
 
-		<div class="w-full mb-8 lg:w-3/12">
+		<div class="w-full p-4 mb-8 lg:w-1/4">			
+			
 			<a aria-label="Go to homepage" class="block lg:inline-block" href="{{site.site_url}}">
 				<img class="mx-auto max-w-40" src="{{options.site_logo.url}}" alt="{{site.title}} Logo"/>
 			</a>
-		</div>
-
-		<div class="w-full mb-8 lg:w-3/12">
-			<h6>Explore</h6>
-			<ul>
-				{% for item in primaryMenu.items %}
-					<li class="{{item.class}}">
-						<a href="{{item.url}}">{{item.name}}</a>
-					</li>
-				{% endfor %}
-			</ul>
-		</div>
-
-		<div class="w-full lg:w-1/2">
-			<p>Address:
-				{{ function('address_stacked') }}</p>
-			<p>Email:
-				<a href="mailto:{{options.site_email}}">{{options.site_email}}</a>
-			</p>
-			<p>{{site.title}}
-				is a registered company in England.</p>
-
+			
+			<a class="block" href="mailto:{{options.site_email}}">{{options.site_email}}</a>
+			
+			<p>{{site.title}} is a registered company in England &amp; Wales.</p>
 			{% if options.reg_number %}
-				<p>Registered Number:
-					{{options.reg_number}}</p>
+				<p>Registered Number: {{options.reg_number}}</p>
 			{% endif %}
-
+			
 			{% if options.vat_number %}
-				<p>VAT Number:
-					{{options.vat_number}}</p>
+				<p>VAT Number: {{options.vat_number}}</p>
 			{% endif %}
 
 			<p>&copy;
 				{{site.title}}
 				{{ 'now' | date('Y') }}. All Rights Reserved</p>
+			
+		</div>
 
-			<a class="block mx-auto max-w-32 adtrak" href="https://www.adtrak.co.uk">{{function('get_adtrak_logo_new')}}</a>
+		<div class="w-full p-4 mb-8 lg:w-1/4">
+			<h6>Navigation</h6>
+			<ul>
+				{% for item in primaryMenu.items %}
+				<li class="{{item.class}}">
+					<a href="{{item.url}}">{{item.name}}</a>
+				</li>
+				{% endfor %}
+			</ul>
+		</div>
+
+		<div class="w-full p-4 mb-8 lg:w-1/4">
+			<h6>Address</h6>
+			{{ function('address_stacked') }}			
+		</div>
+
+		<div class="w-full p-4 lg:w-1/4">
+			<h6>Social</h6>
+			{% include "_components/social-links.twig" %}			
 		</div>
 
 	</div>
