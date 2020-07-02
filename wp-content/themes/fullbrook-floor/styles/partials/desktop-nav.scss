@@ -2,8 +2,7 @@
 Desktop Navs **********************************************/
 
 @screen lg {
-  .menu-primary,
-  .menu-secondary {
+  .menu-primary {
 
     li {
       @apply relative;
@@ -13,7 +12,7 @@ Desktop Navs **********************************************/
       @apply
         relative
         block
-        p-4;
+        p-2;
 
         &:hover {
           @apply
@@ -43,11 +42,10 @@ Desktop Navs **********************************************/
     .current-menu-item a,
     .current-menu-parent a {
       @apply
-        text-white
-        bg-gray-800;
+        text-secondary;
 
         &:hover {
-          @apply text-white;
+          @apply text-secondary;
         }
     }
 
@@ -68,6 +66,14 @@ Desktop Navs **********************************************/
             opacity-100
             visible;
         }
+    }
+  }
+}
+
+@screen xl {
+  .menu-primary {
+    a {
+      @apply p-4;
     }
   }
 }

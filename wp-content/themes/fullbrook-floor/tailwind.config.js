@@ -13,14 +13,14 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          light: '#53D2DF',
-          default: '#0857A2',
-          dark: '#0B426A', 
+          light: '#CDE4F2',
+          default: '#84b8cd',
+          dark: '#2a466c', 
         },
         secondary: {
-          light: '#f83',
-          default: '#FF6A00',
-          dark: '#c50',
+          light: '#f58c54',
+          default: '#F26B24',
+          dark: '#d6520d',
         },
       },
       screens: {
