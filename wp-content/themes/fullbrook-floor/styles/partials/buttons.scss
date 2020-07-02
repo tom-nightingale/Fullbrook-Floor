@@ -7,10 +7,10 @@ button,
 }
 
 .btn-primary {
-  @apply bg-primary text-white;
+  @apply bg-primary-dark text-white;
 
   &:hover {
-    @apply bg-primary-dark;
+    @apply bg-primary;
   }
 }
 

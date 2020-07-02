@@ -2,14 +2,14 @@
 
 <div class="flex flex-col w-full md:flex-row md:flex-wrap hero min-h-128 lg:mt-20">
 
-  <div class="flex flex-col items-center justify-center p-16 text-center bg-red-500 md:w-1/2">
+  <div class="flex flex-col items-center justify-center p-16 text-center bg-gray-200 md:w-1/2">
     <img class="mx-auto lazyload max-w-40" data-src="{{options.site_logo.url}}" alt="{{site.title}} Logo" />
     <p>Friendly, local <span class="block text-2xl font-bold">Estate agents in St. Albans</span></p>
     <a href="" class="btn btn-secondary">Get an instant home valuation</a>
     <a href="" class="btn btn-primary">Search homes for sale</a>
   </div>
 
-  <div class="bg-red-200 bg-center bg-cover md:w-1/2 min-h-64 hero-img">
+  <div class="bg-gray-800 bg-center bg-cover md:w-1/2 min-h-64 hero-img">
     {# 
       {% set hero_small = post.thumbnail.src|resize('800') %}
       {% set hero_medium = post.thumbnail.src|resize('1200') %}
@@ -38,14 +38,14 @@
 
 {% else %}
 
-<div class="w-full bg-gray-100 lg:mt-20">
+<div class="w-full bg-gray-200 lg:mt-20">
   <div class="container">
     <p class="p-16 text-2xl font-bold text-center">Hero title here</p>
   </div>
 </div>
 
 {% if has_search_bar %}
-  <div class="p-4 -mt-8 text-center text-white">
+  <div class="max-w-xl p-4 mx-auto -mt-8 text-center text-white">
     <div class="p-4 bg-gray-800">
       Property search form here
     </div>
