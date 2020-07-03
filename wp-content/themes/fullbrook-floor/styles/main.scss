@@ -1,7 +1,11 @@
 @tailwind base;
 @tailwind components;
 
-@import   'partials/core.scss',
+
+
+
+@import   'partials/fonts.scss',
+          'partials/core.scss',
           'partials/buttons.scss',
           'partials/cookies.scss',
           'partials/desktop-nav.scss',

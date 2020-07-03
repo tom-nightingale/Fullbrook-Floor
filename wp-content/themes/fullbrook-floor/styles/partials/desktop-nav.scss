@@ -12,7 +12,8 @@ Desktop Navs **********************************************/
       @apply
         relative
         block
-        p-2;
+        p-2
+        text-sm;
 
         &:hover {
           @apply
@@ -73,7 +74,15 @@ Desktop Navs **********************************************/
 @screen xl {
   .menu-primary {
     a {
-      @apply p-4;
+      @apply p-3;
+    }
+  }
+}
+
+@screen 2xl {
+  .menu-primary {
+    a {
+      @apply text-base;
     }
   }
 }

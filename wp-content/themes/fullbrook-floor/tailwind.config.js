@@ -2,7 +2,7 @@ module.exports = {
   theme: {
     fontFamily: {
       sans: [
-        'Source Sans Pro',
+        'Mont',
         'sans-serif'
       ],
     },    
