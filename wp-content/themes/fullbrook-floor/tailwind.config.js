@@ -29,6 +29,8 @@ module.exports = {
         '3xl': '1800px',
       },
       spacing: {
+        '27': '6.75rem',
+        '36': '9rem',
         '72': '18rem',
         '84': '21rem',
         '96': '24rem',

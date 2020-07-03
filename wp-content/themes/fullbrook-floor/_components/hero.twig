@@ -1,6 +1,6 @@
 {% if front_page %}
 
-<div class="relative flex flex-col w-full md:flex-row md:flex-wrap hero min-h-128 lg:mt-32 xl:mt-24 lg:pt-4">
+<div class="relative flex flex-col w-full md:flex-row md:flex-wrap hero min-h-128 lg:mt-36 xl:mt-27">
 
   <div class="absolute top-0 left-0 flex flex-col items-center justify-center w-full p-4 text-center text-white lg:p-16 xl:p-24 xl:pb-32 bg-opacity-90 md:bg-opacity-100 min-h-128 bg-primary-dark md:w-1/2 md:relative">
     <img class="mx-auto lazyload max-w-48 xl:opacity-50" data-src="{{options.logo_vertical_white.url}}" alt="{{site.title}} Logo" />
@@ -38,9 +38,9 @@
 
 {% else %}
 
-<div class="relative w-full text-white bg-primary lg:mt-24 lg:pt-4">
+<div class="relative w-full text-white bg-primary lg:mt-36 xl:mt-27">
   <div class="container">
-    <p class="px-4 pt-8 pb-16 text-xl font-bold text-center lg:p-16 lg:pb-20 lg:text-3xl">{{hero_heading}}</p>
+    <p class="px-6 text-2xl font-bold text-center {{has_search_bar ? "pt-8 pb-16 lg:p-12 lg:pb-20" : "py-8 lg:p-12 lg:pb-20" }} xl:text-4xl 2xl:text-5xl">{{hero_heading}}</p>
   </div>
   {% include "_components/pattern-house.twig" with {
     classes : "hidden lg:block"
