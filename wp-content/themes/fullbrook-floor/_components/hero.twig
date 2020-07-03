@@ -1,16 +1,17 @@
 {% if front_page %}
 
-<div class="flex flex-col w-full md:flex-row md:flex-wrap hero min-h-128 lg:mt-20">
+<div class="relative flex flex-col w-full md:flex-row md:flex-wrap hero min-h-128 lg:mt-32 xl:mt-24 lg:pt-4">
 
-  <div class="flex flex-col items-center justify-center p-16 text-center bg-gray-200 md:w-1/2">
-    <img class="mx-auto lazyload max-w-40" data-src="{{options.site_logo.url}}" alt="{{site.title}} Logo" />
-    <p>Friendly, local <span class="block text-2xl font-bold">Estate agents in St. Albans</span></p>
-    <a href="" class="btn btn-secondary">Get an instant home valuation</a>
-    <a href="" class="btn btn-primary">Search homes for sale</a>
+  <div class="absolute top-0 left-0 flex flex-col items-center justify-center w-full p-4 text-center text-white lg:p-16 xl:p-24 xl:pb-32 bg-opacity-90 md:bg-opacity-100 min-h-128 bg-primary-dark md:w-1/2 md:relative">
+    <img class="mx-auto lazyload max-w-48 xl:opacity-50" data-src="{{options.logo_vertical_white.url}}" alt="{{site.title}} Logo" />
+    <p class="mt-8 text-lg leading-snug">{{top_line}} <span class="block text-2xl font-bold xl:text-4xl 2xl:text-5xl">{{main_line}}</span></p>
+    <a href="{{site.url}}/sell-your-home" class="mt-4 btn btn-secondary xl:mt-12">Get an instant home valuation</a>
+    <a href="{{site.url}}/buy-a-home" class="mt-4 text-sm bg-opacity-75 btn btn-white hover:bg-opacity-100">Search homes for sale</a>
+
+    {% include "_components/pattern-house.twig" %}
   </div>
 
-  <div class="bg-gray-800 bg-center bg-cover md:w-1/2 min-h-64 hero-img">
-    {# 
+  <div class="bg-bottom bg-cover md:w-1/2 min-h-128 hero-img">
       {% set hero_small = post.thumbnail.src|resize('800') %}
       {% set hero_medium = post.thumbnail.src|resize('1200') %}
       {% set hero_large = post.thumbnail.src|resize('2000') %}
@@ -31,22 +32,24 @@
           }
         }
       </style>
-      #}
   </div>
     
 </div>
 
 {% else %}
 
-<div class="w-full bg-gray-200 lg:mt-20">
+<div class="relative w-full text-white bg-primary lg:mt-24 lg:pt-4">
   <div class="container">
-    <p class="p-16 text-2xl font-bold text-center">Hero title here</p>
+    <p class="px-4 pt-8 pb-16 text-xl font-bold text-center lg:p-16 lg:pb-20 lg:text-3xl">{{hero_heading}}</p>
   </div>
+  {% include "_components/pattern-house.twig" with {
+    classes : "hidden lg:block"
+  } %}
 </div>
 
 {% if has_search_bar %}
-  <div class="max-w-xl p-4 mx-auto -mt-8 text-center text-white">
-    <div class="p-4 bg-gray-800">
+  <div class="relative z-10 max-w-lg p-4 mx-auto -mt-12 text-center text-white lg:-mt-16">
+    <div class="p-8 bg-primary-dark">
       Property search form here
     </div>
   </div>

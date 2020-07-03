@@ -3,7 +3,7 @@ Buttons ***************************************************/
 input[type="button"],
 button,
 .btn {
-  @apply rounded py-2 px-4 rounded-full transition duration-300;
+  @apply rounded py-2 px-4 rounded-full transition duration-300 font-bold;
 }
 
 .btn-primary {
@@ -19,6 +19,14 @@ button,
 
   &:hover {
     @apply bg-secondary-dark;
+  }
+}
+
+.btn-white {
+  @apply bg-white text-primary-dark;
+
+  &:hover {
+    @apply text-primary-dark;
   }
 }
 

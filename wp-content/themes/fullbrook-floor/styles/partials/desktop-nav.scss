@@ -13,12 +13,12 @@ Desktop Navs **********************************************/
         relative
         block
         p-2
-        text-sm;
+        text-sm
+        rounded-full;
 
         &:hover {
           @apply
-            bg-gray-600
-            text-blue-500;
+            bg-gray-100;
 
           & + .sub-menu {
             @apply
@@ -52,20 +52,23 @@ Desktop Navs **********************************************/
 
     .sub-menu {
       @apply
-        w-full
+        w-64
         absolute
         top-full
         left-0
         z-50
         opacity-0
-        hidden
-        bg-white;
+        hidden;
 
         &:hover {
           @apply
             block
             opacity-100
             visible;
+        }
+
+        a {
+          @apply bg-white rounded-full;
         }
     }
   }

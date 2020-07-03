@@ -1,16 +1,18 @@
-<footer class="p-4 text-center text-white bg-primary-dark md:p-8 lg:px-0 lg:text-left">
+<footer class="relative p-4 text-center text-white bg-primary-dark md:p-8 lg:px-0 lg:text-left">
 
 	<div class="container flex-wrap lg:flex">
 
 		<div class="w-full p-4 mb-8 lg:w-1/4">			
 			
-			<a aria-label="Go to homepage" class="block lg:inline-block" href="{{site.site_url}}">
-				<img class="mx-auto max-w-40" src="{{options.site_logo.url}}" alt="{{site.title}} Logo"/>
+			<a aria-label="Go to homepage" class="block mb-8 lg:inline-block" href="{{site.site_url}}">
+				<img class="w-full mx-auto max-w-64" src="{{options.logo_horizontal_white.url}}" alt="{{site.title}} Logo"/>
 			</a>
 			
 			<a class="block" href="mailto:{{options.site_email}}">{{options.site_email}}</a>
 			
-			<p>{{site.title}} is a registered company in England &amp; Wales.</p>
+			<p class="mt-4 text-sm">{{site.title}} is a registered company in England &amp; Wales. &copy;
+			{{site.title}}
+			{{ 'now' | date('Y') }}. All Rights Reserved</p>
 			{% if options.reg_number %}
 				<p>Registered Number: {{options.reg_number}}</p>
 			{% endif %}
@@ -18,10 +20,6 @@
 			{% if options.vat_number %}
 				<p>VAT Number: {{options.vat_number}}</p>
 			{% endif %}
-
-			<p>&copy;
-				{{site.title}}
-				{{ 'now' | date('Y') }}. All Rights Reserved</p>
 			
 		</div>
 
@@ -47,6 +45,8 @@
 		</div>
 
 	</div>
+
+	{% include "_components/pattern-house.twig" %}
 
 </footer>
 

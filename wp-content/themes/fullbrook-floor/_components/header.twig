@@ -1,9 +1,7 @@
 <header class="w-full bg-white lg:fixed lg:top-0 lg:left-0 lg:z-10 lg:pt-0">
 
-  <p class="p-2 text-sm text-center text-white bg-secondary xl:hidden">Find out how much your home is worth today! Call
-    {% include "_components/phone-number.twig" with {
-      classes : "font-bold"
-    } %}
+  <p class="p-2 text-sm text-center text-white bg-secondary xl:hidden">Find out how much your home is worth today! <span class="inline-block font-bold">Call
+    {% include "_components/phone-number.twig" %}</span>
   </p>
 
   <div class="container items-center justify-between lg:py-4 lg:flex">
@@ -42,7 +40,7 @@
       </nav>
       
       {% include "_components/phone-number.twig" with {
-        classes : "hidden rounded-full bg-secondary text-white py-2 px-4 font-bold xl:block xl:text-sm 2xl:text-base"
+        classes : "hidden rounded-full bg-secondary text-white py-2 px-4 font-bold xl:block xl:ml-2 xl:text-sm 2xl:text-base"
       } %}
 
     </div>

@@ -3,6 +3,8 @@
 {% block hero %}
   {% include "_components/hero.twig" with {
     front_page : true,
+    top_line : post.meta('hero_top_line'),
+    main_line : post.meta('hero_main_line'),
   } %}
 {% endblock %}
 

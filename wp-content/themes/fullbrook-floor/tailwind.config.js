@@ -16,6 +16,7 @@ module.exports = {
           light: '#CDE4F2',
           default: '#84b8cd',
           dark: '#2a466c', 
+          darkest: '#2d3748',
         },
         secondary: {
           light: '#f58c54',
@@ -48,6 +49,12 @@ module.exports = {
         '50': '50vh',
         '75': '75vh',
       }),
+      opacity: {
+        '10': '0.1',
+        '20': '0.2',
+        '90': '.9',
+        '95': '0.95',
+      },
     },
   },
   variants: {},

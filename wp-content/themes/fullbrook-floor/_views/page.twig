@@ -2,7 +2,8 @@
 
 {% block hero %}
   {% include "_components/hero.twig" with {
-    has_search_bar : true,
+    hero_heading : post.meta('hero_heading')|default(post.title),
+    has_search_bar : post.meta('has_search_bar'),
   } %}
 {% endblock %}
 
