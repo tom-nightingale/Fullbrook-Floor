@@ -10,19 +10,19 @@
 
 {% block page_content %}
 
+{% include "_components/property-search.twig" %}
 {% include "_components/buckets.twig" %}
+{% include "_components/featured-properties.twig" %}
 
 <div class="container flex-wrap flex-grow lg:flex">
   
   <main class="lg:w-2/3 lg:pr-16">
 
-    <article class="copy">
+    <article class="p-4 copy">
 
-      <h1>{{post.title}}</h1>
+      <h1>{{post.meta('h1')}}</h1>
 
       {{post.content}}
-
-      {% include "_components/logos-clients.twig" %}
       
     </article>
 

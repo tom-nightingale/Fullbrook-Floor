@@ -49,6 +49,10 @@ h3 {
       mb-6;
   }
 
+  h1 + p {
+    @apply font-bold;
+  }
+
   a {
     @apply
       inline-block

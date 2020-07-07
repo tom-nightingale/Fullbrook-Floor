@@ -6,19 +6,15 @@ input,
 textarea,
 select {
     @apply
-    rounded-full
-    border-0
-    px-4
-    py-3
+    border
+    border-gray-200
+    rounded-md
+    mx-2
+    p-2
     w-full
     text-sm
     shadow-inner
     text-gray-900;
-
-    @screen sm {
-        @apply
-        px-6;
-    }
 
     &[aria-invalid="true"] {
         background-color: #f3e2e2;
@@ -67,9 +63,10 @@ textarea::placeholder {
 }
 
 input[type="button"],
-input[type="submit"] {
+input[type="submit"],
+button {
     @apply
-    bg-secondary
+    bg-primary-dark
     text-white
     font-semibold
     text-base
