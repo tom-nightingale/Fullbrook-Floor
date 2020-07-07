@@ -31,13 +31,17 @@
   
   </div>  
 
-  {% if post.meta('why_choose_us') %}
+  {% if post.meta('show_why_choose_us') %}
     {% include "_components/why-choose-us.twig" %} 
   {% endif %}
 
-  {% include "_components/buckets.twig" %}  
+  {% if post.meta('show_buckets') %}
+    {% include "_components/buckets.twig" %}
+  {% endif %}
   
-  {% include "_components/team.twig" %}
+  {% if post.meta('show_team') %}
+    {% include "_components/team.twig" %}
+  {% endif %}
   
 {% endblock %}
 
