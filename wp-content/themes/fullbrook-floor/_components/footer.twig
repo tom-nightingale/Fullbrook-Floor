@@ -2,7 +2,7 @@
 
 	<div class="container flex-wrap lg:flex">
 
-		<div class="w-full p-4 mb-8 lg:w-1/4">			
+		<div class="w-full p-4 mb-8 text-sm lg:w-1/4">			
 			
 			<a aria-label="Go to homepage" class="block mb-8 lg:inline-block" href="{{site.site_url}}">
 				<img class="w-full mx-auto max-w-64" src="{{options.logo_horizontal_white.url}}" alt="{{site.title}} Logo"/>
@@ -10,9 +10,9 @@
 			
 			<a class="block" href="mailto:{{options.site_email}}">{{options.site_email}}</a>
 			
-			<p class="mt-4 text-sm">{{site.title}} is a registered company in England &amp; Wales. &copy;
+			<p class="my-4">{{site.title}} is a registered company in England &amp; Wales. &copy;
 			{{site.title}}
-			{{ 'now' | date('Y') }}. All Rights Reserved</p>
+			{{ 'now' | date('Y') }}. All Rights Reserved.</p>
 			{% if options.reg_number %}
 				<p>Registered Number: {{options.reg_number}}</p>
 			{% endif %}
