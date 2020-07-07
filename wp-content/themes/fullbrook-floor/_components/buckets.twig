@@ -5,20 +5,18 @@
 
     <div class="{{loop.first ? "" : "flex-grow" }} w-full p-4 md:w-1/2 {{loop.first ? "lg:w-2/5" : "lg:w-1/5" }}">
       
-      <a href="{{bucket.button_link.url}}" class="relative flex flex-col justify-end min-h-96 bg-cover bg-center bucket-{{loop.index}}">
-        
-        
-        <style>
-          .bucket-{{loop.index}} {
-            background-image: url({{bucket.background_image.url|resize('800')}});
-          }
-        </style>
-        
-        
-        <div class="relative z-10 flex flex-col justify-end p-4 text-white rounded-tr-full bg-primary">
-          <p class="text-lg font-bold">{{bucket.title}}</p>
-          {% if bucket.intro %}<p class="text-sm">{{bucket.intro}}</p>{% endif %}
-          <span class="inline-block mt-2 mr-auto text-sm btn btn-secondary">{{bucket.button_text}}</span>
+      <a href="{{bucket.button_link.url}}" class="relative flex flex-col h-full">
+
+        <img class="block object-cover h-48 lg:h-64 lazyload" data-src="{{bucket.background_image.url|resize('800')}}" alt="{{bucket.title}}">
+       
+        <div class="h-full p-4 xl:p-6">
+
+          <p class="mb-2 text-lg font-bold xl:text-xl">{{bucket.title}}</p>
+          
+          {% if bucket.intro %}<div class="text-sm">{{bucket.intro}}</div>{% endif %}
+          
+          <span class="inline-block mt-4 mr-auto text-sm btn btn-secondary">{{bucket.button_text}}</span>
+
         </div>
         
       </a>
