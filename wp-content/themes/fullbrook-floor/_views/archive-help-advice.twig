@@ -9,12 +9,13 @@
 
 {% block page_content %}
 
-<div class="max-w-2xl p-4 mx-auto mb-8 text-center xl:p-8 bg-primary-light">
+<div class="max-w-xl p-6 mx-auto mb-8 text-center text-white xl:p-8 bg-primary-dark 2xl:p-16">
   <p class="font-bold lg:text-xl">Search our help &amp; advice centre</p>
-  <p class="text-sm">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Reprehenderit, debitis sint.</p>
+  <p class="text-sm">Start typing to display results.</p>
+  
   {{ function("get_search_form")}}
 
-  <p class="mt-4 text-xs lg:text-sm"><span class="block lg:inline-block">Popular categories:</span> <a class="font-bold" href="{{site.url}}/help-advice-categories/sales">Sales</a>, <a class="font-bold" href="{{site.url}}/help-advice-categories/lettings">Lettings</a>, <a class="font-bold" href="{{site.url}}/help-advice-categories/mortgages">Mortgages</a></p>
+  <p class="mt-4 text-xs 2xl:mt-6 lg:text-sm"><span class="block lg:inline-block">Popular categories:</span> <a class="font-bold" href="{{site.url}}/help-advice-categories/sales">Sales</a>, <a class="font-bold" href="{{site.url}}/help-advice-categories/lettings">Lettings</a>, <a class="font-bold" href="{{site.url}}/help-advice-categories/mortgages">Mortgages</a></p>
 </div>
 
 <div class="container flex-wrap flex-grow lg:flex">
