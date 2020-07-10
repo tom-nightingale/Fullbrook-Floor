@@ -1,7 +1,7 @@
 {
-  "name": "adtrak-child-tailwind-twig-timber",
+  "name": "fullbrook-floor",
   "version": "1.0.0",
-  "description": "Standard theme for all Adtrak clients",
+  "description": "Fullbrook and floor",
   "main": "index.js",
   "scripts": {
     "dev": "gulp",
@@ -12,7 +12,7 @@
     "type": "git",
     "url": ""
   },
-  "author": "Adtrak Media Ltd <hello@adtrak.co.uk>",
+  "author": "League Digital <hello@weareleague.co.uk>",
   "license": "ISC",
   "bugs": {
     "url": ""
