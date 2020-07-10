@@ -6,13 +6,9 @@ input,
 textarea,
 select {
     @apply
-    border
-    border-gray-200
-    rounded-md
-    mx-2
+    rounded-sm
     p-2
     w-full
-    text-sm
     shadow-inner
     text-gray-900;
 
@@ -68,8 +64,6 @@ button {
     @apply
     bg-primary-dark
     text-white
-    font-semibold
-    text-base
     cursor-pointer;
     transition: .3s;
     

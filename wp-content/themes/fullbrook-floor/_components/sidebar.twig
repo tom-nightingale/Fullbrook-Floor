@@ -1,8 +1,5 @@
 {% if index %}
 
-  <h2>Search</h2>
-  {{ function("get_search_form")}}
-
   <h2>Help & Advice categories</h2>
   {% for category in help_advice_categories %}
     <a class="inline-block m-1 btn btn-primary" href="{{category.link}}">{{category.name}}</a>

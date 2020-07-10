@@ -1,0 +1,7 @@
+<form role="search" method="get" id="searchform" class="max-w-sm mx-auto mt-4 searchform" action="{{site.link}}">
+    <label class="sr-only screen-reader-text" for="s">Search for:</label>
+    <div class="flex flex-wrap w-full text-sm">
+        <input type="text" value="{{ function('get_search_query') }}" name="s" id="s" class="w-3/4 m-0 border-0 rounded-lg rounded-r-none outline-none" placeholder="Start typing..." />        
+        <input class="w-1/4 text-sm font-bold rounded-r-lg lg:m-0" type="submit" id="searchsubmit" value="Search" />        
+    </div>
+</form>
