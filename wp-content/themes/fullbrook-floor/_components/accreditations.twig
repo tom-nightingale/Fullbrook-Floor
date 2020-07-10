@@ -1,0 +1,6 @@
+<div class="flex items-center justify-center p-4 mb-8 bg-primary-light bg-opacity-20">
+  <p class="font-bold">{{options.logos_header}}</p>
+  {% for logo in options.logos %}
+  <img data-src="{{logo.image.url|resize('125')}}" alt="{{logo.name}}" class="mx-1 lazyload">
+  {% endfor %}
+</div>

@@ -1,10 +1,13 @@
 {% extends 'base.twig' %}
 
 {% block hero %}
+
   {% include "_components/hero.twig" with {
-    hero_heading : post.meta('hero_heading')|default(post.title),
-    has_search_bar : post.meta('has_search_bar'),
-  } %}
+      hero_heading : post.meta('hero_heading')|default(post.title),
+      has_search_bar : post.meta('has_search_bar'),
+    } %}
+  {% include "_components/accreditations.twig" %}
+
 {% endblock %}
 
 {% block page_content %}
