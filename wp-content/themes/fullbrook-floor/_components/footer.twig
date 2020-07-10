@@ -1,4 +1,4 @@
-<footer class="relative p-4 text-sm text-center text-white xl:text-base bg-primary-dark md:p-8 lg:px-0 lg:text-left">
+<footer class="relative p-4 text-sm text-center text-white bg-primary-dark md:p-8 lg:px-0 lg:text-left">
 
 	<div class="container flex-wrap justify-between lg:flex">
 
@@ -24,7 +24,7 @@
 		</div>
 
 		<div class="w-full p-4 mb-8 lg:w-3/12 xl:p-6">
-			<h6>Navigation</h6>
+			<h3>Navigation</h3>
 			<ul>
 				{% for item in primaryMenu.items %}
 				<li class="{{item.class}}">
@@ -35,12 +35,12 @@
 		</div>
 
 		<div class="w-full p-4 mb-8 lg:w-3/12 xl:p-6">
-			<h6>Address</h6>
+			<h3>Address</h3>
 			{{ function('address_stacked') }}			
 		</div>
 
 		<div class="w-full p-4 lg:w-2/12">
-			<h6>Social</h6>
+			<h3>Social</h3>
 			{% include "_components/social-links.twig" %}			
 		</div>
 
