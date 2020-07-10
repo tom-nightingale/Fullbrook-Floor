@@ -1,0 +1,47 @@
+{% extends 'base.twig' %}
+
+{% block hero %}
+
+  {% include "_components/hero.twig" with {
+    hero_heading : post.meta('hero_heading')|default(post.title),
+    has_search_bar : post.meta('has_search_bar'),
+  } %}
+  
+{% endblock %}
+
+{% block page_content %}
+
+  
+
+  <div class="flex-wrap items-center justify-between w-full max-w-xl mx-auto mb-8 text-center text-white flex-start lg:text-left lg:flex bg-secondary-dark">
+  
+    <div class="hidden lg:block lg:w-2/12">
+      <img class="object-cover lazyload" data-src="{{options.property_placeholder.url}}" alt="{{site.title}} Logo">
+    </div>    
+
+    <div class="p-4 pb-0 lg:w-7/12 lg:px-8">
+      <p class="my-4 text-lg font-bold leading-snug lg:my-0 lg:text-xl">Sell with a local, friendly estate agent</p>        
+      <p class="text-sm xl:text-base">Lorem ipsum dolor sit amet consectetur adipisicing elit. Eligendi, impedit</p>
+    </div>
+    
+    <div class="p-4 text-center lg:w-3/12">
+      {% include "_components/phone-number.twig" with { classes : 'mb-2 lg:block' } %}
+      <a href="{{site.url}}/sell-your-home" class="inline-block mx-2 text-xs xl:text-sm btn btn-white text-secondary-dark">Get an instant property valuation</a>
+    </div>    
+  
+  </div>
+
+  {% if post.meta('show_why_choose_us') %}
+    {% include "_components/why-choose-us.twig" %} 
+  {% endif %}
+
+  {% if post.meta('show_buckets') %}
+    {% include "_components/buckets.twig" %}
+  {% endif %}
+  
+  {% if post.meta('show_team') %}
+    {% include "_components/team.twig" %}
+  {% endif %}
+  
+{% endblock %}
+
