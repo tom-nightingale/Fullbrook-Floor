@@ -42,10 +42,12 @@
   <div class="container">
     <p class="px-6 text-2xl font-bold text-center {{has_search_bar ? "py-8 lg:p-12 lg:py-16" : "py-8 lg:p-12 lg:py-16" }} xl:text-4xl 2xl:text-5xl">{{hero_heading}}</p>
   </div>
-  {% include "_components/pattern-house.twig" with {
-    classes : "hidden lg:block"
-  } %}
+  {% include "_components/pattern-house.twig" %}
 </div>
+
+{% if has_accreditations %}
+  {% include "_components/accreditations.twig" %}
+{% endif %}
 
 {% if has_search_bar %}
   {% include "_components/property-search.twig" %}

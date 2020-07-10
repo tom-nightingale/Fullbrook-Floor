@@ -5,8 +5,8 @@
   {% include "_components/hero.twig" with {
       hero_heading : post.meta('hero_heading')|default(post.title),
       has_search_bar : post.meta('has_search_bar'),
+      has_accreditations : true,
     } %}
-  {% include "_components/accreditations.twig" %}
 
 {% endblock %}
 
