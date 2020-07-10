@@ -18,28 +18,43 @@
   <p class="mt-4 text-xs 2xl:mt-6 lg:text-sm"><span class="block lg:inline-block">Popular categories:</span> <a class="font-bold" href="{{site.url}}/help-advice-categories/sales">Sales</a>, <a class="font-bold" href="{{site.url}}/help-advice-categories/lettings">Lettings</a>, <a class="font-bold" href="{{site.url}}/help-advice-categories/mortgages">Mortgages</a></p>
 </div>
 
-<div class="container flex-wrap flex-grow lg:flex">
+<div class="container flex flex-wrap p-0">
 
-  <main class="flex-wrap md:flex lg:w-3/4 lg:pr-16">
+  {% for post in posts[0:2] %}
   
-    {% for post in posts %}
+    {% include "_components/help-advice-card.twig" with {
+      featured: true
+    } %}
   
-      {% include "_components/help-advice-card.twig" %}
-  
-    {% endfor %}
-  
-  </main>
-  
-  <aside class="lg:w-1/4">
-  
-    {% include "_components/sidebar.twig" with {
-        index : true,
-        help_advice_categories : help_advice_categories,
-        categories : categories,
-        archives : archives
-      } %}
-  </aside>
+  {% endfor %}
 
 </div>
+
+<div class="my-8 bg-primary-light bg-opacity-20">
+  
+  <div class="container flex-wrap p-0 lg:py-8 lg:flex">
+
+    <main class="flex-wrap sm:flex lg:w-3/4 lg:pr-16">
+
+      {% for post in posts[2:] %}
+      
+        {% include "_components/help-advice-card.twig" %}
+      
+      {% endfor %}
+    
+    </main>
+    
+    <aside class="pt-4 lg:w-1/4">
+    
+      {% include "_components/sidebar.twig" with {
+          help_advice_categories : help_advice_categories,
+        } %}
+    </aside>
+
+  </div>
+
+</div>
+
+{% include "_components/buckets.twig" %}
 
 {% endblock %}

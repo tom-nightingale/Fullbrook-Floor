@@ -59,7 +59,9 @@ module.exports = {
       },
     },
   },
-  variants: {},
+  variants: {
+    boxShadow: ['responsive', 'hover', 'focus', 'group-hover'],
+  },
   plugins: [
     require('tailwindcss-filters'), // https://github.com/benface/tailwindcss-filters
     require('tailwindcss-gradients'), //https://github.com/benface/tailwindcss-gradients

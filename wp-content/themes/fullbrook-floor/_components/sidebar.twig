@@ -1,20 +1,26 @@
+
+
+  <div class="p-4">
+    <h2>Help & Advice categories</h2>
+    {% for category in help_advice_categories %}
+      <a class="inline-block m-1 opacity-75 btn btn-white hover:opacity-100" href="{{category.link}}">{{category.name}}</a>
+    {% endfor %}
+  </div>
+  
 {% if index %}
-
-  <h2>Help & Advice categories</h2>
-  {% for category in help_advice_categories %}
-    <a class="inline-block m-1 btn btn-primary" href="{{category.link}}">{{category.name}}</a>
-  {% endfor %}
-
-  <h2>Archives</h2>
-  {{archives}}
+  <div class="p-4">
+    <h2>Archives</h2>
+    {{archives}}
+  </div>
 
 
-  <h2>Categories</h2>
-  {{categories}}
-
+  <div class="p-4">
+    <h2>Categories</h2>
+    {{categories}}
+  </div>
 {% endif %}
 
-<div class="w-full p-8 text-center text-white bg-primary-dark xl:p-16 2xl:p-24">
+<div class="w-full p-8 mt-8 text-center text-white bg-primary-dark xl:p-16 2xl:p-24">
   
   <img class="block mx-auto max-w-36 lg:max-w-48 lazyload" data-src="{{options.logo_vertical_white.url}}" alt="{{site.title}} Logo">
   
