@@ -62,8 +62,11 @@ input[type="button"],
 input[type="submit"],
 button {
     @apply
-    bg-secondary-dark
+    bg-secondary
     text-white
+    max-w-xs
+    mx-auto
+    outline-none
     cursor-pointer;
     transition: .3s;
     
@@ -71,6 +74,10 @@ button {
         @apply
         bg-secondary-dark;
     }
+}
+
+#nf-field-4-wrap {
+    @apply text-center;
 }
 
 // --------------------------------------------------------------------------------------------------
@@ -84,6 +91,7 @@ button {
             border
             border-gray-400
             rounded-sm
+            outline-none
             mb-4;
     }
 
