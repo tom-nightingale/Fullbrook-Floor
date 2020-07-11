@@ -76,21 +76,42 @@ button {
 // --------------------------------------------------------------------------------------------------
 // Ninja Forms
 // --------------------------------------------------------------------------------------------------
-nf-field {
-    @apply
-    float-left
-    mb-3
-    w-full;
+.nf-form-layout {
+    input,
+    select,
+    textarea {
+        @apply 
+            border
+            border-gray-400
+            rounded-sm
+            mb-4;
+    }
 
-    &:last-child {
-        @apply mb-0;
+    input[type="submit"],
+    input[type="button"] {
+        @apply border-none rounded-sm;
     }
 }
+
+// nf-field {
+//     @apply
+//     float-left
+//     mb-3
+//     w-full;
+
+//     &:last-child {
+//         @apply mb-0;
+//     }
+// }
 
 .nf-form-fields-required,
 .nf-after-field,
 .nf-after-form-content {
     display: none;
+}
+
+.nf-field-label {
+    @apply sr-only;
 }
 
 .hide-labels label {
