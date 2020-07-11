@@ -21,6 +21,17 @@
   </div>
 {% endif %}
 
+{% if post.meta('sidebar_logos') %}
+  <div class="flex flex-wrap items-center justify-center w-full mb-8 ">
+    <p class="w-full text-lg font-bold text-center lg:text-2xl">Get your property featured on...</p>
+    {% for logo in post.meta('sidebar_logos') %}
+      <a href="{{logo.link}}">
+        <img class="block mx-2 lazyload max-w-36 lg:max-w-48" data-src="{{logo.image.url}}" alt="{{logo.name}} Logo">
+      </a>
+    {% endfor %}
+  </div>
+{% endif %}
+
 <div class="relative w-full my-8 text-center text-white bg-primary-dark {{cta_padding ? cta_padding}}">
   
   <img class="block mx-auto max-w-36 lg:max-w-48 lazyload" data-src="{{options.logo_vertical_white.url}}" alt="{{site.title}} Logo">
