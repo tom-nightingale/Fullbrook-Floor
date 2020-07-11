@@ -1,37 +1,46 @@
 {% extends 'base.twig' %}
 
 {% block hero %}
-  {% include "_components/hero.twig" with {
-    has_search_bar : true,
+{% include "_components/hero.twig" with {
+    hero_heading : "Help & Advice Centre",
+    has_search_bar : post.meta('has_search_bar'),
   } %}
 {% endblock %}
 
 {% block page_content %}
 
-{{current_term.name}}
+{% include "_components/search-help-advice.twig" %}
 
-<div class="container flex-wrap flex-grow lg:flex">
+<div class="my-8 bg-primary-light bg-opacity-20">
 
-  <main class="flex-wrap md:flex lg:w-2/3 lg:pr-16">
-    
-    {% for post in posts %}
+  <div class="container flex-wrap items-start p-0 lg:py-8 lg:flex">
+
+    <main class="flex-wrap sm:flex lg:w-3/4 lg:pr-16">
+
+      <p class="w-full p-4 text-lg font-bold">Results for "<span class="text-secondary">{{current_term}}</span>"</p>
+
+      {% for post in posts %}
 
       {% include "_components/help-advice-card.twig" %}
 
-    {% endfor %}        
+      {% endfor %}
 
-  </main>
+      {% include "_components/pagination.twig" %}
 
-  <aside class="bg-gray-100 lg:w-1/3">
-    
-    {% include "_components/sidebar.twig" with {
-      index : true,
-      help_advice_categories : help_advice_categories,
-      categories : categories,
-      archives : archives
-    } %}
-  </aside>
+    </main>
+
+    <aside class="pt-4 lg:w-1/4">
+
+      {% include "_components/sidebar.twig" with {
+          help_advice_categories : help_advice_categories,
+          cta_padding : 'p-8 xl:p-16',
+        } %}
+    </aside>
+
+  </div>
 
 </div>
+
+{% include "_components/buckets.twig" %}
 
 {% endblock %}
