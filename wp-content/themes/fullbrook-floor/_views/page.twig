@@ -28,7 +28,10 @@
     </main>
   
     <aside class="items-center lg:w-1/2 lg:flex">
-      {% include "_components/sidebar.twig" %}
+      {% include "_components/sidebar.twig" with {
+        cta_padding : 'p-8 xl:p-16 2xl:p-24',
+      }
+      %}
     </aside>
   
   </div>  
