@@ -15,20 +15,18 @@
 
   <main class="mb-8 lg:w-1/2">
 
+    <img class="object-cover object-center w-full mb-6 sm:h-72 h-36 lazyload" data-src="{{post.thumbnail}}" alt="{{post.title}} image">
+    
     <small>Posted {{post.post_date|date("jS F Y")}}</small>
     <p class="mb-6 text-sm">Listed in: {% for term in post.terms %}<a class="font-bold text-secondary hover:text-secondary-dark" href="{{term.link}}">{{term.name}}</a> {% endfor %}</p>
-    
-    {% for post in posts %}
 
-      <article class="copy">
-                
-        <h1>{{post.meta('h1') ? post.meta('h1') : post.title}}</h1>
+    <article class="copy">
+              
+      <h1>{{post.meta('h1') ? post.meta('h1') : post.title}}</h1>
 
-        {{post.content}}
+      {{post.content}}
 
-      </article>  
-
-    {% endfor %}        
+    </article>  
     
   </main>
   
