@@ -115,3 +115,13 @@ h3 {
     }
   }
 }
+
+//WP Generated Styles 
+
+figure {
+  @apply max-w-full;
+}
+
+.wp-caption-text {
+  @apply text-center p-4 text-sm bg-gray-100 mb-8;
+}

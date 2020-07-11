@@ -1,0 +1,39 @@
+{% extends 'base.twig' %}
+
+{% block hero %}
+
+  {% include "_components/hero.twig" with {
+    hero_heading : post.meta('hero_heading')|default(post.title),
+    has_search_bar : post.meta('has_search_bar'),
+  } %}
+
+{% endblock %}
+
+{% block page_content %}
+
+<div class="container flex-wrap justify-center lg:my-16 lg:flex lg:px-8">
+
+  <main class="mb-8 lg:w-1/2">
+
+    <small>Posted {{post.post_date|date("jS F Y")}}</small>
+    <p class="mb-6 text-sm">Listed in: {% for term in post.terms %}<a class="font-bold text-secondary hover:text-secondary-dark" href="{{term.link}}">{{term.name}}</a> {% endfor %}</p>
+    
+    {% for post in posts %}
+
+      <article class="copy">
+                
+        <h1>{{post.meta('h1') ? post.meta('h1') : post.title}}</h1>
+
+        {{post.content}}
+
+      </article>  
+
+    {% endfor %}        
+    
+  </main>
+  
+  {% include "_components/cta-sell-property.twig" %}
+
+</div>
+
+{% endblock %}
