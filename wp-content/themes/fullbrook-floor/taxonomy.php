@@ -13,4 +13,4 @@ $context['posts'] = Timber::get_posts();
 $context['current_term'] = new Timber\Term($term);
 $context['help_advice_categories'] = Timber::get_terms($help_advice_categories);
 
-Timber::render( [ 'taxonomy-'.$taxonomy.'.twig', 'taxonomy.twig' ], $context );
+Timber::render( [ 'taxonomy-'.$term->name.'.twig', 'taxonomy.twig' ], $context );

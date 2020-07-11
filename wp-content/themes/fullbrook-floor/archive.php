@@ -7,7 +7,9 @@ $help_advice_categories = [
   'hide_empty' => false
 ];
 
+$term = get_queried_object();
+
 $context['posts'] = new Timber\PostQuery();
 $context['help_advice_categories'] = Timber::get_terms($help_advice_categories);
 
-Timber::render( [ 'archive-help-advice.twig', 'archive.twig' ], $context );
+Timber::render( [ 'archive-'. $term->name .'.twig', 'archive.twig' ], $context );
