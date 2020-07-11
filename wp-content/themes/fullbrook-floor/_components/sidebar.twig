@@ -1,11 +1,12 @@
 
-
+{% if help_advice_categories %}
   <div class="p-4">
     <h2>Help & Advice categories</h2>
     {% for category in help_advice_categories %}
       <a class="inline-block m-1 opacity-75 btn btn-white hover:opacity-100" href="{{category.link}}">{{category.name}}</a>
     {% endfor %}
   </div>
+{% endif %}
   
 {% if index %}
   <div class="p-4">
