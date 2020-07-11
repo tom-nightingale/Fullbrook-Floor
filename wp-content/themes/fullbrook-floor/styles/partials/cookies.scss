@@ -9,7 +9,7 @@ Cookie Notice *********************************************/
     w-full
     hidden
     text-gray-900
-    bg-orange-300
+    bg-white
 }
 
 #wp-notification.open {
@@ -26,7 +26,7 @@ Cookie Notice *********************************************/
 }
 
 .wp-notification-container p {
-    @apply m-0
+    @apply m-0 text-sm
 }
 
 .wp-notification-container a {
@@ -38,6 +38,8 @@ Cookie Notice *********************************************/
       py-2
       rounded
       font-bold
+      text-sm
+      capitalize
       text-gray-900;
 }
 
@@ -54,6 +56,9 @@ Cookie Notice *********************************************/
       py-2
       rounded
       font-bold
+      text-sm
+      capitalize
+      bg-primary-light
       cursor-pointer
 }
 
