@@ -79,7 +79,7 @@ gulp.task('styles', function () {
     })
   ))
   .pipe(rename('main.min.css'))
-  .pipe(gulp.dest('dist/'))
+  .pipe(gulp.dest('./dist'))
   .pipe(browserSync.reload({
     stream: true
   }))
@@ -112,7 +112,7 @@ gulp.task('scripts', function() {
     .pipe(source('production-dist.js'))
     .pipe(buffer())
     .pipe(gulpIf(argv.production, terser()))
-    .pipe(gulp.dest('dist/'))
+    .pipe(gulp.dest('./dist'))
     .pipe(browserSync.reload({
       stream: true
     }))
