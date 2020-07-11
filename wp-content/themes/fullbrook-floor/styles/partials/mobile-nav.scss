@@ -25,7 +25,7 @@ $dropdownArrowText :  inherit;
     right-0
     bottom-0
     h-full
-    bg-gray-900;
+    bg-primary-dark;
     display: block !important;
     width: 80%;
     z-index: 99999999;
@@ -42,8 +42,9 @@ $dropdownArrowText :  inherit;
         w-full
         p-4
         text-center
-        bg-gray-500;
-        color: rgba(#fff,.35);
+        font-bold
+        bg-primary;        
+        color: rgba(#fff,.75);
         border-bottom: 1px solid $linkBorder;
     }
 
@@ -73,7 +74,6 @@ $dropdownArrowText :  inherit;
         text-sm;
         color: $linkText;
         border-bottom: 1px solid $linkBorder;
-        background-color: $linkBg;
 
         &:hover {
             @apply no-underline;
@@ -89,11 +89,18 @@ $dropdownArrowText :  inherit;
     }
 
     /* Current page states */
-    .current-menu-item > a,
-    .current-menu-parent > a,
-    .current-menu-ancestor > a {
-        background-color: $linkBgActive;
-        color: $linkTextActive;
+    .current-menu-item,
+    .current-menu-parent,
+    .current-menu-ancestor {
+        @apply bg-secondary text-white;
+
+        a {
+            @apply bg-secondary;
+        }
+    }
+
+    .current-menu-ancestor {
+        @apply bg-secondary-dark;
     }
 
     .sub-arrow {
@@ -136,8 +143,18 @@ $dropdownArrowText :  inherit;
         float-left
         w-full;
 
-        li {
-            @apply pl-6
+        .current-menu-item,
+        .current-menu-parent,
+        .current-menu-ancestor {
+            @apply bg-secondary text-white;
+
+            a {
+                @apply bg-secondary;
+            }
+        }
+
+        a {
+            @apply pl-8 bg-gray-700;
         }
     }
 }
@@ -162,8 +179,8 @@ $dropdownArrowText :  inherit;
     @apply
     hidden
     fixed
-    left-0;
-    background-color: red;
+    left-0
+    bg-primary;
     bottom: 40%;
     width: 60px;
     height: 50px;
@@ -194,7 +211,7 @@ $dropdownArrowText :  inherit;
     opacity-0
     invisible;
     display: block !important; /* override critical css */
-    background-color: rgba(#000,.4);
+    background-color: rgba(#000,.6);
     z-index: 999999;
     transition: .3s;
 

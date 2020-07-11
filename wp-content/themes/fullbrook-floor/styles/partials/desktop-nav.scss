@@ -40,8 +40,8 @@ Desktop Navs **********************************************/
         opacity: .5;
     }
 
-    .current-menu-item a,
-    .current-menu-parent a {
+    .current-menu-item > a,
+    .current-menu-parent > a {
       @apply
         text-secondary;
 
@@ -68,7 +68,7 @@ Desktop Navs **********************************************/
         }
 
         a {
-          @apply bg-white rounded-full;
+          @apply bg-white rounded-full px-4;
         }
     }
   }
