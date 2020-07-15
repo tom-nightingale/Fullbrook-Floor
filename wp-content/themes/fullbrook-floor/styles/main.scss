@@ -34,3 +34,11 @@
       opacity: 1;
   }
 }
+
+.profile-container img {
+  transition: .3s;
+}
+
+.profile-container:hover img {
+  transform: translateX(-100%);
+}

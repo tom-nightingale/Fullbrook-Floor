@@ -2,9 +2,12 @@
 
   {% for member in team_members %}
 
-    <div class="flex flex-wrap flex-wrap-reverse w-full border-2 border-white lg:w-1/2 bg-primary-light bg-opacity-20">
+    <div class="flex flex-wrap flex-wrap-reverse w-full border-2 border-white lg:w-1/2 bg-primary-light bg-opacity-20 profile-container">
     
-      <img class="{{loop.index is even ? "order-2"}} object-cover object-center w-full h-40 bg-gray-100 lg:h-auto sm:w-1/4 min-h-64 lazyload" data-src="{{member.profile_photo.url|resize('300')}}" alt="Name">
+      <div class="relative {{loop.index is even ? "order-2"}} w-full h-full bg-gray-100 sm:w-1/4 min-h-64 overflow-hidden">
+        <img class="absolute top-0 left-0 block object-cover object-center w-full h-full lazyload" data-src="{{member.profile_photo.url|resize('300')}}" alt="{{member.name}}">
+        <img class="absolute top-0 block object-cover object-center w-full h-full left-full lazyload" data-src="{{member.casual_photo.url|resize('300')}}" alt="{{member.name}}">
+      </div>
     
       <div class="w-full p-8 lg:p-16 sm:w-3/4">
         <p class="mb-4 leading-tight">Meet <span class="block text-2xl font-bold">{{member.name}}</span></p>

@@ -8,7 +8,7 @@
 
       let query = "";
       function liveSearch(query) {
-        console.log(query);
+        // console.log(query);
 
         let search_term = "?search_term=" + query;
         const restURL = themeURL.site_url + "/wp-json/livesearch/v2/livesearch/" + search_term;
