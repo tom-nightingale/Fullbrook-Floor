@@ -4,15 +4,12 @@
 
 		<div class="w-full p-4 mb-8 lg:w-3/12 xl:p-6">			
 			
-			<a aria-label="Go to homepage" class="block mb-8 lg:inline-block" href="{{site.site_url}}">
+			<a aria-label="Go to homepage" class="block mb-4 lg:inline-block" href="{{site.site_url}}">
 				<img class="w-full mx-auto max-w-64" src="{{options.logo_horizontal_white.url}}" alt="{{site.title}} Logo"/>
 			</a>
 			
-			<a class="block" href="mailto:{{options.site_email}}">{{options.site_email}}</a>
-			
-			<p class="my-4">{{site.title}} is a registered company in England &amp; Wales. &copy;
-			{{site.title}}
-			{{ 'now' | date('Y') }}. All Rights Reserved.</p>
+			<p class="mt-4">Fullbrook &amp; Floor is a trading name of Fullbrook and Floor.</p>
+			<p class="mb-4">{{site.title}} is a registered company in England &amp; Wales.</p>
 			{% if options.reg_number %}
 				<p>Registered Number: {{options.reg_number}}</p>
 			{% endif %}
@@ -20,6 +17,8 @@
 			{% if options.vat_number %}
 				<p>VAT Number: {{options.vat_number}}</p>
 			{% endif %}
+
+			<p class="mt-4">&copy; {{site.title}} {{ 'now' | date('Y') }}. All Rights Reserved.</p>
 			
 		</div>
 
@@ -35,8 +34,11 @@
 		</div>
 
 		<div class="w-full p-4 mb-8 lg:w-3/12 xl:p-6">
-			<h3>Address</h3>
+			<h3>Contact</h3>
 			{{ function('address_stacked') }}			
+
+			<p class="my-2">{{function('icon', 'envelope', 'mr-2')}} <a href="mailto:{{options.site_email}}">{{options.site_email}}</a></p>
+			<p class="my-2">{{function('icon', 'phone', 'mr-2')}} <a href="tel:{{options.default_phone_number}}">{{options.default_phone_number}}</a></p>
 		</div>
 
 		<div class="w-full p-4 lg:w-2/12">
