@@ -2,7 +2,8 @@
 
 <div class="relative flex flex-col w-full md:flex-row md:flex-wrap hero min-h-128 lg:mt-36 xl:mt-27">
 
-  <div class="absolute top-0 left-0 flex flex-col items-center justify-center w-full p-4 text-center text-white lg:p-16 xl:p-24 xl:pb-36 bg-opacity-90 md:bg-opacity-100 min-h-128 bg-primary-dark md:w-1/2 md:relative">
+  <div class="absolute top-0 left-0 z-10 flex flex-col items-center justify-center w-full p-4 text-center text-white lg:p-16 xl:p-24 xl:pb-36 bg-opacity-90 md:bg-opacity-100 min-h-128 bg-primary-dark md:w-1/2 md:relative">
+
     <img class="mx-auto lazyload max-w-48 xl:opacity-75" data-src="{{options.logo_vertical_white.url}}" alt="{{site.title}} Logo" />
 
     <p class="mt-8 text-lg leading-snug">{{top_line}} <span class="block text-2xl font-bold xl:text-4xl 2xl:text-5xl">{{main_line}}</span></p>
@@ -13,50 +14,36 @@
       <span class="flex flex-wrap items-center mx-1"><span class="inline-block w-2 h-2 mr-1 rounded-full bg-secondary"></span> Trust</span>
     </p> -->
     
-    <a href="{{site.url}}/sell-your-home" class="mt-4 btn btn-secondary xl:mt-12">Get an instant home valuation</a>
+    <a href="{{site.url}}/sell-your-home" class="mt-4 btn btn-secondary xl:mt-12">Get an FREE valuation</a>
     <a href="{{site.url}}/buy-a-home" class="mt-4 text-sm bg-opacity-75 btn btn-white hover:bg-opacity-100">Search homes for sale</a>
 
     {% include "_components/pattern-house.twig" %}
   </div>
 
-  <div class="bg-bottom bg-cover md:w-1/2 min-h-128 hero-img">
-      {% set hero_small = post.thumbnail.src|resize('800') %}
-      {% set hero_medium = post.thumbnail.src|resize('1200') %}
-      {% set hero_large = post.thumbnail.src|resize('2000') %}
-      <style>
-        .hero-img {
-          background-image: url('{{hero_small}}');
-        }
-      
-        @media (min-width: 800px) {
-          .hero-img {
-            background-image: url('{{hero_medium}}');
-          }
-        }
-      
-        @media (min-width: 1200px) {
-          .hero-img {
-            background-image: url('{{hero_large}}');
-          }
-        }
-      </style>
+  <div class="relative bg-bottom bg-cover md:w-1/2 min-h-128 hero-carousel">
+      {% for image in post.meta('hero_carousel') %}
+        {% set hero_small = image.sizes.medium_large %}
+        {% set hero_medium = image.sizes.large %}
+        {% set hero_large = image.url %}
+        <img class="absolute top-0 left-0 object-cover object-center h-full width-full carousel-image" src="{{hero_small}}"
+        srcset="{{hero_medium}} 1200w, {{hero_large}} 1600w" alt="{{site.title}}">        
+      {% endfor %}
   </div>
-    
+
+
 </div>
 
 {% else %}
 
-<div class="relative w-full text-white bg-primary lg:mt-36 xl:mt-27">
-  <div class="container">
-    <p class="px-6 text-2xl font-bold text-center {{has_search_bar ? "py-8 lg:p-12 lg:py-16" : "py-8 lg:p-12 lg:py-16" }} xl:text-4xl 2xl:text-5xl">{{hero_heading}}</p>
+  <div class="relative w-full text-white bg-primary lg:mt-36 xl:mt-27">
+    <div class="container">
+      <p class="px-6 text-2xl font-bold text-center {{has_search_bar ? "py-8 lg:p-12 lg:py-16" : "py-8 lg:p-12 lg:py-16" }} xl:text-4xl 2xl:text-5xl">{{hero_heading}}</p>
+    </div>
+    {% include "_components/pattern-house.twig" %}
   </div>
-  {% include "_components/pattern-house.twig" %}
-</div>
 
-{% include "_components/accreditations.twig" %}
-
-{% if has_search_bar %}
-  {% include "_components/property-search.twig" %}
-{% endif %}
+  {% if has_search_bar %}
+    {% include "_components/property-search.twig" %}
+  {% endif %}
 
 {% endif %}

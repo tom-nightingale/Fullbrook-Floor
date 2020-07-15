@@ -1,6 +1,17 @@
-<div class="flex flex-wrap items-center justify-center p-4 mb-8 bg-primary-light bg-opacity-20">
-  <p class="w-full mb-2 text-xs font-bold text-center lg:w-auto lg:text-base lg:mb-0">{{options.logos_header}}</p>
-  {% for logo in options.logos %}
-  <img data-src="{{logo.image.url|resize('125')}}" alt="{{logo.name}}" class="mx-1 lazyload max-w-24 lg:max-w-36">
-  {% endfor %}
+<div class="flex flex-wrap items-center justify-center bg-primary-light bg-opacity-20 {{classes}}">
+  
+  <div class="flex flex-wrap items-center justify-center w-full p-4 lg:w-1/2">
+    <p class="w-full mb-2 text-xs font-bold text-center lg:w-auto lg:text-base lg:mb-0">{{options.logos_header}}</p>
+    {% for logo in options.logos %}
+      <img data-src="{{logo.image.url|resize('125')}}" alt="{{logo.name}}" class="mx-1 lazyload max-w-24 lg:max-w-36">
+    {% endfor %}
+  </div>
+
+  <div class="flex flex-wrap items-center justify-center w-full p-4 lg:w-1/2">
+    <p class="w-full mb-2 text-xs font-bold text-center lg:w-auto lg:text-base lg:mb-0">{{options.mover_logo_headline}}</p>
+    {% for logo in options.mover_logos %}
+      <a href="{{logo.link}}"><img data-src="{{logo.logo.url|resize('125')}}" alt="{{logo.name}}" class="mx-1 lazyload max-w-24 lg:max-w-36"></a>
+    {% endfor %}
+  </div>  
+
 </div>

@@ -6,7 +6,11 @@
     top_line : post.meta('hero_top_line'),
     main_line : post.meta('hero_main_line'),
   } %}
-  {% include "_components/accreditations.twig" %}
+
+  {% include "_components/accreditations.twig" with {
+  	classes : 'mb-8',
+  }%}
+
 {% endblock %}
 
 
@@ -40,4 +44,9 @@
   </div>
 
   {% include "_components/team.twig" %}
+  
+{% endblock %}
+
+{% block footer %}
+  {% include "_components/footer.twig" %}
 {% endblock %}

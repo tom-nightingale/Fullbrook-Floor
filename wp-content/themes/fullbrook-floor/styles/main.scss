@@ -25,3 +25,12 @@
 .bg-blend-multiply {
   background-blend-mode: multiply;
 }
+
+.carousel-image {
+  opacity: 0;
+  transition: all .6s;
+
+  &.active {
+      opacity: 1;
+  }
+}

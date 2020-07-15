@@ -12,6 +12,9 @@
   {% endblock %}
 
   {% block footer %}
+    {% include "_components/accreditations.twig" with {
+      classes : 'mt-4',
+    }%}
     {% include "_components/footer.twig" %}
   {% endblock %}
 

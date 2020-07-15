@@ -11,16 +11,15 @@
 
 {% block page_content %}
 
-  <div class="container lg:my-8 xl:my-24lg:px-8 2xl:px-40">
+  <div class="container lg:my-8 xl:my-24 lg:px-8 2xl:px-40">
   
     {% for member in team_members %}
     <div class="flex flex-wrap items-center mb-8">
-      
-      <div class="w-1/2 p-8 {% if loop.index == "2" %} lg:order-3 {% endif %}">
+      <div class="w-1/2 p-8 ">
         <img class="block object-cover mx-auto lazyload" data-src="{{member.profile_photo.url}}" alt="{{member.name}}">
       </div>
       
-      <div class="lg:w-1/2 ">
+      <div class="lg:w-1/2 {% if loop.index == "2" %} lg:order-3 {% endif %}">
         <h1 class="m-0 leading-snug">{{member.name}}</h1>
         <p class="mb-4">{{member.job_title}}</p>
         <p class="mb-0 text-sm">{{function('icon', 'phone')}} {{member.phone_number}} {{function('icon', 'envelope', 'ml-4')}} <a href="mailto:{{member.email_address}}">{{member.email_address}}</a></p>
