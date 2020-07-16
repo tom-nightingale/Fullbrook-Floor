@@ -9,6 +9,10 @@
 
   {% block htmlheader %}
   <link rel="stylesheet" href="{{ theme.link ~ '/dist/main.min.css' }}">
+
+  {# remove this when the site goes live!! #}
+  <meta name="robots" content="noindex,nofollow">
+
   {% endblock %}
 
   {% if options.google_analytics %}
