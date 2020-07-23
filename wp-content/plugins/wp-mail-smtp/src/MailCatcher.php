@@ -13,7 +13,7 @@ if ( ! class_exists( 'PHPMailer', false ) ) {
  *
  * @since 1.0.0
  */
-class MailCatcher extends \PHPMailer {
+class MailCatcher extends \PHPMailer implements MailCatcherInterface {
 
 	/**
 	 * Callback Action function name.
@@ -77,6 +77,9 @@ class MailCatcher extends \PHPMailer {
 			$mail_mailer === 'pepipost'
 		) {
 			try {
+				// Allow to hook early to catch any early failed emails.
+				do_action( 'wp_mail_smtp_mailcatcher_smtp_pre_send_before', $this );
+
 				// Prepare all the headers.
 				if ( ! $this->preSend() ) {
 					return false;
@@ -150,5 +153,17 @@ class MailCatcher extends \PHPMailer {
 	public function getCustomHeaders() {
 
 		return $this->CustomHeader;
+	}
+
+	/**
+	 * Get the PHPMailer line ending.
+	 *
+	 * @since 2.2.0
+	 *
+	 * @return string
+	 */
+	public function get_line_ending() {
+
+		return $this->LE; // phpcs:ignore
 	}
 }
