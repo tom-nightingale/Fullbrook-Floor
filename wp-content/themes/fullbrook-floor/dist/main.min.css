@@ -980,16 +980,31 @@ Desktop Navs **********************************************/
   }
 }
 
+label {
+  display: block;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  --text-opacity: 1;
+  color: #F26B24;
+  color: rgba(242, 107, 36, var(--text-opacity));
+}
+
 input,
 textarea,
 select {
   border-radius: 0.125rem;
   padding: 0.5rem;
   width: 100%;
+  font-size: 0.875rem;
   box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  border-width: 1px;
+  --border-opacity: 1;
+  border-color: #e2e8f0;
+  border-color: rgba(226, 232, 240, var(--border-opacity));
   --text-opacity: 1;
-  color: #1a202c;
-  color: rgba(26, 32, 44, var(--text-opacity));
+  color: #2a466c;
+  color: rgba(42, 70, 108, var(--text-opacity));
 }
 
 input[aria-invalid="true"],
@@ -1009,55 +1024,13 @@ select {
 
 textarea {
   height: 150px;
-  border-radius: 25px;
 }
 
-input::-webkit-input-placeholder {
+::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
   --text-opacity: 1;
-  color: #4a5568;
-  color: rgba(74, 85, 104, var(--text-opacity));
-}
-
-input::-ms-input-placeholder {
-  --text-opacity: 1;
-  color: #4a5568;
-  color: rgba(74, 85, 104, var(--text-opacity));
-}
-
-input::-moz-placeholder {
-  --text-opacity: 1;
-  color: #4a5568;
-  color: rgba(74, 85, 104, var(--text-opacity));
-}
-
-input::placeholder {
-  --text-opacity: 1;
-  color: #4a5568;
-  color: rgba(74, 85, 104, var(--text-opacity));
-}
-
-textarea::-webkit-input-placeholder {
-  --text-opacity: 1;
-  color: #4a5568;
-  color: rgba(74, 85, 104, var(--text-opacity));
-}
-
-textarea::-ms-input-placeholder {
-  --text-opacity: 1;
-  color: #4a5568;
-  color: rgba(74, 85, 104, var(--text-opacity));
-}
-
-textarea::-moz-placeholder {
-  --text-opacity: 1;
-  color: #4a5568;
-  color: rgba(74, 85, 104, var(--text-opacity));
-}
-
-textarea::placeholder {
-  --text-opacity: 1;
-  color: #4a5568;
-  color: rgba(74, 85, 104, var(--text-opacity));
+  color: #a0aec0;
+  color: rgba(160, 174, 192, var(--text-opacity));
 }
 
 input[type="button"],
@@ -1085,48 +1058,11 @@ input[type="button"]:hover,
   background-color: rgba(214, 82, 13, var(--bg-opacity));
 }
 
-#nf-field-4-wrap {
-  text-align: center;
-}
-
-.nf-form-layout input,
-.nf-form-layout select,
-.nf-form-layout textarea {
-  border-width: 1px;
-  --border-opacity: 1;
-  border-color: #cbd5e0;
-  border-color: rgba(203, 213, 224, var(--border-opacity));
-  border-radius: 0.125rem;
-  outline: 0;
-  margin-bottom: 1rem;
-}
-
-.nf-form-layout input[type="submit"],
-.nf-form-layout input[type="button"] {
-  border-style: none;
-  border-radius: 0.125rem;
-}
-
-.nf-form-fields-required,
-.nf-after-field,
-.nf-after-form-content {
-  display: none;
-}
-
-.nf-field-label {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
-}
-
-.hide-labels label {
-  display: none;
+.wpcf7-form .wpcf7-not-valid-tip {
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-top: 0.5rem;
+  text-align: right;
 }
 
 /* Important to set */

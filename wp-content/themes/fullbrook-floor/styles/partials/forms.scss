@@ -1,6 +1,9 @@
 // --------------------------------------------------------------------------------------------------
 // Base Form Styles
 // --------------------------------------------------------------------------------------------------
+label {
+    @apply block my-4 font-bold text-secondary;
+}
 
 input,
 textarea,
@@ -9,8 +12,10 @@ select {
     rounded-sm
     p-2
     w-full
+    text-sm
     shadow-inner
-    text-gray-900;
+    border border-gray-300
+    text-primary-dark;
 
     &[aria-invalid="true"] {
         background-color: #f3e2e2;
@@ -28,34 +33,10 @@ select {
 
 textarea {
     height: 150px;
-    border-radius: 25px;
 }
 
-// The below placeholder selectors don't work when comma separated
-input::-webkit-input-placeholder {
-    @apply text-gray-700;
-}
-input::-ms-input-placeholder {
-    @apply text-gray-700;
-}
-input::-moz-placeholder {
-    @apply text-gray-700;
-}
-input::placeholder {
-    @apply text-gray-700;
-}
-
-textarea::-webkit-input-placeholder {
-    @apply text-gray-700;
-}
-textarea::-ms-input-placeholder {
-    @apply text-gray-700;
-}
-textarea::-moz-placeholder {
-    @apply text-gray-700;
-}
-textarea::placeholder {
-    @apply text-gray-700;
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    @apply text-gray-500;
 }
 
 input[type="button"],
@@ -76,53 +57,12 @@ button {
     }
 }
 
-#nf-field-4-wrap {
-    @apply text-center;
-}
-
 // --------------------------------------------------------------------------------------------------
-// Ninja Forms
+// CF7
 // --------------------------------------------------------------------------------------------------
-.nf-form-layout {
-    input,
-    select,
-    textarea {
-        @apply 
-            border
-            border-gray-400
-            rounded-sm
-            outline-none
-            mb-4;
-    }
 
-    input[type="submit"],
-    input[type="button"] {
-        @apply border-none rounded-sm;
-    }
+.wpcf7-form .wpcf7-not-valid-tip {
+    @apply text-sm font-bold mt-2 text-right;
 }
 
-// nf-field {
-//     @apply
-//     float-left
-//     mb-3
-//     w-full;
-
-//     &:last-child {
-//         @apply mb-0;
-//     }
-// }
-
-.nf-form-fields-required,
-.nf-after-field,
-.nf-after-form-content {
-    display: none;
-}
-
-.nf-field-label {
-    @apply sr-only;
-}
-
-.hide-labels label {
-    display: none;
-}
 
