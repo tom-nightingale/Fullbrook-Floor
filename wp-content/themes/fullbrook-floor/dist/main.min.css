@@ -18928,13 +18928,24 @@ figure {
 
 .modal {
   top: 0;
+  left: 0;
   transform: translateY(-100%);
 }
 
 .modal.active {
   transform: translateY(0);
+}
+
+.modal-content {
+  width: 100%;
   transition-property: all;
-  transition-duration: 500ms;
+  transition-duration: 300ms;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100%);
+}
+
+.modal-content.active {
+  transform: translateY(0) translateX(-50%);
 }
 
 @media (min-width: 640px) {

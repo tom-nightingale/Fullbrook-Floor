@@ -45,10 +45,20 @@
 
 .modal {
   top: 0;
+  left: 0;
   transform: translateY(-100%);
 
   &.active {
-    transform: translateY(0);
-    @apply transition-all duration-500;
+    transform: translateY(0);    
+  }
+}
+
+.modal-content {
+  @apply w-full transition-all duration-300;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100%);
+
+  &.active {
+    transform: translateY(0) translateX(-50%);
   }
 }
