@@ -42,9 +42,11 @@
     
     <p class="my-4 text-lg font-bold leading-snug lg:text-xl">Find out how much your property is worth!</p>
     
-    <p class="text-sm lg:text-base">Lorem ipsum dolor sit amet consectetur adipisicing elit. Eligendi, impedit</p>
+    <p class="text-sm lg:text-base">Get an accurate market appraisal of your property and find out exactly how much it's worth!</p>
 
-    <a href="{{site.url}}/sell-your-home" class="inline-block mt-8 text-sm lg:text-base btn btn-white">Get FREE property valuation</a>
+    {% include "_components/btn-free-valuation.twig" with {
+      classes : "inline-block mt-8 text-sm lg:text-base btn btn-white",
+    } %}
 
   </div>
 
