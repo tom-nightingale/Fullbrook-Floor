@@ -1014,7 +1014,6 @@ input[aria-invalid="true"],
 }
 
 select {
-  background-image: url(../images/angle-down-light.svg);
   background-position: 90% center;
   background-repeat: no-repeat;
   background-size: 12px;

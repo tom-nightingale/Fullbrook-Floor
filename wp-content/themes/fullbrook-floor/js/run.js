@@ -75,9 +75,6 @@
 		}
         window.addEventListener('resize', addDropdownIcon);
 
-
-        
-
 	});
 
 }(jQuery));
