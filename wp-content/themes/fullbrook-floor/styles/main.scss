@@ -42,3 +42,13 @@
 .profile-container:hover img {
   transform: translateX(-100%);
 }
+
+.modal {
+  top: 0;
+  transform: translateY(-100%);
+
+  &.active {
+    transform: translateY(0);
+    @apply transition-all duration-500;
+  }
+}

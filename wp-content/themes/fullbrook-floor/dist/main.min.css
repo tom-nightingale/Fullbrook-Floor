@@ -18926,6 +18926,17 @@ figure {
   transform: translateX(-100%);
 }
 
+.modal {
+  top: 0;
+  transform: translateY(-100%);
+}
+
+.modal.active {
+  transform: translateY(0);
+  transition-property: all;
+  transition-duration: 500ms;
+}
+
 @media (min-width: 640px) {
   .sm\:space-y-0 > :not(template) ~ :not(template) {
     --space-y-reverse: 0;
