@@ -45,8 +45,7 @@ button {
     @apply
     bg-secondary
     text-white
-    max-w-xs
-    mx-auto
+    font-bold
     outline-none
     cursor-pointer;
     transition: .3s;
@@ -63,6 +62,11 @@ button {
 
 .wpcf7-form .wpcf7-not-valid-tip {
     @apply text-sm font-bold mt-2 text-right;
+}
+
+.wpcf7-form.invalid .wpcf7-response-output,
+.wpcf7-form.failed .wpcf7-response-output {
+    @apply border-0 font-bold p-0 mt-4 text-red-600;
 }
 
 

@@ -1042,9 +1042,7 @@ button {
   --text-opacity: 1;
   color: #fff;
   color: rgba(255, 255, 255, var(--text-opacity));
-  max-width: 20rem;
-  margin-left: auto;
-  margin-right: auto;
+  font-weight: 700;
   outline: 0;
   cursor: pointer;
   transition: .3s;
@@ -1063,6 +1061,17 @@ input[type="button"]:hover,
   font-weight: 700;
   margin-top: 0.5rem;
   text-align: right;
+}
+
+.wpcf7-form.invalid .wpcf7-response-output,
+.wpcf7-form.failed .wpcf7-response-output {
+  border-width: 0;
+  font-weight: 700;
+  padding: 0;
+  margin-top: 1rem;
+  --text-opacity: 1;
+  color: #e53e3e;
+  color: rgba(229, 62, 62, var(--text-opacity));
 }
 
 /* Important to set */
