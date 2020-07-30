@@ -12,9 +12,11 @@
 
 {% block page_content %}
 
+{# {{dump(featured_properties)}} #}
+
     {% if posts.pagination.current < 2 %}
         {% include "_components/featured-properties.twig" with {
-            hide_see_all : true,
+            hide_see_all : true
         } %}
     {% endif %}
 

@@ -7,13 +7,31 @@
 
     <div class="flex flex-wrap justify-center my-8">
 
-      {{ function('do_shortcode', '[featured_properties posts_per_page="4"]') }}
+      {# {{dump(featured_properties)}} #}
+
+      {% for property in featured_properties %}
+
+          {% include "_components/property-card.twig" with {
+              image : property.thumbnail,
+              title : property.post_title,
+              street : property._address_street,
+              price : property._price_actual,
+              price_qualifier : property.price_qualifier,
+              link: property.link,
+              bedrooms : property._bedrooms,
+              bathrooms : property._bathrooms,
+              reception_rooms : property._reception_rooms,
+              }
+          %}
+          
+      {% endfor %}
+      
 
     </div>
 
     {% if hide_see_all == false %}
       <div class="text-center">
-        <a href="" class="inline-block mx-auto text-sm btn btn-white">See all properties</a>
+        <a href="{{site.url ~ '/buy-a-home'}}" class="inline-block mx-auto text-sm btn btn-white">See all properties</a>
       </div>
     {% endif %}
 
