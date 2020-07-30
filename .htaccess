@@ -13,3 +13,9 @@ RewriteRule . /index.php [L]
 </IfModule>
 
 # END WordPress
+
+
+# AuthUserFile 	/home/fullbrookandfloo/public_html/staging/.htpasswd
+# AuthType Basic
+# AuthName “Login Details”
+# Require valid-user
