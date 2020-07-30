@@ -1,7 +1,7 @@
 <div class="w-11/12 max-w-xl p-8 mx-auto bg-white rounded-lg">
   <p class="mb-4 text-xl font-bold text-center text-secondary">Search for your next home&hellip;</p>
 
-  <form action="" class="flex flex-wrap justify-between">
+  {# <form action="" class="flex flex-wrap justify-between">
     <select class="w-auto" name="" id="">
       <option value="Buy">Buy</option>
       <option value="Let">Let</option>
@@ -12,6 +12,10 @@
     <input class="w-auto" type="text" placeholder="Max Price">
     <input class="w-auto" type="text" placeholder="Min. Bedrooms">
     <button>Search</button>
-  </form>
+  </form> #}
+
+  
+
+    {{ function('do_shortcode', '[property_search_form id="default"]')}}
 
 </div>

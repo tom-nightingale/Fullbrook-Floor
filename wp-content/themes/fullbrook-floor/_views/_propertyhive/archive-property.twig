@@ -1,0 +1,32 @@
+{% extends 'base.twig' %}
+
+{% block hero %}
+
+{% include "_components/hero.twig" with {
+    hero_heading : post.meta('hero_heading')|default(post.title),
+    has_search_bar : post.meta('has_search_bar'),
+    has_accreditations : true,
+} %}
+
+{% endblock %}
+
+{% block page_content %}
+
+    Archive Property
+
+    {# {{dump(post)}} #}
+    
+    {% do action('propertyhive_before_main_content') %}
+
+    {% do action('propertyhive_before_search_results_loop') %}
+    
+  
+    
+    {% do action('propertyhive_after_search_results_loop') %}
+
+    {% do action('propertyhive_after_main_content') %}
+
+
+    {# {% include "_components/featured-properties.twig" %} #}
+
+{% endblock %}

@@ -7,10 +7,7 @@
 
     <div class="flex flex-wrap justify-center my-8">
 
-      {% include "_components/property-card.twig" %}
-      {% include "_components/property-card.twig" %}
-      {% include "_components/property-card.twig" %}
-      {% include "_components/property-card.twig" %}
+      {{ function('do_shortcode', '[featured_properties posts_per_page="4"]') }}
 
     </div>
 
