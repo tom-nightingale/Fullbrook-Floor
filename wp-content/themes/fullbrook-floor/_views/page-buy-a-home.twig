@@ -12,7 +12,9 @@
 
 {% block page_content %}
 
-  {% include "_components/featured-properties.twig" %}
+  {% include "_components/featured-properties.twig" with {
+    hide_see_all: true,
+  } %}
   
 {% endblock %}
 

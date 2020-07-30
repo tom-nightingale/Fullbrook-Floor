@@ -11,9 +11,11 @@
 
     </div>
 
-    <div class="text-center">
-      <a href="" class="inline-block mx-auto text-sm btn btn-white">See all properties</a>
-    </div>
+    {% if hide_see_all == false %}
+      <div class="text-center">
+        <a href="" class="inline-block mx-auto text-sm btn btn-white">See all properties</a>
+      </div>
+    {% endif %}
 
   </div>
 
