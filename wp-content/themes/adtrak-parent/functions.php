@@ -65,25 +65,25 @@ add_filter('upload_mimes', function($mimes) {
  * Filters the page title appropriately depending on the current page
  * This will 90% of the time be overwritten by Yoast, but we have this here just incase.
  */
-add_filter('wp_title', function () {
-	global $post;
+// add_filter('wp_title', function () {
+// 	global $post;
 
-	$name = get_bloginfo('name');
-	$description = get_bloginfo('description');
+// 	$name = get_bloginfo('name');
+// 	$description = get_bloginfo('description');
 
-	if (is_front_page() || is_home()) {
-		if ($description) {
-			return sprintf('%s - %s', $name, $description);
-		}
-		return $name;
-	}
+// 	if (is_front_page() || is_home()) {
+// 		if ($description) {
+// 			return sprintf('%s - %s', $name, $description);
+// 		}
+// 		return $name;
+// 	}
 
-	if (is_category()) {
-		return sprintf('%s - %s', trim(single_cat_title('', false)), $name);
-	}
+// 	if (is_category()) {
+// 		return sprintf('%s - %s', trim(single_cat_title('', false)), $name);
+// 	}
 
-	return sprintf('%s - %s', trim($post->post_title), $name);
-});
+// 	return sprintf('%s - %s', trim($post->post_title), $name);
+// });
 
 /**
  * Remove the WordPress version from RSS feeds
