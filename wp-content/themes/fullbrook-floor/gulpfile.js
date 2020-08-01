@@ -69,7 +69,8 @@ gulp.task('styles', function () {
         'ninja-forms-field', 
         'active',
         'icon-angle-down',
-        'wp-caption-text'
+        'wp-caption-text',
+        'lg:w-4/5',        
       ],
       extractors: [
         {
