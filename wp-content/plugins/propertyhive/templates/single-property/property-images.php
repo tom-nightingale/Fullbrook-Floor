@@ -34,7 +34,7 @@ global $post, $propertyhive, $property;
         }
     ?>
 
-    <?php do_action( 'propertyhive_product_thumbnails' ); ?>
+    <?php //do_action( 'propertyhive_product_thumbnails' ); ?>
 
     <?php do_action( 'propertyhive_after_single_property_images' ); ?>
 
