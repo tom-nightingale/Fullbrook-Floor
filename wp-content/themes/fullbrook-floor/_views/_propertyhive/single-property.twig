@@ -97,7 +97,7 @@
             <p class="my-4">Get in touch to view this property</p>
             <div class="items-center justify-center lg:flex">
                 <p>Call {% include "_components/phone-number.twig" %}</p>
-                <a href="#" class="inline-block my-4 lg:my-0 btn btn-white lg:mx-4">Request a viewing</a>
+                <a href="javascript:;" class="inline-block my-4 lg:my-0 btn btn-white lg:mx-4" data-fancybox data-src="#makeEnquiry{{post.id}}">Request a viewing</a>
             </div>
         </div>
 
@@ -126,7 +126,7 @@
             <div class="lg:sticky lg:top-48">
 
                 <div class="flex items-center justify-center w-full mb-4 bg-gray-200 min-h-128">
-                    //map goes here
+                    {{function('do_shortcode', '[property_static_map]')}}
                 </div>
                 
                 {{function('propertyhive_template_single_actions') }}
