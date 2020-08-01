@@ -20,14 +20,69 @@
     </div>
 
     <div class="w-full lg:p-16 full lg:w-6/12">
+        
+        <p class="text-secondary">{{post._address_street}}, {{post._address_three}}, {{post._address_postcode}}</p>
+        <h1 class="mb-0">{{post.post_title}}</h1>
 
         {# {{dump(post)}} #}
+        
 
-        <h1 class="mb-0">{{post.post_title}}</h1>
-        <p class="mb-8 text-secondary">{{post._address_street}}, {{post._address_three}}, {{post._address_postcode}}</p>
+        {% if post._department == "residential-sales" %}
+            
+            <p>
+                {% for term in availability %}
+                    <span class="font-bold">{{term.name}}</span>
+                {% endfor %}
+                {% for term in property_type %}
+                    &bull; <span class="font-bold text-secondary">{{term.name}}</span>
+                {% endfor %}
+                {% for term in marketing_flag %}
+                    &bull; {{term.name}}
+                {% endfor %}
+                {% for term in tenure %}
+                    &bull; {{term.name}}
+                {% endfor %}
+            </p>
+            <p class="text-sm opacity-50">
+                {% for term in parking %}
+                    {% if not loop.first %} &bull; {% endif %} {{term.name}}
+                {% endfor %}
+                {% for term in outside_space %}
+                    &bull; {{term.name}}
+                {% endfor %}
+            </p>
+            
+            <p class="mt-8 text-xl leading-snug">{{ function('property_price_qualifier', post.id) }} 
+                <span class="block text-3xl font-bold">£{{post._price_actual|number_format}}</span></p>
 
-        <p class="mt-8 text-xl leading-snug">{{ function('property_price_qualifier', post.id) }} <span
-                class="block text-3xl font-bold">£{{post._price|number_format}}</span></p>
+        {% elseif post._department == "residential-lettings" %}
+
+
+            <p>{% for term in availability %}
+                <span class="font-bold">{{term.name}}</span>
+            {% endfor %}
+            {% for term in property_type %}
+                &bull; <span class="font-bold text-secondary">{{term.name}}</span>
+            {% endfor %}
+            {% for term in furnished %}
+                &bull; <span class="text-secondary">{{term.name}}</span>
+            {% endfor %}</p>
+
+            
+            <p class="text-sm opacity-50">
+                {% for term in parking %}
+                {{term.name}}
+                {% endfor %}
+                {% for term in outside_space %}
+                &bull; {{term.name}}
+                {% endfor %}
+            </p>
+
+            
+            <p><span class="font-bold">Available from:</span> {{post._available_date|date('F j, Y')}}</p>
+            <p class="mt-8 leading-snug"><span class="font-bold">Deposit:</span> £{{post._deposit|number_format}}</p>
+            <p><span class="block text-3xl font-bold text-secondary">£{{post._price_actual|number_format}} {{post._rent_frequency}}</span></p>
+        {% endif %}
                 
         <hr class="my-8">
 
