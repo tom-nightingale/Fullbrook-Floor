@@ -49,13 +49,21 @@
     </div>
 
     <div class="w-full mt-8">
+        <div class="relative flex items-center justify-center p-4 py-12 text-white bg-primary">
+            <p class="text-lg font-bold">Property Features</p>
+            {% include "_components/pattern-house.twig" %}
+        </div>
+        {{function('propertyhive_template_single_features') }}
+    </div>
+
+    <div class="w-full mt-8">
         {{function('propertyhive_template_single_floor_area') }}
         {{function('propertyhive_template_single_meta') }}
         {{function('propertyhive_template_single_sharing') }}
 
 
         {{function('propertyhive_template_single_actions') }}
-        {{function('propertyhive_template_single_features') }}
+        
         {{function('propertyhive_template_single_summary') }}
         {{function('propertyhive_template_single_description') }}
     </div>
