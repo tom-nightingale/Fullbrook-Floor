@@ -7,11 +7,10 @@
 
     <div class="flex flex-wrap justify-center my-8">
 
-      {# {{dump(featured_properties)}} #}
-
       {% for property in featured_properties %}
 
           {% include "_components/property-card.twig" with {
+              property_id : property.id,
               image : property.thumbnail,
               title : property.post_title,
               street : property._address_street,

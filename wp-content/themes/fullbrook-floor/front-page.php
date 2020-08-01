@@ -5,6 +5,7 @@ $context['post'] = new Timber\Post();
 
 $featured_query = [
     'posts_per_page' => 4,
+    'orderby' => 'rand',
     'post_type' => 'property',
     'meta_query'  => array(
         array(
