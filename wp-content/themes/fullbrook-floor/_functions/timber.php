@@ -27,7 +27,8 @@
 
     function add_to_twig( $twig ) {
         // Adding a function.
-        $twig->addFunction( new Timber\Twig_Function( 'address_stacked', 'address_stacked' ) );        
+        $twig->addFunction( new Timber\Twig_Function( 'address_stacked', 'address_stacked' ) );   
+        $twig->addFunction( new Timber\Twig_Function( 'property_price', 'property_price' ) );     
         return $twig;
     }
     

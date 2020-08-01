@@ -11,44 +11,44 @@
 {% endblock %}
 
 {% block page_content %}
-
-    {% if posts.pagination.current < 2 %}
+    
+    {# {% if properties.pagination.current < 2 %}
         {% include "_components/featured-properties.twig" with {
             hide_see_all : true
         } %}
-    {% endif %}
+    {% endif %} #}
 
-
-    {{ function('propertyhive_result_count') }}
-    {{ function('propertyhive_catalog_ordering') }}
+    <div class="container flex flex-wrap items-center justify-between p-4 mb-4">
+        {{ function('propertyhive_result_count') }}
+        {{ function('propertyhive_catalog_ordering') }}
+    </div>
 
     <div class="container flex flex-wrap">
         
-        {% if properties %}        
-
-            {% for property in properties %}
-            
-                {% include "_components/property-card.twig" with {
-                    image : property.thumbnail,
-                    title : property.post_title,
-                    street : property._address_street,
-                    price : property._price_actual,
-                    price_qualifier : property.price_qualifier,
-                    link: property.link,
-                    bedrooms : property._bedrooms,
-                    bathrooms : property._bathrooms,
-                    reception_rooms : property._reception_rooms,
-                    }
-                %}
-            
-            {% endfor %}
-            
+        {% if properties %}
+        
+        {% for property in properties %}
+        
+            {% include "_components/property-card.twig" with {
+                property_id : property.id,
+                image : property.thumbnail,
+                title : property.post_title,
+                street : property._address_street,
+                link: property.link,
+                bedrooms : property._bedrooms,
+                bathrooms : property._bathrooms,
+                reception_rooms : property._reception_rooms,
+                }
+            %}
+        
+        {% endfor %}
+        
             {% include "_components/pagination.twig" %}
-
+        
         {% else %}
-
+        
             <p>No properties found</p>
-
+        
         {% endif %}
 
 
