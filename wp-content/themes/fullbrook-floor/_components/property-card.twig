@@ -8,14 +8,11 @@
 
       <p class="mt-8 leading-snug">{{ function('property_price_qualifier', property_id) }} <span class="block text-xl font-bold">£{{property._price|number_format}}</span></p>
       <hr class="my-8">
-      <div class="flex flex-wrap mb-8 text-center">
-        <div class="w-1/3">{{function('icon', 'bed', 'text-3xl')}}<span class="block text-xs lg:text-sm">{{bedrooms}} Beds</span>
-        </div>
-        <div class="w-1/3">{{function('icon', 'bath', 'text-3xl')}}<span class="block text-xs lg:text-sm">{{bathrooms}} Baths</span>
-        </div>
-        <div class="w-1/3">{{function('icon', 'sofa', 'text-3xl')}}<span class="block text-xs lg:text-sm">{{reception_rooms}} Receptions</span>
-        </div>
-      </div>
+      {% include "_components/room-numbers.twig" with {
+        bedrooms: bedrooms,
+        bathrooms: bathrooms,
+        reception_rooms: reception_rooms
+      } %}
       <div class="text-center">
         <span class="inline-block mx-auto btn btn-primary">View this property</span>
       </div>

@@ -1,0 +1,66 @@
+{% extends 'base.twig' %}
+
+{% block hero %}
+
+{% include "_components/hero.twig" with {
+    hero_heading : post.meta('hero_heading')|default(post.title),
+    has_search_bar : post.meta('has_search_bar'),
+    has_accreditations : true,
+} %}
+
+{% endblock %}
+
+{% block page_content %}
+
+<div class="container flex flex-wrap justify-between pt-8">
+
+    <div class="w-full lg:p-8 lg:w-6/12">
+        {{function('propertyhive_template_not_on_market')}}
+        {{function('propertyhive_show_property_images')}}
+    </div>
+
+    <div class="lg:p-16 full lg:w-6/12">
+
+        {# {{dump(post)}} #}
+
+        <h1 class="mb-0">{{post.post_title}}</h1>
+        <p class="mb-8 text-secondary">{{post._address_street}}, {{post._address_three}}, {{post._address_postcode}}</p>
+
+        <p class="mt-8 text-xl leading-snug">{{ function('property_price_qualifier', post.id) }} <span
+                class="block text-3xl font-bold">£{{post._price|number_format}}</span></p>
+                
+        <hr class="my-8">
+
+        {% include "_components/room-numbers.twig" with {
+            bedrooms: post._bedrooms,
+            bathrooms: post._bathrooms,
+            reception_rooms: _reception_rooms
+        } %}
+
+        <div class="p-4 text-center text-white bg-primary-dark">
+            <p class="text-2xl font-bold">Book a viewing</p>
+            <p class="my-4">Get in touch to view this property</p>
+            <div class="items-center lg:flex">
+                <p>Call {% include "_components/phone-number.twig" %}</p>
+                <a href="#" class="inline-block my-4 btn btn-white">Request a viewing</a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="w-full mt-8">
+        {{function('propertyhive_template_single_floor_area') }}
+        {{function('propertyhive_template_single_meta') }}
+        {{function('propertyhive_template_single_sharing') }}
+
+
+        {{function('propertyhive_template_single_actions') }}
+        {{function('propertyhive_template_single_features') }}
+        {{function('propertyhive_template_single_summary') }}
+        {{function('propertyhive_template_single_description') }}
+    </div>
+
+</div>
+
+
+{% endblock %}
