@@ -19,7 +19,7 @@
         {{function('propertyhive_show_property_images')}}
     </div>
 
-    <div class="lg:p-16 full lg:w-6/12">
+    <div class="w-full lg:p-16 full lg:w-6/12">
 
         {# {{dump(post)}} #}
 
@@ -40,9 +40,9 @@
         <div class="p-4 text-center text-white bg-primary-dark">
             <p class="text-2xl font-bold">Book a viewing</p>
             <p class="my-4">Get in touch to view this property</p>
-            <div class="items-center lg:flex">
+            <div class="items-center justify-center lg:flex">
                 <p>Call {% include "_components/phone-number.twig" %}</p>
-                <a href="#" class="inline-block my-4 btn btn-white">Request a viewing</a>
+                <a href="#" class="inline-block my-4 btn btn-white lg:mx-4">Request a viewing</a>
             </div>
         </div>
 
@@ -56,16 +56,27 @@
         {{function('propertyhive_template_single_features') }}
     </div>
 
-    <div class="w-full mt-8">
-        {{function('propertyhive_template_single_floor_area') }}
-        {{function('propertyhive_template_single_meta') }}
-        {{function('propertyhive_template_single_sharing') }}
+    <div class="flex-wrap w-full mt-8 lg:flex">
 
+        <div class="w-full lg:p-16 lg:w-1/2 copy">
+            <h1>{{post.title}}</h1>
+            {{function('propertyhive_template_single_summary') }}
 
-        {{function('propertyhive_template_single_actions') }}
+            <h2>Full details:</h2>
+            {{function('propertyhive_template_single_description') }}
+        </div>
+
+        <div class="w-full lg:p-16 lg:w-1/2">         
+            
+            <div class="flex items-center justify-center w-full mb-4 bg-gray-200 min-h-128">
+                //map goes here
+            </div>
+            
+            {{function('propertyhive_template_single_actions') }}
+        </div>
         
-        {{function('propertyhive_template_single_summary') }}
-        {{function('propertyhive_template_single_description') }}
+        
+        
     </div>
 
 </div>
