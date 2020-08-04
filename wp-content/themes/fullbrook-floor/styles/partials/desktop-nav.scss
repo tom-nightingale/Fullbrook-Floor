@@ -41,7 +41,8 @@ Desktop Navs **********************************************/
     }
 
     .current-menu-item > a,
-    .current-menu-parent > a {
+    .current-menu-parent > a,
+    .current_page_parent > a {
       @apply
         text-secondary;
 

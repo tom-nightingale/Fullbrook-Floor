@@ -931,14 +931,16 @@ Desktop Navs **********************************************/
   }
 
   .menu-primary .current-menu-item > a,
-  .menu-primary .current-menu-parent > a {
+  .menu-primary .current-menu-parent > a,
+  .menu-primary .current_page_parent > a {
     --text-opacity: 1;
     color: #F26B24;
     color: rgba(242, 107, 36, var(--text-opacity));
   }
 
   .menu-primary .current-menu-item > a:hover,
-    .menu-primary .current-menu-parent > a:hover {
+    .menu-primary .current-menu-parent > a:hover,
+    .menu-primary .current_page_parent > a:hover {
     --text-opacity: 1;
     color: #F26B24;
     color: rgba(242, 107, 36, var(--text-opacity));
