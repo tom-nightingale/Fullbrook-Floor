@@ -1,9 +1,6 @@
 @tailwind base;
 @tailwind components;
 
-
-
-
 @import   'partials/fonts.scss',
           'partials/core.scss',
           'partials/buttons.scss',
@@ -15,9 +12,10 @@
 
 @tailwind utilities;
 
+//Mapbox imports
+@import '../node_modules/leaflet/dist/leaflet.css';
+
 // Custom CSS Here
-
-
 .pattern-house {
   background-image: url(../images/pattern-house.svg);
 }

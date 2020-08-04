@@ -24,8 +24,7 @@
         <p class="text-secondary">{{post._address_street}}, {{post._address_three}}, {{post._address_postcode}}</p>
         <h1 class="mb-0">{{post.post_title}}</h1>
 
-        {# {{dump(post)}} #}
-        
+        {# {{dump(post)}} #}        
 
         {% if post._department == "residential-sales" %}
             
@@ -125,8 +124,10 @@
 
             <div class="lg:sticky lg:top-48">
 
-                <div class="flex items-center justify-center w-full mb-4 bg-gray-200 min-h-128">
-                    {{function('do_shortcode', '[property_static_map]')}}
+                <div class="flex items-center justify-center w-full mb-4 bg-gray-200 min-h-128" id="leafletmap" data-lat="{{post._latitude}}" data-long="{{post._longitude}}" data-marker-title="{{post.title}}">
+                    
+                    {# {{function('do_shortcode', '[property_static_map]')}} #}
+
                 </div>
                 
                 {{function('propertyhive_template_single_actions') }}
