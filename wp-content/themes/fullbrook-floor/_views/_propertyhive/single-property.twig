@@ -120,19 +120,13 @@
             {{function('propertyhive_template_single_description') }}
         </div>
 
-        <div class="w-full lg:p-16 lg:w-1/2">         
+        <div class="w-full lg:p-16 lg:w-1/2">    
 
-            <div class="lg:sticky lg:top-48">
+            <div class="z-0 flex items-center justify-center w-full mb-4 bg-gray-200 realtive min-h-128" id="leafletmap" data-lat="{{post._latitude}}" data-long="{{post._longitude}}" data-marker-title="{{post.title}}">
 
-                <div class="flex items-center justify-center w-full mb-4 bg-gray-200 min-h-128" id="leafletmap" data-lat="{{post._latitude}}" data-long="{{post._longitude}}" data-marker-title="{{post.title}}">
-                    
-                    {# {{function('do_shortcode', '[property_static_map]')}} #}
-
-                </div>
-                
-                {{function('propertyhive_template_single_actions') }}
-
-            </div>            
+            </div>
+            
+            {{function('propertyhive_template_single_actions') }}        
             
         </div>
         
