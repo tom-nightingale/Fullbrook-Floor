@@ -70,7 +70,9 @@ gulp.task('styles', function () {
         'active',
         'icon-angle-down',
         'wp-caption-text',
-        'lg:w-4/5',        
+        'lg:w-4/5',  
+        'property-search-form',
+        'control'
       ],
       extractors: [
         {
