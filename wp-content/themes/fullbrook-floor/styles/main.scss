@@ -78,7 +78,7 @@
     }
 
     label {
-      @apply m-0 p-0 text-primary-dark text-center;
+      @apply m-0 p-0 text-primary-dark;
     }
 
     @screen sm {
@@ -86,10 +86,6 @@
 
       .control {
         @apply w-1/2 p-2;
-      }
-
-      label {
-        @apply text-left;
       }
     }
 
