@@ -72,7 +72,9 @@ gulp.task('styles', function () {
         'wp-caption-text',
         'lg:w-4/5',  
         'property-search-form',
-        'control'
+        'control',
+        'propertyhive-ordering',
+        'flexslider'
       ],
       extractors: [
         {
