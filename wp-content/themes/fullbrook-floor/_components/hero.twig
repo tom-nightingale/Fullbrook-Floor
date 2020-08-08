@@ -24,7 +24,7 @@
       {% for image in post.meta('hero_carousel') %}
         {% set hero_small = image.sizes.medium_large %}
         {% set hero_medium = image.sizes.large %}
-        {% set hero_large = image.url %}
+        {% set hero_large = image.url|resize('1200') %}
         <img class="absolute top-0 left-0 object-cover object-center w-full h-full carousel-image" src="{{hero_small}}"
         srcset="{{hero_medium}} 1200w, {{hero_large}} 1600w" alt="{{site.title}}">        
       {% endfor %}
