@@ -18957,6 +18957,51 @@ figure {
   object-position: center;
 }
 
+/* property search form */
+
+.property-search-container .property-search-form {
+  display: block;
+}
+
+.property-search-container .property-search-form .control {
+  width: 100%;
+  display: block;
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+.property-search-container .property-search-form label {
+  margin: 0;
+  padding: 0;
+  --text-opacity: 1;
+  color: #2a466c;
+  color: rgba(42, 70, 108, var(--text-opacity));
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .property-search-container .property-search-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .property-search-container .property-search-form .control {
+    width: 50%;
+    padding: 0.5rem;
+  }
+
+  .property-search-container .property-search-form label {
+    text-align: left;
+  }
+}
+
+@media (min-width: 1024px) {
+  .property-search-container .property-search-form .control {
+    width: 20%;
+  }
+}
+
 @media (min-width: 640px){
   .sm\:space-y-0 > :not(template) ~ :not(template){
     --space-y-reverse: 0;
