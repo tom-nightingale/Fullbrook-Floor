@@ -74,7 +74,13 @@ gulp.task('styles', function () {
         'property-search-form',
         'control',
         'propertyhive-ordering',
-        'flexslider'
+        'flexslider',
+        'flex-direction-nav',
+        'flex-next',
+        'flex-prev',
+        'pl-6',
+        'top-4',
+        'pl-5'
       ],
       extractors: [
         {

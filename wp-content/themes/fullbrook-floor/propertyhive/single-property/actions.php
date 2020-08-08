@@ -34,7 +34,7 @@ global $post, $property;
                $action['class'] = ( isset( $action['class'] ) ) ? $action['class'] : '';
                
                echo '
-               <li class="inline-block w-full px-2 lg:w-1/3 ' . $action['class'] . '"';
+               <li class="inline-block w-full p-2 lg:w-1/3 ' . $action['class'] . '"';
                if ( isset( $action['parent_attributes'] ) && ! empty( $action['parent_attributes'] ) )
                {
                    foreach ( $action['parent_attributes'] as $key => $value )
