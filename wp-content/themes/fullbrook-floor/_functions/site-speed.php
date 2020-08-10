@@ -48,6 +48,7 @@ function my_deregister_styles() {
   wp_deregister_style('adtrak-cookie'); // Disable separate stylesheet for cookie notice (styles can be found in footer.scss)
   wp_deregister_style('wp-block-library'); // Gutenberg related stylesheet
   wp_deregister_style( 'dashicons' );
+  wp_deregister_style( 'contact-form-7' );  
 }
 add_action('wp_print_styles', 'my_deregister_styles', 100);
 
