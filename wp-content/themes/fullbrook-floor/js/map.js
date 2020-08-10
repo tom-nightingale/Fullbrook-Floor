@@ -1,5 +1,5 @@
 
-import 'leaflet/dist/leaflet'
+import 'leaflet/dist/leaflet';
 
 //Starting map pointer restAPI call
 (function ($) {

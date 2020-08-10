@@ -11,7 +11,7 @@ function toggleModal(event, element) {
 }
 
 modalTrigger.forEach( element => {
-    console.log(element);
+    // console.log(element);
     element.addEventListener('click', toggleModal);
 });
 
