@@ -1,9 +1,9 @@
 === Flamingo ===
 Contributors: takayukister, megumithemes, itpixelz
 Tags: bird, contact, mail, crm
-Requires at least: 5.2
-Tested up to: 5.3
-Stable tag: 2.1.1
+Requires at least: 5.4
+Tested up to: 5.5
+Stable tag: 2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,15 @@ This plugin stores submission data collected through contact forms, which may in
 
 == Changelog ==
 
+= 2.2 =
+
+* Sets the `post_date` of an inbound message based on the submission timestamp.
+* Allows users to search and filter messages within the Spam subgroup.
+* Changes the visibility of the `$found_items` property to private and introduces the `count()` method as an alternative.
+* Changes the visibility of the `$id` property to private and introduces the `id()` method as an alternative.
+* Introduces the submission result in the inbound message viewer screen.
+* Stores the `posted_data_hash` value for search.
+
 = 2.1.1 =
 
 * Security enhancement, CSV: Prefixes a field when its value begins with `=`, `+`, `-`, or `@`. See https://contactform7.com/2020/01/15/heads-up-about-spreadsheet-vulnerabilities/ for details.
@@ -41,8 +50,3 @@ This plugin stores submission data collected through contact forms, which may in
 
 * UI improvements in displaying JSON reCAPTCHA logs in the Inbound Message editor page.
 * Moves to trash automatically after every 30 days of the creation of spam messages.
-
-= 2.0 =
-
-* Displays spam logs in the Inbound Message editor page.
-* Displays reCAPTCHA logs in the Inbound Message editor page.

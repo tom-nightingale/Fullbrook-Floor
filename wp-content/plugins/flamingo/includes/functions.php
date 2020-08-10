@@ -3,7 +3,7 @@
 function flamingo_plugin_url( $path = '' ) {
 	$url = plugins_url( $path, FLAMINGO_PLUGIN );
 
-	if ( is_ssl() && 'http:' == substr( $url, 0, 5 ) ) {
+	if ( is_ssl() and 'http:' == substr( $url, 0, 5 ) ) {
 		$url = 'https:' . substr( $url, 5 );
 	}
 
@@ -52,7 +52,7 @@ function flamingo_schedule_move_trash() {
 		if ( $post->trash() ) {
 
 			// delete spam meta time to stop trashing in cron job
-			delete_post_meta( $post->id, '_spam_meta_time' );
+			delete_post_meta( $post->id(), '_spam_meta_time' );
 		}
 
 	}

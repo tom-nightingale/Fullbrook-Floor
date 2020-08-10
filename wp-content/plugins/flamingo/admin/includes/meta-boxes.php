@@ -7,28 +7,31 @@ function flamingo_contact_submit_meta_box( $post ) {
 
 <div id="delete-action">
 <?php
-	if ( current_user_can( 'flamingo_delete_contact', $post->id ) ) {
+	if ( current_user_can( 'flamingo_delete_contact', $post->id() ) ) {
 		$delete_text = __( 'Delete', 'flamingo' );
 
 		$delete_link = add_query_arg(
 			array(
-				'post' => $post->id,
+				'post' => $post->id(),
 				'action' => 'delete',
 			),
 			menu_page_url( 'flamingo', false )
 		);
 
-		$delete_link = wp_nonce_url( $delete_link, 'flamingo-delete-contact_' . $post->id );
+		$delete_link = wp_nonce_url(
+			$delete_link,
+			'flamingo-delete-contact_' . $post->id()
+		);
 
-?><a class="submitdelete deletion" href="<?php echo esc_url( $delete_link ); ?>" onclick="if (confirm('<?php echo esc_js( sprintf( __( "You are about to delete this contact '%s'\n 'Cancel' to stop, 'OK' to delete." ), $post->email ) ); ?>')) {return true;} return false;"><?php echo esc_html( $delete_text ); ?></a><?php } ?>
+?><a class="submitdelete deletion" href="<?php echo esc_url( $delete_link ); ?>" onclick="if (confirm('<?php echo esc_js( sprintf( __( "You are about to delete this contact '%s'\n 'Cancel' to stop, 'OK' to delete.", 'flamingo' ), $post->email ) ); ?>')) {return true;} return false;"><?php echo esc_html( $delete_text ); ?></a><?php } ?>
 </div>
 
 <div id="publishing-action">
 <span class="spinner"></span>
-<?php if ( ! empty( $post->id ) ) : ?>
-	<input name="save" type="submit" class="button-primary" id="publish" tabindex="4" accesskey="p" value="<?php echo esc_attr( __( 'Update Contact', 'flamingo' ) ); ?>" />
+<?php if ( ! empty( $post->id() ) ) : ?>
+	<input name="save" type="submit" class="button-primary" id="publish" tabindex="4" accesskey="p" value="<?php echo esc_attr( __( 'Update contact', 'flamingo' ) ); ?>" />
 <?php else : ?>
-	<input name="save" type="submit" class="button-primary" id="publish" tabindex="4" accesskey="p" value="<?php echo esc_attr( __( 'Add Contact', 'flamingo' ) ); ?>" />
+	<input name="save" type="submit" class="button-primary" id="publish" tabindex="4" accesskey="p" value="<?php echo esc_attr( __( 'Add contact', 'flamingo' ) ); ?>" />
 <?php endif; ?>
 </div>
 
@@ -47,10 +50,10 @@ function flamingo_contact_tags_meta_box( $post ) {
 		return;
 	}
 
-	$tags = wp_get_post_terms( $post->id, $taxonomy->name );
+	$tags = wp_get_post_terms( $post->id(), $taxonomy->name );
 	$tag_names = $tag_ids = array();
 
-	if ( ! empty( $tags ) && ! is_wp_error( $tags ) ) {
+	if ( ! empty( $tags ) and ! is_wp_error( $tags ) ) {
 		foreach( $tags as $tag ) {
 			$tag_names[] = $tag->name;
 			$tag_ids[] = $tag->term_id;
@@ -117,21 +120,57 @@ function flamingo_inbound_submit_meta_box( $post ) {
 	<fieldset class="misc-pub-section" id="comment-status-radio">
 	<legend class="screen-reader-text"><?php echo esc_html( __( 'Inbound message status', 'flamingo' ) ); ?></legend>
 	<label><input type="radio"<?php checked( $post->spam, true ); ?> name="inbound[status]" value="spam" /><?php echo esc_html( __( 'Spam', 'flamingo' ) ); ?></label><br />
-	<label><input type="radio"<?php checked( $post->spam, false ); ?> name="inbound[status]" value="ham" /><?php echo esc_html( __( 'Not Spam', 'flamingo' ) ); ?></label>
+	<label><input type="radio"<?php checked( $post->spam, false ); ?> name="inbound[status]" value="ham" /><?php echo esc_html( __( 'Not spam', 'flamingo' ) ); ?></label>
 	</fieldset>
 
 	<div class="misc-pub-section curtime misc-pub-curtime">
 	<span id="timestamp">
 <?php
+	$submitted_timestamp = get_post_timestamp( $post->id() );
+
+	$submitted_on = sprintf(
+		/* translators: Publish box date string. 1: Date, 2: Time. */
+		__( '%1$s at %2$s', 'flamingo' ),
+		wp_date(
+			/* translators: Publish box date format, see https://www.php.net/date */
+			_x( 'M j, Y', 'publish box date format', 'flamingo' ),
+			$submitted_timestamp
+		),
+		wp_date(
+			/* translators: Publish box time format, see https://www.php.net/date */
+			_x( 'H:i', 'publish box time format', 'flamingo' ),
+			$submitted_timestamp
+		)
+	);
+
 	echo sprintf(
 		/* translators: %s: message submission date */
 		esc_html( __( 'Submitted on: %s', 'flamingo' ) ),
-		'<b>' . esc_html( $post->date ) . '</b>'
+		'<b>' . esc_html( $submitted_on ) . '</b>'
 	);
 ?>
 	</span>
 	</div>
 <?php
+	if ( ! empty( $post->submission_status ) ) {
+		echo '<div class="misc-pub-section submission-status">', "\n";
+
+		$submission_status = sprintf(
+			/* translators: %s: Result of the submission. */
+			esc_html( __( 'Submission result: %s', 'flamingo' ) ),
+			sprintf( '<b>%s</b>', esc_html( $post->submission_status ) )
+		);
+
+		echo sprintf(
+			'<span class="dashicons-before %1$s"> %2$s</span>',
+			in_array( $post->submission_status, array( 'mail_failed', 'spam' ) )
+				? 'dashicons-no' : 'dashicons-yes',
+			$submission_status
+		);
+
+		echo '</div>', "\n";
+	}
+
 	if ( ! empty( $post->spam_log ) ) {
 		echo '<div class="misc-pub-section spam-log">', "\n";
 
@@ -165,23 +204,25 @@ function flamingo_inbound_submit_meta_box( $post ) {
 <div id="major-publishing-actions">
 	<div id="delete-action">
 <?php
-	if ( current_user_can( 'flamingo_delete_inbound_message', $post->id ) ) {
+	if ( current_user_can( 'flamingo_delete_inbound_message', $post->id() ) ) {
 		if ( ! EMPTY_TRASH_DAYS ) {
-			$delete_text = __( 'Delete Permanently', 'flamingo' );
+			$delete_text = __( 'Delete permanently', 'flamingo' );
 		} else {
-			$delete_text = __( 'Move to Trash', 'flamingo' );
+			$delete_text = __( 'Move to trash', 'flamingo' );
 		}
 
 		$delete_link = add_query_arg(
 			array(
-				'post' => $post->id,
+				'post' => $post->id(),
 				'action' => 'trash',
 			),
 			menu_page_url( 'flamingo_inbound', false )
 		);
 
-		$delete_link = wp_nonce_url( $delete_link,
-			'flamingo-trash-inbound-message_' . $post->id );
+		$delete_link = wp_nonce_url(
+			$delete_link,
+			'flamingo-trash-inbound-message_' . $post->id()
+		);
 
 		echo sprintf( '<a href="%1$s" class="submitdelete deletion">%2$s</a>',
 			esc_url( $delete_link ),
@@ -312,7 +353,7 @@ function flamingo_outbound_submit_meta_box( $post ) {
 
 <div id="minor-publishing-actions">
 <div id="save-action">
-<?php if ( $initial || 'publish' != $post->post_status ) : ?>
+<?php if ( $initial or 'publish' != $post->post_status ) : ?>
 <input type="submit" name="save" id="save-post" value="<?php echo esc_attr( __( 'Save Draft', 'flamingo' ) ); ?>" class="button" />
 <span class="spinner"></span>
 <?php endif; ?>
@@ -331,23 +372,25 @@ function flamingo_outbound_submit_meta_box( $post ) {
 <?php if ( ! $initial ) : ?>
 <div id="delete-action">
 <?php
-	if ( current_user_can( 'flamingo_delete_outbound_message', $post->id ) ) {
+	if ( current_user_can( 'flamingo_delete_outbound_message', $post->id() ) ) {
 		if ( ! EMPTY_TRASH_DAYS ) {
-			$delete_text = __( 'Delete Permanently', 'flamingo' );
+			$delete_text = __( 'Delete permanently', 'flamingo' );
 		} else {
-			$delete_text = __( 'Move to Trash', 'flamingo' );
+			$delete_text = __( 'Move to trash', 'flamingo' );
 		}
 
 		$delete_link = add_query_arg(
 			array(
-				'post' => $post->id,
+				'post' => $post->id(),
 				'action' => 'trash',
 			),
 			menu_page_url( 'flamingo_outbound', false )
 		);
 
-		$delete_link = wp_nonce_url( $delete_link,
-			'flamingo-trash-outbound-message_' . $post->id );
+		$delete_link = wp_nonce_url(
+			$delete_link,
+			'flamingo-trash-outbound-message_' . $post->id()
+		);
 
 ?><a class="submitdelete deletion" href="<?php echo esc_url( $delete_link ); ?>"><?php echo esc_html( $delete_text ); ?></a><?php } ?>
 </div>
@@ -355,7 +398,7 @@ function flamingo_outbound_submit_meta_box( $post ) {
 
 <div id="publishing-action">
 <span class="spinner"></span>
-<input name="send" type="submit" class="button-primary" id="publish" tabindex="4" accesskey="p" value="<?php echo esc_attr( __( 'Send Message', 'flamingo' ) ); ?>" />
+<input name="send" type="submit" class="button-primary" id="publish" tabindex="4" accesskey="p" value="<?php echo esc_attr( __( 'Send message', 'flamingo' ) ); ?>" />
 </div>
 
 <div class="clear"></div>

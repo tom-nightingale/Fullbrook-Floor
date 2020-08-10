@@ -1,7 +1,9 @@
 <?php
 
 add_filter( 'wp_privacy_personal_data_erasers',
-	'flamingo_privacy_register_personal_data_erasers', 10, 1 );
+	'flamingo_privacy_register_personal_data_erasers',
+	10, 1
+);
 
 function flamingo_privacy_register_personal_data_erasers( $erasers ) {
 	return array_merge( (array) $erasers, array(
@@ -31,7 +33,7 @@ function flamingo_privacy_contact_eraser( $email_address, $page = 1 ) {
 	$messages = array();
 
 	foreach ( (array) $posts as $post ) {
-		if ( ! current_user_can( 'flamingo_delete_contact', $post->id ) ) {
+		if ( ! current_user_can( 'flamingo_delete_contact', $post->id() ) ) {
 			$items_retained = true;
 
 			$messages = array(
@@ -48,7 +50,7 @@ function flamingo_privacy_contact_eraser( $email_address, $page = 1 ) {
 		}
 	}
 
-	$done = Flamingo_Contact::$found_items < $number;
+	$done = Flamingo_Contact::count() < $number;
 
 	return array(
 		'items_removed' => $items_removed,
@@ -73,7 +75,7 @@ function flamingo_privacy_inbound_eraser( $email_address, $page = 1 ) {
 	$messages = array();
 
 	foreach ( (array) $posts as $post ) {
-		if ( ! current_user_can( 'flamingo_delete_inbound_message', $post->id ) ) {
+		if ( ! current_user_can( 'flamingo_delete_inbound_message', $post->id() ) ) {
 			$items_retained = true;
 
 			$messages = array(
@@ -90,7 +92,7 @@ function flamingo_privacy_inbound_eraser( $email_address, $page = 1 ) {
 		}
 	}
 
-	$done = Flamingo_Inbound_Message::$found_items < $number;
+	$done = Flamingo_Inbound_Message::count() < $number;
 
 	return array(
 		'items_removed' => $items_removed,

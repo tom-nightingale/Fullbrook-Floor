@@ -31,8 +31,9 @@ class Flamingo_Outbound_Messages_List_Table extends WP_List_Table {
 	}
 
 	public function prepare_items() {
-		$current_screen = get_current_screen();
-		$per_page = $this->get_items_per_page( $current_screen->id . '_per_page' );
+		$per_page = $this->get_items_per_page(
+			'flamingo_outbound_messages_per_page'
+		);
 
 		$args = array(
 			'posts_per_page' => $per_page,
@@ -56,7 +57,7 @@ class Flamingo_Outbound_Messages_List_Table extends WP_List_Table {
 		}
 
 		if ( ! empty( $_REQUEST['order'] )
-		&& 'asc' == strtolower( $_REQUEST['order'] ) ) {
+		and 'asc' == strtolower( $_REQUEST['order'] ) ) {
 			$args['order'] = 'ASC';
 		}
 
@@ -73,7 +74,7 @@ class Flamingo_Outbound_Messages_List_Table extends WP_List_Table {
 
 		$this->items = Flamingo_Outbound_Message::find( $args );
 
-		$total_items = Flamingo_Outbound_Message::$found_items;
+		$total_items = Flamingo_Outbound_Message::count();
 		$total_pages = ceil( $total_items / $per_page );
 
 		$this->set_pagination_args( array(
@@ -90,7 +91,7 @@ class Flamingo_Outbound_Messages_List_Table extends WP_List_Table {
 
 		// Inbox
 		Flamingo_Outbound_Message::find( array( 'post_status' => 'any' ) );
-		$posts_in_inbox = Flamingo_Outbound_Message::$found_items;
+		$posts_in_inbox = Flamingo_Outbound_Message::count();
 
 		$inbox = sprintf(
 			_nx( 'Inbox <span class="count">(%s)</span>',
@@ -105,7 +106,7 @@ class Flamingo_Outbound_Messages_List_Table extends WP_List_Table {
 
 		// Trash
 		Flamingo_Outbound_Message::find( array( 'post_status' => 'trash' ) );
-		$posts_in_trash = Flamingo_Outbound_Message::$found_items;
+		$posts_in_trash = Flamingo_Outbound_Message::count();
 
 		if ( empty( $posts_in_trash ) ) {
 			return $status_links;
@@ -152,9 +153,9 @@ class Flamingo_Outbound_Messages_List_Table extends WP_List_Table {
 		}
 
 		if ( $this->is_trash or ! EMPTY_TRASH_DAYS ) {
-			$actions['delete'] = __( 'Delete Permanently', 'flamingo' );
+			$actions['delete'] = __( 'Delete permanently', 'flamingo' );
 		} else {
-			$actions['trash'] = __( 'Move to Trash', 'flamingo' );
+			$actions['trash'] = __( 'Move to trash', 'flamingo' );
 		}
 
 		return $actions;
@@ -173,7 +174,7 @@ class Flamingo_Outbound_Messages_List_Table extends WP_List_Table {
 
 		if ( $this->is_trash
 		and current_user_can( 'flamingo_delete_outbound_messages' ) ) {
-			submit_button( __( 'Empty Trash', 'flamingo' ),
+			submit_button( __( 'Empty trash', 'flamingo' ),
 				'button-secondary apply', 'delete_all', false );
 		}
 ?>
@@ -183,14 +184,16 @@ class Flamingo_Outbound_Messages_List_Table extends WP_List_Table {
 
 	protected function column_default( $item, $column_name ) {
 		do_action( 'manage_flamingo_outbound_posts_custom_column',
-			$column_name, $item->id );
+			$column_name, $item->id()
+		);
 	}
 
 	protected function column_cb( $item ) {
 		return sprintf(
 			'<input type="checkbox" name="%1$s[]" value="%2$s" />',
 			$this->_args['singular'],
-			$item->id );
+			$item->id()
+		);
 	}
 
 	protected function column_subject( $item ) {
@@ -199,7 +202,7 @@ class Flamingo_Outbound_Messages_List_Table extends WP_List_Table {
 		}
 
 		$actions = array();
-		$post_id = absint( $item->id );
+		$post_id = absint( $item->id() );
 
 		$edit_link = add_query_arg(
 			array(
@@ -232,27 +235,21 @@ class Flamingo_Outbound_Messages_List_Table extends WP_List_Table {
 	}
 
 	protected function column_date( $item ) {
-		$post = get_post( $item->id );
+		$datetime = get_post_datetime( $item->id() );
 
-		if ( ! $post ) {
+		if ( false === $datetime ) {
 			return '';
 		}
 
-		$t_time = get_the_time( __( 'Y/m/d g:i:s A', 'flamingo' ), $item->id );
-		$m_time = $post->post_date;
-		$time = get_post_time( 'G', true, $item->id );
-
-		$time_diff = time() - $time;
-
-		if ( $time_diff > 0 && $time_diff < 24*60*60 ) {
-			$h_time = sprintf( __( '%s ago', 'flamingo' ), human_time_diff( $time ) );
-		} else {
-			$h_time = mysql2date( __( 'Y/m/d', 'flamingo' ), $m_time );
-		}
-
-		return sprintf( '<abbr aria-label="%2$s">%1$s</abbr>',
-			esc_html( $h_time ),
-			esc_attr( $t_time )
+		$t_time = sprintf(
+			/* translators: 1: date, 2: time */
+			__( '%1$s at %2$s', 'flamingo' ),
+			/* translators: date format, see https://www.php.net/date */
+			$datetime->format( __( 'Y/m/d', 'flamingo' ) ),
+			/* translators: time format, see https://www.php.net/date */
+			$datetime->format( __( 'g:i a', 'flamingo' ) )
 		);
+
+		return $t_time;
 	}
 }

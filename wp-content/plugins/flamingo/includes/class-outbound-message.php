@@ -4,10 +4,9 @@ class Flamingo_Outbound_Message {
 
 	const post_type = 'flamingo_outbound';
 
-	public static $found_items = 0;
+	private static $found_items = 0;
 
-	public $id;
-	public $date;
+	private $id;
 	public $to;
 	public $from;
 	public $subject;
@@ -55,6 +54,19 @@ class Flamingo_Outbound_Message {
 		return $objs;
 	}
 
+	public static function count( $args = '' ) {
+		if ( $args ) {
+			$args = wp_parse_args( $args, array(
+				'offset' => 0,
+				'post_status' => 'publish',
+			) );
+
+			self::find( $args );
+		}
+
+		return absint( self::$found_items );
+	}
+
 	public static function add( $args = '' ) {
 		$defaults = array(
 			'to' => '',
@@ -79,16 +91,36 @@ class Flamingo_Outbound_Message {
 	}
 
 	public function __construct( $post = null ) {
-		if ( ! empty( $post ) && ( $post = get_post( $post ) ) ) {
+		if ( ! empty( $post ) and $post = get_post( $post ) ) {
 			$this->id = $post->ID;
-
-			$this->date = get_the_time(
-				__( 'Y/m/d g:i:s A', 'flamingo' ), $this->id );
 			$this->to = get_post_meta( $post->ID, '_to', true );
 			$this->from = get_post_meta( $post->ID, '_from', true );
 			$this->subject = get_post_meta( $post->ID, '_subject', true );
 			$this->meta = get_post_meta( $post->ID, '_meta', true );
 		}
+	}
+
+	public function __get( $name ) {
+		/* translators: 1: Property, 2: Version, 3: Class, 4: Method. */
+		$message = __( 'The visibility of the %1$s property has been changed in %2$s. Now the property may only be accessed by the %3$s class. You can use the %4$s method instead.', 'flamingo' );
+
+		if ( 'id' == $name ) {
+			if ( WP_DEBUG ) {
+				trigger_error( sprintf(
+					$message,
+					sprintf( '<code>%s</code>', 'id' ),
+					esc_html( __( 'Flamingo 2.2', 'flamingo' ) ),
+					sprintf( '<code>%s</code>', self::class ),
+					sprintf( '<code>%s</code>', 'id()' )
+				) );
+			}
+
+			return $this->id;
+		}
+	}
+
+	public function id() {
+		return $this->id;
 	}
 
 	public function save() {

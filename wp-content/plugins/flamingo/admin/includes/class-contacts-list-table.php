@@ -13,7 +13,7 @@ class Flamingo_Contacts_List_Table extends WP_List_Table {
 			'full_name' => __( 'Name', 'flamingo' ),
 			'tags' => __( 'Tags', 'flamingo' ),
 			'history' => __( 'History', 'flamingo' ),
-			'last_contacted' => __( 'Last Contact', 'flamingo' ),
+			'last_contacted' => __( 'Last contact', 'flamingo' ),
 		);
 
 		$columns = apply_filters(
@@ -31,8 +31,9 @@ class Flamingo_Contacts_List_Table extends WP_List_Table {
 	}
 
 	public function prepare_items() {
-		$current_screen = get_current_screen();
-		$per_page = $this->get_items_per_page( $current_screen->id . '_per_page' );
+		$per_page = $this->get_items_per_page(
+			'flamingo_contacts_per_page'
+		);
 
 		$args = array(
 			'posts_per_page' => $per_page,
@@ -55,7 +56,7 @@ class Flamingo_Contacts_List_Table extends WP_List_Table {
 		}
 
 		if ( ! empty( $_REQUEST['order'] )
-		&& 'asc' == strtolower( $_REQUEST['order'] ) ) {
+		and 'asc' == strtolower( $_REQUEST['order'] ) ) {
 			$args['order'] = 'ASC';
 		}
 
@@ -65,7 +66,7 @@ class Flamingo_Contacts_List_Table extends WP_List_Table {
 
 		$this->items = Flamingo_Contact::find( $args );
 
-		$total_items = Flamingo_Contact::$found_items;
+		$total_items = Flamingo_Contact::count();
 		$total_pages = ceil( $total_items / $per_page );
 
 		$this->set_pagination_args( array(
@@ -136,27 +137,28 @@ class Flamingo_Contacts_List_Table extends WP_List_Table {
 
 	protected function column_default( $item, $column_name ) {
 		do_action( 'manage_flamingo_contact_posts_custom_column',
-			$column_name, $item->id );
+			$column_name, $item->id()
+		);
 	}
 
 	protected function column_cb( $item ) {
 		return sprintf(
 			'<input type="checkbox" name="%1$s[]" value="%2$s" />',
 			$this->_args['singular'],
-			$item->id
+			$item->id()
 		);
 	}
 
 	protected function column_email( $item ) {
 		$edit_link = add_query_arg(
 			array(
-				'post' => $item->id,
+				'post' => $item->id(),
 				'action' => 'edit',
 			),
 			menu_page_url( 'flamingo', false )
 		);
 
-		if ( current_user_can( 'flamingo_edit_contact', $item->id ) ) {
+		if ( current_user_can( 'flamingo_edit_contact', $item->id() ) ) {
 			return sprintf(
 				'<strong><a class="row-title" href="%1$s" aria-label="%2$s">%3$s</a></strong>',
 				esc_url( $edit_link ),
@@ -183,13 +185,13 @@ class Flamingo_Contacts_List_Table extends WP_List_Table {
 
 		$link = add_query_arg(
 			array(
-				'post' => $item->id,
+				'post' => $item->id(),
 				'action' => 'edit',
 			),
 			menu_page_url( 'flamingo', false )
 		);
 
-		if ( current_user_can( 'flamingo_edit_contact', $item->id ) ) {
+		if ( current_user_can( 'flamingo_edit_contact', $item->id() ) ) {
 			$actions['edit'] = sprintf(
 				'<a href="%1$s">%2$s</a>',
 				esc_url( $link ),
@@ -206,7 +208,7 @@ class Flamingo_Contacts_List_Table extends WP_List_Table {
 
 	protected function column_tags( $item ) {
 		if ( empty( $item->tags ) ) {
-			return esc_html( __( 'No Tags', 'flamingo' ) );
+			return esc_html( __( 'No tags', 'flamingo' ) );
 		}
 
 		$output = '';
@@ -285,7 +287,7 @@ class Flamingo_Contacts_List_Table extends WP_List_Table {
 					's' => $item->email,
 				) );
 
-				$count = (int) Flamingo_Inbound_Message::$found_items;
+				$count = (int) Flamingo_Inbound_Message::count();
 
 				if ( ! $count ) {
 					continue;
@@ -322,26 +324,30 @@ class Flamingo_Contacts_List_Table extends WP_List_Table {
 	}
 
 	protected function column_last_contacted( $item ) {
-		if ( empty( $item->last_contacted ) ) {
+		if ( empty( $item->last_contacted )
+		or '0000-00-00 00:00:00' === $item->last_contacted ) {
 			return '';
 		}
 
-		$t_time = mysql2date( __( 'Y/m/d g:i:s A', 'flamingo' ), $item->last_contacted, true );
-		$m_time = $item->last_contacted;
-		$time = mysql2date( 'G', $item->last_contacted )
-			- get_option( 'gmt_offset' ) * 3600;
+		$datetime = date_create_immutable_from_format(
+			'Y-m-d H:i:s',
+			$item->last_contacted,
+			wp_timezone()
+		);
 
-		$time_diff = time() - $time;
-
-		if ( $time_diff > 0 and $time_diff < 24*60*60 ) {
-			$h_time = sprintf( __( '%s ago', 'flamingo' ), human_time_diff( $time ) );
-		} else {
-			$h_time = mysql2date( __( 'Y/m/d', 'flamingo' ), $m_time );
+		if ( false === $datetime ) {
+			return '';
 		}
 
-		return sprintf( '<abbr aria-label="%2$s">%1$s</abbr>',
-			esc_html( $h_time ),
-			esc_attr( $t_time )
+		$t_time = sprintf(
+			/* translators: 1: date, 2: time */
+			__( '%1$s at %2$s', 'flamingo' ),
+			/* translators: date format, see https://www.php.net/date */
+			$datetime->format( __( 'Y/m/d', 'flamingo' ) ),
+			/* translators: time format, see https://www.php.net/date */
+			$datetime->format( __( 'g:i a', 'flamingo' ) )
 		);
+
+		return $t_time;
 	}
 }
