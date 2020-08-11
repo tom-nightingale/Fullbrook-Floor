@@ -7,7 +7,24 @@
       
       <a href="{{bucket.button_link.url}}" class="relative flex flex-col h-full">
 
-        <img class="block object-cover h-48 lg:h-64 lazyload" data-src="{{bucket.background_image.url|resize('800', '400', 'top')}}" alt="{{bucket.title}}">
+        {% include "_components/picture.twig" with {
+            source: bucket.background_image.url,
+            breakpoints: {
+              "640px" : {
+                w: 800,
+                h: 400,
+                crop: 'top'
+              },
+            },
+            img: {
+              classes: 'block w-full object-cover h-48 lg:h-64 lazyload',
+              alt: bucket.title,
+              w: null,
+              h: 600,
+              crop: 'top',
+            }
+          }
+        %}
        
         <div class="h-full p-4 xl:p-6">
 

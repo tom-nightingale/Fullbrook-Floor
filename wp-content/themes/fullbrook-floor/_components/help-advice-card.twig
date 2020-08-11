@@ -2,7 +2,31 @@
 
   <a href="{{post.link}}" class="h-full block bg-white group hover:shadow-lg {% if featured %}lg:flex flex-wrap items-center{% endif %}">
 
-    <img class="bg-gray-100 h-48 w-full object-cover lazyload lg:h-56 {% if featured %}lg:w-1/3 h-56{% endif %}" data-src="{{post.thumbnail.src|resize('400')}}" alt="{{post.title}} title image">
+      {% if featured %}
+        {% set featuredClass = 'lg:w-1/3 h-56' %}
+      {% else %}
+        {% set featuredClass = '' %}
+      {% endif %}
+
+      {% include "_components/picture.twig" with {
+        pictureClasses : featuredClass,
+        source: post.thumbnail.src,
+        breakpoints: {
+          "640px" : {
+            w: 500,
+            h: 500,
+            crop: 'center'
+          },
+        },
+        img: {
+          classes: 'bg-gray-100 h-48 w-full object-cover lazyload lg:h-56',
+          alt: 'Image of ' ~ post.title,
+          w: 640,
+          h: 300,
+          crop: 'center',
+        }
+      }
+    %}
 
     <div class="p-4 {% if featured %}lg:w-2/3 lg:px-6{% endif %} xl:p-8">
       <p class="text-xl font-bold">{{post.title}}</p>
