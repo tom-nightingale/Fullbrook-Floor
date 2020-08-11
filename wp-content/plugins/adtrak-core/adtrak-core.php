@@ -12,7 +12,7 @@
  * @package           AdtrakCore
  *
  * @wordpress-plugin
- * Plugin Name: 	League Core
+ * Plugin Name: 	Adtrak Core
  * Plugin URI: 		http://github.com/adtrak-core/plugin
  * Description: 	Core functionality for WordPress Development.
  * Version: 		0.9.27
@@ -20,7 +20,7 @@
  * Author URI: 		https://adtrak.co.uk
  * License: 		GPL-2.0+
  * License URI:     http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:     league-core
+ * Text Domain:     adtrak-core
  * Domain Path:     /languages
  */
 
@@ -55,13 +55,13 @@ function deactivate_core()
 }
 
 # github updater
-// require __DIR__ . '/vendor/yahnis-elsts/plugin-update-checker/plugin-update-checker.php';
-// $className = PucFactory::getLatestClassVersion('PucGitHubChecker');
-// $updater = new $className(
-//     'https://github.com/adtrak-core/adtrak-core',
-//     __FILE__,
-//     'master'
-// );
+require __DIR__ . '/vendor/yahnis-elsts/plugin-update-checker/plugin-update-checker.php';
+$className = PucFactory::getLatestClassVersion('PucGitHubChecker');
+$updater = new $className(
+    'https://github.com/adtrak-core/adtrak-core',
+    __FILE__,
+    'master'
+);
 
 /**
  * Begins execution of the plugin.
