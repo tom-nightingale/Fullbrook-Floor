@@ -19,6 +19,7 @@
 			{% endif %}
 
 			<p class="mt-4">&copy; {{site.title}} {{ 'now' | date('Y') }}. All Rights Reserved.</p>
+			<p><a class="hover:text-secondary-light" href="{{site.url}}/cookie-policy">Cookies &amp; Privacy Policy</a></p>
 			
 		</div>
 
@@ -27,7 +28,7 @@
 			<ul>
 				{% for item in primaryMenu.items %}
 				<li class="{{item.class}}">
-					<a href="{{item.url}}">{{item.name}}</a>
+					<a class="transition hover:text-secondary-light" href="{{item.url}}">{{item.name}}</a>
 				</li>
 				{% endfor %}
 			</ul>
@@ -37,8 +38,8 @@
 			<h3>Contact</h3>
 			{{ function('address_stacked') }}			
 
-			<p class="my-2">{{function('icon', 'envelope', 'mr-2')}} <a href="mailto:{{options.site_email}}">{{options.site_email}}</a></p>
-			<p class="my-2">{{function('icon', 'phone', 'mr-2')}} <a href="tel:{{options.default_phone_number}}">{{options.default_phone_number}}</a></p>
+			<p class="my-2">{{function('icon', 'envelope', 'mr-2')}} <a class="hover:text-secondary-light" href="mailto:{{options.site_email}}">{{options.site_email}}</a></p>
+			<p class="my-2">{{function('icon', 'phone', 'mr-2')}} {% include "_components/phone-number.twig" %}</p>
 		</div>
 
 		<div class="w-full p-4 lg:w-2/12">

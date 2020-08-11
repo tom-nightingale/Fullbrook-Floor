@@ -1076,6 +1076,54 @@ input[type="button"]:hover,
   color: rgba(229, 62, 62, var(--text-opacity));
 }
 
+.property-search-container .property-search-form {
+  display: block;
+}
+
+.property-search-container .property-search-form .control {
+  width: 100%;
+  display: block;
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+.property-search-container .property-search-form label {
+  margin: 0;
+  padding: 0;
+  --text-opacity: 1;
+  color: #2a466c;
+  color: rgba(42, 70, 108, var(--text-opacity));
+}
+
+.property-search-container .property-search-form input,
+  .property-search-container .property-search-form select {
+  border-radius: 9999px;
+}
+
+@media (min-width: 640px) {
+  .property-search-container .property-search-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .property-search-container .property-search-form .control {
+    width: 50%;
+    padding: 0.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .property-search-container .property-search-form .control {
+    width: 20%;
+  }
+
+  .property-search-container .property-search-form .btn-primary {
+    margin-top: 0.5rem;
+    border-style: none;
+  }
+}
+
 /* Important to set */
 
 /* Colours */
@@ -19080,46 +19128,6 @@ figure {
   height: 100% !important;
   object-fit: cover;
   object-position: center;
-}
-
-/* property search form */
-
-.property-search-container .property-search-form {
-  display: block;
-}
-
-.property-search-container .property-search-form .control {
-  width: 100%;
-  display: block;
-  padding: 0;
-  margin-bottom: 1rem;
-}
-
-.property-search-container .property-search-form label {
-  margin: 0;
-  padding: 0;
-  --text-opacity: 1;
-  color: #2a466c;
-  color: rgba(42, 70, 108, var(--text-opacity));
-}
-
-@media (min-width: 640px) {
-  .property-search-container .property-search-form {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-
-  .property-search-container .property-search-form .control {
-    width: 50%;
-    padding: 0.5rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .property-search-container .property-search-form .control {
-    width: 20%;
-  }
 }
 
 @media (min-width: 480px){

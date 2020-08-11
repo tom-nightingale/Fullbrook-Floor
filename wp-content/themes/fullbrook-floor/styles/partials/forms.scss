@@ -69,3 +69,47 @@ button {
 }
 
 
+
+// --------------------------------------------------------------------------------------------------
+// Propertyhive Search Form
+// --------------------------------------------------------------------------------------------------
+
+.property-search-container {
+  
+  .property-search-form {
+    @apply block;
+
+    .control {
+      @apply w-full block p-0 mb-4;
+    }
+
+    label {
+      @apply m-0 p-0 text-primary-dark;
+    }
+
+    input,
+    select { 
+        @apply rounded-full;
+    }
+
+    @screen sm {
+      @apply flex flex-wrap items-center;
+
+      .control {
+        @apply w-1/2 p-2;
+      }
+    }
+
+    @screen lg {
+      .control {
+        @apply w-1/5;
+      }
+
+      .btn-primary {
+          @apply mt-2 border-none;
+      }
+    }
+
+  }
+}
+
