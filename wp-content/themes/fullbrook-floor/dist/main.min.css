@@ -1488,9 +1488,9 @@ h3 {
 }
 
 .copy a:hover {
-  --bg-opacity: 1;
-  background-color: #2a4365;
-  background-color: rgba(42, 67, 101, var(--bg-opacity));
+  --text-opacity: 1;
+  color: #F26B24;
+  color: rgba(242, 107, 36, var(--text-opacity));
 }
 
 .copy ol,
