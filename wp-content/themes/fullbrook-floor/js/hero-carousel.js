@@ -23,5 +23,5 @@ if (carousel) {
     }
   }
 
-  setInterval(rotateSlide, 5000);
+  setInterval(rotateSlide, 3000);
 }
