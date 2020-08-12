@@ -14,7 +14,7 @@
 @tailwind utilities;
 
 //Mapbox imports
-@import '../node_modules/leaflet/dist/leaflet.css';
+@import 'leaflet/dist/leaflet';
 
 // Custom CSS Here
 .pattern-house {
