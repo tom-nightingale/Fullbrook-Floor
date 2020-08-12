@@ -1133,6 +1133,26 @@ input[type="button"]:hover,
   }
 }
 
+.fancybox-container p {
+  margin-bottom: 1rem;
+}
+
+.property-enquiry-form label {
+  margin: 0;
+  margin-top: 1rem;
+  padding: 0;
+}
+
+.property-enquiry-form input,
+.property-enquiry-form select {
+  border-radius: 9999px;
+}
+
+.property-enquiry-form textarea {
+  border-radius: 0.375rem;
+  outline: 0;
+}
+
 /* Important to set */
 
 /* Colours */

@@ -23,7 +23,7 @@ if ( !empty($features) )
     foreach ($features as $feature)
     {
 ?>
-        <li class="relative py-2 pl-5 md:pl-6 md:w-1/2 2xl:w-1/3"><?php icon('check', 'absolute top-4 left-0 text-xs text-secondary h-5 w-5 p-1 rounded-full border border-secondary'); ?> <?php echo $feature; ?></li>
+        <li class="relative py-3 pl-6 md:w-1/2 2xl:w-1/3"><?php icon('check', 'absolute top-4 left-0 text-xs text-secondary h-5 w-5 p-1 rounded-full border border-secondary'); ?> <?php echo $feature; ?></li>
 <?php
     }
 ?>

@@ -87,7 +87,7 @@ button {
 
 .property-search-container {
   
-  .property-search-form {
+  .property-search-form, {
     @apply block;
 
     .control {
@@ -122,5 +122,25 @@ button {
     }
 
   }
+}
+.fancybox-container {
+  p {
+    @apply mb-4;
+  }
+}
+
+.property-enquiry-form {
+    label {
+      @apply m-0 mt-4 p-0;
+    }
+
+    input,
+    select { 
+        @apply rounded-full;
+    }
+
+     textarea {
+      @apply rounded-md outline-none;
+    }
 }
 
