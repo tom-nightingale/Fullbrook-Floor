@@ -53,7 +53,7 @@ gulp.task('styles', function () {
     argv.production,
     purgecss({
       content: ['**/*.twig'],
-      whitelistPatterns: [/nf/, /wp/],
+      whitelistPatterns: [/nf/, /wp/, /leaflet/],
       whitelist: [
         'buckets--num-4',
         'textarea',
