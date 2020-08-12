@@ -9,12 +9,10 @@
           'partials/forms.scss',
           'partials/mobile-nav.scss',
           'partials/cf7.scss',
+          'partials/leaflet.scss',
           'partials/typography.scss';
 
 @tailwind utilities;
-
-//Mapbox imports
-@import 'leaflet/dist/leaflet';
 
 // Custom CSS Here
 .pattern-house {
