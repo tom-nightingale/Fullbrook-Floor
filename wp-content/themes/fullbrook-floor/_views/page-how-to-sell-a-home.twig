@@ -25,7 +25,10 @@
           <img class="block object-cover object-center mx-auto mb-8 bg-gray-500 border-4 border-white rounded-full w-36 h-36 lazyload" data-src="{{step.image.sizes.medium_large}}" alt="{{step.title}}">
 
           <p class="mb-2 text-lg font-bold">{{loop.index}}. {{step.title}}</p>
-          {{step.content}}
+          
+          <div class="copy">
+            {{step.content}}
+          </div>
           
           {% if step.is_highlighted %}
             <a href="{{site.url}}/contact-us" class="inline-block mt-6 text-sm text-white btn btn-secondary">Start selling your home today!</a>
