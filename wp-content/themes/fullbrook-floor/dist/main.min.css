@@ -1481,7 +1481,7 @@ div.wpcf7 .wpcf7-submit:disabled {
 
 /*! purgecss end ignore */
 
-/* required styles */
+/* purgecss start ignore */
 
 .leaflet-pane,
 .leaflet-tile,
@@ -2234,6 +2234,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
   margin-left: -12px;
   border-right-color: #fff;
 }
+
+/* purgecss end ignore */
 
 @font-face {
   font-family: 'Source Sans Pro';
