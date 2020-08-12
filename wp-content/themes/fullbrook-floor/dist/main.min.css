@@ -1076,6 +1076,17 @@ input[type="button"]:hover,
   color: rgba(229, 62, 62, var(--text-opacity));
 }
 
+.wpcf7-form input,
+.wpcf7-form select {
+  border-radius: 9999px;
+  outline: 0;
+}
+
+.wpcf7-form textarea {
+  border-radius: 0.375rem;
+  outline: 0;
+}
+
 .property-search-container .property-search-form {
   display: block;
 }

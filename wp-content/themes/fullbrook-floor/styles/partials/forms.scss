@@ -68,6 +68,17 @@ button {
     @apply border-0 font-bold p-0 mt-4 text-red-600;
 }
 
+.wpcf7-form {
+    input,
+    select { 
+        @apply rounded-full outline-none;
+    }
+
+    textarea {
+      @apply rounded-md outline-none;
+    }
+}
+
 
 
 // --------------------------------------------------------------------------------------------------
