@@ -83,7 +83,9 @@ gulp.task('styles', function () {
         'pl-5',
         '2xl:w-1/3',
         'md:flex',
-        'py-3'
+        'py-3',
+        'border',
+        'border-secondary'
       ],
       extractors: [
         {
