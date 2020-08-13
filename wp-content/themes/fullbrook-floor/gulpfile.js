@@ -80,7 +80,9 @@ gulp.task('styles', function () {
         'flex-prev',
         'pl-6',
         'top-4',
-        'pl-5'
+        'pl-5',
+        '2xl:w-1/3',
+        'w-1/3'
       ],
       extractors: [
         {
