@@ -24,7 +24,7 @@
         <p class="text-secondary">{{post._address_street}}, {{post._address_three}}, {{post._address_postcode}}</p>
         <h1 class="mb-0">{{post.post_title}}</h1>
 
-        {# {{dump(post)}} #}        
+        {# {{dump(post)}} #}
 
         {% if post._department == "residential-sales" %}
             
@@ -88,7 +88,7 @@
         {% include "_components/room-numbers.twig" with {
             bedrooms: post._bedrooms,
             bathrooms: post._bathrooms,
-            reception_rooms: _reception_rooms
+            reception_rooms: post._reception_rooms,
         } %}
 
         <div class="relative p-4 pb-8 text-center text-white bg-primary-dark lg:p-8 lg:pb-16">
