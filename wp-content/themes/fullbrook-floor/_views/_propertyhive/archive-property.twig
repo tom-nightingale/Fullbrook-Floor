@@ -23,17 +23,17 @@
         {{ function('propertyhive_catalog_ordering') }}
     </div>
 
-    <div class="container flex flex-wrap">
+    <div class="container flex flex-wrap justify-center">
         
         {% if properties %}
         
         {% for property in properties %}
-        
+
             {% include "_components/property-card.twig" with {
                 property_id : property.id,
                 image : property.thumbnail,
                 title : property.post_title,
-                street : property._address_street,
+                street : property._address_postcode,
                 link: property.link,
                 bedrooms : property._bedrooms,
                 bathrooms : property._bathrooms,
