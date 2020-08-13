@@ -32,3 +32,14 @@ function edit_default_property_search_form_fields($fields)
 
     return $fields; // return the fields
 }
+
+
+// Update the enquiry form to have a nice Telephone Number label
+add_filter( 'propertyhive_property_enquiry_form_fields', 'edit_default_property_enquiry_form' );
+
+function edit_default_property_enquiry_form($fields)
+
+    $fields['telephone_number']['label'] = "Telephone Number";
+
+    return $fields; // return the fields
+}
