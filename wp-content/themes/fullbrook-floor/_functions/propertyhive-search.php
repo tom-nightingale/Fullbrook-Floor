@@ -10,7 +10,7 @@ function edit_default_property_search_form_fields($fields)
 
 
     //add additional fields to the property maximum price
-     $prices = array(
+    $prices = array(
         '' => __( 'No preference', 'propertyhive' ),
         '100000' => '£100,000',
         '150000' => '£150,000',
@@ -28,7 +28,6 @@ function edit_default_property_search_form_fields($fields)
         '5000000' => '£5,000,000',
     );
     $fields['maximum_price']['options'] = $prices;
-
 
     return $fields; // return the fields
 }
