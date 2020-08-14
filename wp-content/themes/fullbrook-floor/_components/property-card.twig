@@ -5,17 +5,17 @@
     {% include "_components/picture.twig" with {
         source: image.src,
         breakpoints: {
-          "640px" : {
-            w: 768,
-            h: 400,
+          "750px" : {
+            w: 750,
+            h: null,
             crop: 'center'
           },
         },
         img: {
-          classes: 'block object-cover w-full h-64 bg-gray-500 lazyload',
+          classes: 'block object-contain w-full bg-gray-500 lazyload',
           alt: 'Image of ' ~ title,
-          w: null,
-          h: 600,
+          w: 750,
+          h: 500,
           crop: 'center',
         }
       }
