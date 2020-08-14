@@ -32,8 +32,8 @@
           <h3>Address</h3>
           {{ function('address_stacked') }}
 
-          <p class="mt-8">Call: {% include "_components/phone-number.twig" with { classes : 'hover:text-secondary' } %}</p>
-          <p>Email: <a class="font-bold break-all hover:text-secondary" href="maitlo:{{options.site_email}}">{{options.site_email}}</a></p>
+          <p class="mt-8 text-sm xl:text-base">Call: <span class="block">{% include "_components/phone-number.twig" with { classes : 'hover:text-secondary' } %}</span></p>
+          <p class="text-sm xl:text-base">Email: <a class="block font-bold hover:text-secondary" href="maitlo:{{options.site_email}}">{{options.site_email}}</a></p>
         </div>
         
         <div class="p-4 sm:w-1/2 lg:w-full">
