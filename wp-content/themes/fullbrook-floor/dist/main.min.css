@@ -1154,6 +1154,10 @@ input[type="button"]:hover,
   outline: 0;
 }
 
+.propertyhive-ordering {
+  max-width: 480px;
+}
+
 /* Important to set */
 
 /* Colours */

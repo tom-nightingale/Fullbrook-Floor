@@ -14,7 +14,7 @@ global $propertyhive, $wp_query;
 if ( $wp_query->found_posts < 2 )
 	return;
 ?>
-<form class="w-full mt-2 propertyhive-ordering" method="get">
+<form class="w-full propertyhive-ordering" method="get">
 	<?php
 
 		if (
