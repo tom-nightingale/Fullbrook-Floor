@@ -13,8 +13,8 @@
 {% block page_content %}
 
 <div class="container flex flex-wrap justify-between pt-8">
-
-    <div class="w-full lg:p-8 lg:w-6/12">
+    <div class="relative w-full lg:p-8 lg:w-6/12">
+        <span class="absolute top-0 right-0 z-10 p-2 text-sm text-white lg:right-6 lg:top-4 bg-secondary">{% for term in availability %}{{term.name}}{% endfor %}</span>
         {{function('propertyhive_template_not_on_market')}}
         {{function('propertyhive_show_property_images')}}
     </div>
