@@ -12,11 +12,11 @@
 
 {% block page_content %}
     
-    {% if featured_properties %}
+    {# {% if featured_properties %}
         {% include "_components/featured-properties.twig" with {
             hide_see_all : true
         } %}
-    {% endif %}
+    {% endif %} #}
 
     <div class="container p-4 mb-4">
         <div class="flex flex-wrap items-center justify-between w-full p-4 rounded-sm bg-opacity-20 bg-primary-light">
@@ -41,6 +41,7 @@
             {% endfor %}
 
             {% include "_components/property-card.twig" with {
+                property : property,
                 property_id : property.id,
                 image : property.thumbnail,
                 title : property.post_title,

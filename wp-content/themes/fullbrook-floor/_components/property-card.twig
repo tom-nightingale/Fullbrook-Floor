@@ -27,7 +27,15 @@
 
 
     <div class="p-4 text-sm lg:p-8">
-      <p class="text-2xl font-bold">{{title}}</p>
+
+      {# {{dump(property)}} #}
+
+      {% set heading = title|split(',') %}
+      <p class="text-2xl font-bold leading-snug">
+        {% for line in heading %}
+          <span class="block">{{line}}{{loop.first ? ","}}</span>
+        {% endfor %}
+      </p>
 
       {% set postcode = street|split(' ') %}
       <p>{{postcode[0]}}</p>
