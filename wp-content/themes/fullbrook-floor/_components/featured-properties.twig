@@ -10,16 +10,16 @@
       {% for property in featured_properties %}
 
           {% include "_components/property-card.twig" with {
+              property : property,
               property_id : property.id,
               image : property.thumbnail,
               title : property.post_title,
-              street : property._address_street,
-              price : property._price_actual,
-              price_qualifier : property.price_qualifier,
+              street : property._address_postcode,
               link: property.link,
               bedrooms : property._bedrooms,
               bathrooms : property._bathrooms,
               reception_rooms : property._reception_rooms,
+              availability : property_availability,
               }
           %}
           
