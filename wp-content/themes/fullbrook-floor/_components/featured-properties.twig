@@ -9,6 +9,15 @@
 
       {% for property in featured_properties %}
 
+        {# set default property_availability #}
+        {% set property_availability = "" %}
+        
+        {% for term in property.terms %}
+          {% if term.taxonomy == "availability" %}
+            {% set property_availability = term.name %}
+          {% endif %}
+        {% endfor %}
+
           {% include "_components/property-card.twig" with {
               property : property,
               property_id : property.id,
