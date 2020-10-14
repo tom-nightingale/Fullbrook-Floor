@@ -28,6 +28,16 @@
         liveSearch(query);
       });
 
+      $(document).on('keyup', function (e) {
+        if (e.keyCode === 27) {
+          // console.log('esc key pressed');
+          // $(".livesearch").attr('value', '');
+          // $(".search-news").attr('value', '');
+          $(".livesearch-results").empty();
+          $(".livesearch-results").addClass('hidden');
+        }
+      });
+
 
     });
   });
