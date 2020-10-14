@@ -139,6 +139,10 @@
 		public static function cloudflare_get_zone_id($email = false, $key = false){
 			$hostname = preg_replace("/^(https?\:\/\/)?(www\d*\.)?/", "", $_SERVER["HTTP_HOST"]);
 
+			if(function_exists("idn_to_utf8")){
+				$hostname = idn_to_utf8($hostname);
+			}
+			
 			$header = array("method" => "GET",
 							'headers' => array(
 											"X-Auth-Email" => $email,

@@ -1,9 +1,4 @@
 <?php
-/**
- * Yoast SEO Plugin File.
- *
- * @package Yoast\WP\SEO\Config\Migrations
- */
 
 namespace Yoast\WP\SEO\Config\Migrations;
 
@@ -40,7 +35,7 @@ class ReplacePermalinkHashIndex extends Migration {
 			'permalink_hash',
 			'string',
 			[
-				'null' => true,
+				'null'  => true,
 				'limit' => 40,
 			]
 		);
@@ -102,7 +97,7 @@ class ReplacePermalinkHashIndex extends Migration {
 			'permalink_hash',
 			'string',
 			[
-				'null' => true,
+				'null'  => true,
 				'limit' => 191,
 			]
 		);

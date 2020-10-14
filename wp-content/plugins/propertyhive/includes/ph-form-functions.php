@@ -248,7 +248,7 @@ function ph_get_search_form_fields()
         }
 
         $fields['commercial_property_type'] = array(
-            'type' => 'select',
+            'type' => 'commercial_property_type',
             'show_label' => true,
             'before' => '<div class="control control-commercial_property_type commercial-only">',
             'label' => __( 'Type', 'propertyhive' ),
@@ -262,14 +262,33 @@ function ph_get_search_form_fields()
 /**
  * Main function for drawing property enquiry form.
  *
- * @param string $id
+ * @param string $property_id
  * @return void
  */
 function propertyhive_enquiry_form( $property_id = '' )
 {
+    global $post;
+    
     $form_controls = ph_get_property_enquiry_form_fields( $property_id );
 
     $form_controls = apply_filters( 'propertyhive_property_enquiry_form_fields', $form_controls );
+
+    $form_controls['property_id'] = array(
+        'type' => 'hidden',
+        'value' => ( $property_id != '' ? $property_id : $post->ID )
+    );
+
+    if ( get_option( 'propertyhive_property_enquiry_form_disclaimer', '' ) != '' )
+    {
+        $disclaimer = get_option( 'propertyhive_property_enquiry_form_disclaimer', '' );
+
+        $form_controls['disclaimer'] = array(
+            'type' => 'checkbox',
+            'label' => $disclaimer,
+            'label_style' => 'width:100%;',
+            'required' => true
+        );
+    }
 
     ph_get_template( 'global/make-enquiry-form.php',array( 'form_controls' => $form_controls ) );
 }
@@ -285,14 +304,11 @@ function ph_get_property_enquiry_form_fields( $property_id = '' )
 
     $fields = array();
 
-    $fields['property_id'] = array(
-        'type' => 'hidden',
-        'value' => ( $property_id != '' ? $property_id : $post->ID )
-    );
-
     $fields['name'] = array(
         'type' => 'text',
         'label' => __( 'Full Name', 'propertyhive' ),
+        'show_label' => true,
+        'before' => '<div class="control control-name">',
         'required' => true
     );
     if ( is_user_logged_in() )
@@ -305,6 +321,8 @@ function ph_get_property_enquiry_form_fields( $property_id = '' )
     $fields['email_address'] = array(
         'type' => 'email',
         'label' => __( 'Email Address', 'propertyhive' ),
+        'show_label' => true,
+        'before' => '<div class="control control-email_address">',
         'required' => true
     );
     if ( is_user_logged_in() )
@@ -317,26 +335,18 @@ function ph_get_property_enquiry_form_fields( $property_id = '' )
     $fields['telephone_number'] = array(
         'type' => 'text',
         'label' => __( 'Number', 'propertyhive' ),
+        'show_label' => true,
+        'before' => '<div class="control control-telephone_number">',
         'required' => true
     );
 
     $fields['message'] = array(
         'type' => 'textarea',
         'label' => __( 'Message', 'propertyhive' ),
+        'show_label' => true,
+        'before' => '<div class="control control-message">',
         'required' => true
     );
-
-    if ( get_option( 'propertyhive_property_enquiry_form_disclaimer', '' ) != '' )
-    {
-        $disclaimer = get_option( 'propertyhive_property_enquiry_form_disclaimer', '' );
-
-        $fields['disclaimer'] = array(
-            'type' => 'checkbox',
-            'label' => $disclaimer,
-            'label_style' => 'width:100%;',
-            'required' => true
-        );
-    }
 
     return $fields;
 }
@@ -1246,27 +1256,10 @@ function ph_form_field( $key, $field )
             }
 
             $output .= '<div id="search-form-slider-' . $key . '" class="search-form-slider" style="min-width:150px;"></div>';
-            switch ( $key )
-            {
-                case "price_slider":
-                {
-                    $output .= '<input type="hidden" name="minimum_price" id="min_slider_value-' . $key . '" value="' . ( isset($_GET['minimum_price']) ? ph_clean($_GET['minimum_price']) : '' ) . '">';
-                    $output .= '<input type="hidden" name="maximum_price" id="max_slider_value-' . $key . '" value="' . ( isset($_GET['maximum_price']) ? ph_clean($_GET['maximum_price']) : '' ) . '">';
-                    break;
-                }
-                case "rent_slider":
-                {
-                    $output .= '<input type="hidden" name="minimum_rent" id="min_slider_value-' . $key . '" value="' . ( isset($_GET['minimum_rent']) ? ph_clean($_GET['minimum_rent']) : '' ) . '">';
-                    $output .= '<input type="hidden" name="maximum_rent" id="max_slider_value-' . $key . '" value="' . ( isset($_GET['maximum_rent']) ? ph_clean($_GET['maximum_rent']) : '' ) . '">';
-                    break;
-                }
-                case "bedrooms_slider":
-                {
-                    $output .= '<input type="hidden" name="minimum_bedrooms" id="min_slider_value-' . $key . '" value="' . ( isset($_GET['minimum_bedrooms']) ? ph_clean($_GET['minimum_bedrooms']) : '' ) . '">';
-                    $output .= '<input type="hidden" name="maximum_bedrooms" id="max_slider_value-' . $key . '" value="' . ( isset($_GET['maximum_bedrooms']) ? ph_clean($_GET['maximum_bedrooms']) : '' ) . '">';
-                    break;
-                }
-            }
+
+            $field_name = str_replace("_slider", "", $key);
+            $output .= '<input type="hidden" name="minimum_' . $field_name . '" id="min_slider_value-' . $key . '" value="' . ( isset($_GET['minimum_' . $field_name]) ? ph_clean($_GET['minimum_' . $field_name]) : '' ) . '">';
+            $output .= '<input type="hidden" name="maximum_' . $field_name . '" id="max_slider_value-' . $key . '" value="' . ( isset($_GET['maximum_' . $field_name]) ? ph_clean($_GET['maximum_' . $field_name]) : '' ) . '">';
 
             $output .= $field['after'];
 
@@ -1302,32 +1295,9 @@ function ph_form_field( $key, $field )
                 }
             }
 
-            switch ( $key )
+            if ( $field['min'] != '' && $field['max'] != '' )
             {
-                case "price_slider":
-                {   
-                    if ( $field['min'] != '' && $field['max'] != '' )
-                    {
-                        $value = 'values: [ ' . ( isset($_GET['minimum_price']) && $_GET['minimum_price'] != '' ? ph_clean($_GET['minimum_price']) : $field['min'] ) . ', ' . ( isset($_GET['maximum_price']) && $_GET['maximum_price'] != '' ? ph_clean($_GET['maximum_price']) : $field['max'] ) . ' ],';
-                    }
-                    break;
-                }
-                case "rent_slider":
-                {   
-                    if ( $field['min'] != '' && $field['max'] != '' )
-                    {
-                        $value = 'values: [ ' . ( isset($_GET['minimum_rent']) && $_GET['minimum_rent'] != '' ? ph_clean($_GET['minimum_rent']) : $field['min'] ) . ', ' . ( isset($_GET['maximum_rent']) && $_GET['maximum_rent'] != '' ? ph_clean($_GET['maximum_rent']) : $field['max'] ) . ' ],';
-                    }
-                    break;
-                }
-                case "bedrooms_slider":
-                {   
-                    if ( $field['min'] != '' && $field['max'] != '' )
-                    {
-                        $value = 'values: [ ' . ( isset($_GET['minimum_bedrooms']) && $_GET['minimum_bedrooms'] != '' ? ph_clean($_GET['minimum_bedrooms']) : $field['min'] ) . ', ' . ( isset($_GET['maximum_bedrooms']) && $_GET['maximum_bedrooms'] != '' ? ph_clean($_GET['maximum_bedrooms']) : $field['max'] ) . ' ],';
-                    }
-                    break;
-                }
+                $value = 'values: [ ' . ( isset($_GET['minimum_' . $field_name]) && $_GET['minimum_' . $field_name] != '' ? ph_clean($_GET['minimum_' . $field_name]) : $field['min'] ) . ', ' . ( isset($_GET['maximum_' . $field_name]) && $_GET['maximum_' . $field_name] != '' ? ph_clean($_GET['maximum_' . $field_name]) : $field['max'] ) . ' ],';
             }
 
             $output .= '<script>

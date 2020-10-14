@@ -211,6 +211,12 @@ class PH_Countries {
 				'currency_symbol' => 'Rs',
 				'currency_prefix' => false
 			),
+			'MA' => array(
+				'name' => 'Morocco',
+				'currency_code' => 'MAD',
+				'currency_symbol' => 'د.م.',
+				'currency_prefix' => false
+			),
 			'NO' => array(
 				'name' => 'Norway',
 				'currency_code' => 'NOK',
@@ -435,8 +441,8 @@ class PH_Countries {
 		            {
 		                case "pw": { $price = ($price * 52) / 12; break; }
 		                case "pcm": { $price = $price; break; }
-		                case "pq": { $price = ($price * 4) / 52; break; }
-		                case "pa": { $price = ($price / 52); break; }
+		                case "pq": { $price = ($price * 4) / 12; break; }
+		                case "pa": { $price = ($price / 12); break; }
 		            }
 
 		            $converted_price = $this->convert_price_to_gbp( $price, $currency );
@@ -453,8 +459,8 @@ class PH_Countries {
 		            {
 		                case "pw": { $price = ($price * 52) / 12; break; }
 		                case "pcm": { $price = $price; break; }
-		                case "pq": { $price = ($price * 4) / 52; break; }
-		                case "pa": { $price = ($price / 52); break; }
+		                case "pq": { $price = ($price * 4) / 12; break; }
+		                case "pa": { $price = ($price / 12); break; }
 		            }
 
 		            $converted_price = $this->convert_price_to_gbp( $price, $currency );

@@ -2,7 +2,7 @@
 Contributors: wordpressdotorg, clorith, azaozz
 Requires at least: 5.4
 Tested up to: 5.5
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -28,6 +28,17 @@ WordPress.org has an article about [using the browsers console log to diagnose J
 3. That's it! The plugin handles the rest automatically for you.
 
 == Changelog ==
+
+= v 1.1.0 =
+* Added option to dismiss deprecation notices in backend
+* Added logging of deprecation notices in the front end
+* Added admin bar entry to show when deprecations occur
+* Added view of logged deprecations
+* Added dashboard notice encouraging users to remove the plugin if no deprecations have been logged in a while (1 week).
+* Changed the time interval between showing the dashboard nag from 2 weeks to 1 week, as WordPress 5.6 comes closer.
+
+= v 1.0.1 =
+* Fix one of the admin notices being non-dismissible.
 
 = v 1.0.0 =
 * Initial release.

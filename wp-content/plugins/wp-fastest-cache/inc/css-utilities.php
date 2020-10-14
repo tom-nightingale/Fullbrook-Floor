@@ -555,6 +555,12 @@
 					$this->url = $matches[1];
 					$cssContent = $this->fixPathsInCssContent($cssContent, $matches[1]);
 					$this->url = $tmp_url;
+
+					// to minify again because of the @import css sources
+					if(isset($this->wpfc->options->wpFastestCacheMinifyCss) && $this->wpfc->options->wpFastestCacheMinifyCss){
+						$cssContent = $this->_process($cssContent);
+					}
+					
 					return $cssContent;
 				}
 			}
