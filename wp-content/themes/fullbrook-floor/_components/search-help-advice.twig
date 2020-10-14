@@ -4,10 +4,12 @@
 
   {{ function("get_search_form")}}
 
-  <p class="mt-4 text-xs 2xl:mt-6 lg:text-sm"><span class="block lg:inline-block">Popular categories:</span> <a
+  {#
+    <p class="mt-4 text-xs 2xl:mt-6 lg:text-sm"><span class="block lg:inline-block">Popular categories:</span> <a
       class="font-bold" href="{{site.url}}/help-advice-categories/sales">Sales</a>, <a class="font-bold"
       href="{{site.url}}/help-advice-categories/lettings">Lettings</a>, <a class="font-bold"
       href="{{site.url}}/help-advice-categories/mortgages">Mortgages</a></p>
+      #}
 
   {% include "_components/pattern-house.twig" %}
 </div>

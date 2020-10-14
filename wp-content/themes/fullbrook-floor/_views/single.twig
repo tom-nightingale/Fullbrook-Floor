@@ -15,8 +15,6 @@
 
   <main class="lg:w-1/2">
 
-    <!-- <img class="object-cover object-center w-full mb-6 sm:h-72 h-36 lazyload" data-src="{{post.thumbnail}}" alt="{{post.title}} image"> -->
-
     {% include "_components/picture.twig" with {
       source: post.thumbnail.src,
       breakpoints: {
@@ -47,7 +45,9 @@
     %}
     
     <small>Posted {{post.post_date|date("jS F Y")}}</small>
-    <p class="mb-6 text-sm">Listed in: {% for term in post.terms %}<a class="font-bold text-secondary hover:text-secondary-dark" href="{{term.link}}">{{term.name}}</a> {% endfor %}</p>
+    {% if post.terms %}
+      <p class="mb-6 text-sm">Listed in: {% for term in post.terms %}<a class="font-bold text-secondary hover:text-secondary-dark" href="{{term.link}}">{{term.name}}</a> {% endfor %}</p>
+    {% endif %}
 
     <article class="copy">
               

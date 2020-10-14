@@ -23,6 +23,8 @@
 
 </div>
 
+{% if posts|length > 2 %}
+
 <div class="my-8 bg-primary-light bg-opacity-20">
   
   <div class="container flex-wrap items-start p-0 lg:py-8 lg:flex">
@@ -50,6 +52,8 @@
   </div>
 
 </div>
+
+{% endif %}
 
 {% include "_components/buckets.twig" %}
 
