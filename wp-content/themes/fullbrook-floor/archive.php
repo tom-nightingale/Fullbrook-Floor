@@ -4,7 +4,7 @@ $context = Timber::context();
 
 $help_advice_categories = [
   'taxonomy' => 'help-advice-categories',
-  'hide_empty' => false
+  'hide_empty' => true
 ];
 
 $term = get_queried_object();
