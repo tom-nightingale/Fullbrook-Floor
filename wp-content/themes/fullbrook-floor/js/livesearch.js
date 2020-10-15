@@ -25,14 +25,13 @@
 
       $(".livesearch").keyup(function (e) {
         let query = $(this).val();
-        liveSearch(query);
+        if (e.keyCode != 27 || e.key != "Escape") {
+          liveSearch(query);
+        }
       });
 
       $(document).on('keyup', function (e) {
-        if (e.keyCode === 27) {
-          // console.log('esc key pressed');
-          // $(".livesearch").attr('value', '');
-          // $(".search-news").attr('value', '');
+        if (e.keyCode == 27 || e.keyCode == "Escape") {
           $(".livesearch-results").empty();
           $(".livesearch-results").addClass('hidden');
         }
