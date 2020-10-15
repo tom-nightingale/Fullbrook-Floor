@@ -13,14 +13,14 @@
 
 <div class="container flex-wrap justify-center my-8 lg:my-16 lg:flex lg:px-8">
 
-  <main class="lg:w-1/2">
+  <main class="lg:w-2/3 xl:w-1/2">
 
     {% include "_components/picture.twig" with {
       source: post.thumbnail.src,
       breakpoints: {
         "1024px" : {
           w: 1280,
-          h: 500,
+          h: 700,
           crop: 'center'
         },
         "768px" : {
@@ -30,12 +30,12 @@
         },
         "640px" : {
           w: 768,
-          h: 400,
+          h: 600,
           crop: 'center'
         },
       },
       img: {
-        classes: 'object-cover object-center w-full mb-6 sm:h-72 h-36 lazyload',
+        classes: 'object-cover object-center w-full mb-6 md:h-96 xl:h-auto h-72 lazyload',
         alt: post.title,
         w: 640,
         h: 600,
