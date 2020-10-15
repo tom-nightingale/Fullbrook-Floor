@@ -530,6 +530,7 @@ return array(
     'YoastSEO_Vendor\\Symfony\\Component\\DependencyInjection\\ParameterBag\\ParameterBag' => $baseDir . '/vendor_prefixed/symfony/dependency-injection/ParameterBag/ParameterBag.php',
     'YoastSEO_Vendor\\Symfony\\Component\\DependencyInjection\\ParameterBag\\ParameterBagInterface' => $baseDir . '/vendor_prefixed/symfony/dependency-injection/ParameterBag/ParameterBagInterface.php',
     'YoastSEO_Vendor\\Symfony\\Component\\DependencyInjection\\ResettableContainerInterface' => $baseDir . '/vendor_prefixed/symfony/dependency-injection/ResettableContainerInterface.php',
+    'YoastSEO_Vendor\\Symfony\\Polyfill\\Intl\\Idn\\Idn' => $baseDir . '/vendor_prefixed/symfony/polyfill-intl-idn/Idn.php',
     'Yoast\\WP\\Lib\\Migrations\\Adapter' => $baseDir . '/lib/migrations/adapter.php',
     'Yoast\\WP\\Lib\\Migrations\\Column' => $baseDir . '/lib/migrations/column.php',
     'Yoast\\WP\\Lib\\Migrations\\Constants' => $baseDir . '/lib/migrations/constants.php',
