@@ -15,34 +15,13 @@
 
   <main class="lg:w-2/3 xl:w-1/2">
 
-    {% include "_components/picture.twig" with {
-      source: post.thumbnail.src,
-      breakpoints: {
-        "1024px" : {
-          w: 1280,
-          h: 700,
-          crop: 'center'
-        },
-        "768px" : {
-          w: 1024,
-          h: 500,
-          crop: 'center'
-        },
-        "640px" : {
-          w: 768,
-          h: 600,
-          crop: 'center'
-        },
-      },
-      img: {
-        classes: 'object-cover object-center w-full mb-6 md:h-96 xl:h-auto h-72 lazyload',
-        alt: post.title,
-        w: 640,
-        h: 600,
-        crop: 'center',
-      }
-    }
-    %}
+    <picture class="block mb-6 lazyload">
+      <source srcset="{{ post.thumbnail.src|resize(900)|towebp }}" type="image/webp" media="(min-width:1024px)">
+        <source srcset="{{ post.thumbnail.src|resize(1000)|towebp }}" type="image/webp" media="(min-width:640px)">
+      <source srcset="{{ post.thumbnail.src|resize(640)|towebp }}" type="image/webp" media="(min-width:375px)">
+      <source srcset="{{ post.thumbnail.src|resize(640)|tojpg }}" type="image/jpeg">
+      <img src="{{ post.thumbnail.src|resize(640)|tojpg }}" alt="{{ post.title }}">
+    </picture>
     
     <small>Posted {{post.post_date|date("jS F Y")}}</small>
     {% if post.terms %}
