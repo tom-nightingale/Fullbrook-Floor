@@ -13,8 +13,7 @@ select {
     p-2
     w-full
     text-sm
-    shadow-inner
-    border border-gray-300
+    border border-gray-400
     text-primary-dark;
 
     &[aria-invalid="true"] {
@@ -47,8 +46,9 @@ textarea {
     height: 150px;
 }
 
-::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-    @apply text-gray-500;
+::placeholder,
+input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    @apply text-gray-600;
 }
 
 input[type="button"],
@@ -59,7 +59,8 @@ button {
     text-white
     font-bold
     outline-none
-    cursor-pointer;
+    cursor-pointer
+    border-none;    
     transition: .3s;
     
     &:hover {
@@ -90,6 +91,58 @@ button {
     textarea {
       @apply rounded-md outline-none;
     }
+}
+
+#wpcf7-f667-o1 .wpcf7-form {
+  @apply max-w-xs mx-auto;
+
+  .cf7mls_next.action-button, .cf7mls_back.action-button {
+       @apply bg-secondary
+      text-white
+      font-bold
+      outline-none
+      cursor-pointer
+      rounded-full;
+      transition: .3s;
+
+      &:hover {
+        @apply bg-secondary-dark;
+      }
+    }
+
+    .cf7mls_back.action-button {
+      @apply bg-gray-500;
+
+      &:hover {
+        @apply bg-gray-600;
+      }
+    }
+
+    @screen lg {
+
+      .your-house-name-number,
+      .your-name {
+        input {
+          @apply rounded-r-none;
+        }
+      }
+      .your-postcode,
+      .your-phone-number {
+        input {
+          @apply rounded-l-none;
+        }
+      }
+
+      .wpcf7-submit {
+        @apply p-4;
+      }
+
+      .wpcf7-submit + .ajax-loader + .cf7mls_back {
+        @apply w-1/2 mt-8;
+      }
+    }
+   
+
 }
 
 
@@ -159,7 +212,5 @@ button {
 
 .propertyhive-ordering {
   @apply max-w-xs;
-  select {
-  }
 }
 
