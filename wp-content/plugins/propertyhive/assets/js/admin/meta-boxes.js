@@ -63,6 +63,11 @@ jQuery( function($){
     //$('#propertyhive-property-notes, #propertyhive-contact-notes, #propertyhive-enquiry-notes, #propertyhive-viewing-notes, #propertyhive-offer-notes, #propertyhive-sale-notes').on( 'click', 'a.add_note', function() {
     $('[id^=\'propertyhive-\'][id$=\'-notes\']').on( 'click', 'a.add_note', function() {
         if ( ! $('textarea#add_note').val() ) return;
+
+        if ( $(this).text() == 'Adding...' ) { return false; }
+
+        $(this).html('Adding...');
+        $(this).attr('disabled', 'disabled');
  
         var data = {
             action:         'propertyhive_add_note',
@@ -95,11 +100,15 @@ jQuery( function($){
 
     $('[id^=\'propertyhive-\'][id$=\'-notes\']').on( 'click', 'a.delete_note', function() {
         
+        if ( $(this).text() == 'Deleting...' ) { return; }
+
         var confirm_box = confirm('Are you sure you wish to delete this note?');
         if (!confirm_box)
         {
             return false;
         }
+
+        $(this).html('Deleting...');
 
         var note = $(this).closest('li.note');
         
@@ -127,7 +136,19 @@ jQuery( function($){
 
     $('[id^=\'propertyhive-\'][id$=\'-notes\']').on( 'click', 'a.toggle_note_pinned', function() {
 
+        if ( $(this).text().indexOf('...') >= 0 ) { return; }
+
         var note = $(this).closest('li.note');
+
+        if ( note.find('div.pinned').length > 0 )
+        {
+            var loading_text = 'Unpinning...';
+        }
+        else
+        {
+            var loading_text = 'Pinning...';
+        }
+        $(this).html(loading_text);
 
         var data = {
             action:           'propertyhive_toggle_note_pinned',
