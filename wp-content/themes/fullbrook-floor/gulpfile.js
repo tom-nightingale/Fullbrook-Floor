@@ -85,7 +85,9 @@ gulp.task('styles', function () {
         'md:flex',
         'py-3',
         'border',
-        'border-secondary'
+        'border-secondary',
+        'cf7mls_next.action-button',
+        '.cf7mls_back.action-button'
       ],
       extractors: [
         {
