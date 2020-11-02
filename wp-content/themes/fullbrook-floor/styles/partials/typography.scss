@@ -29,15 +29,29 @@ h6, .h6 {
 }
 
 h1 {
-  @apply text-4xl;
-}
-
-h2 {
   @apply text-2xl;
 }
 
-h3 {
+h2 {
   @apply text-xl;
+}
+
+h3 {
+  @apply text-lg;
+}
+
+@screen lg {
+  h1 {
+    @apply text-4xl;
+  }
+
+  h2 {
+    @apply text-2xl;
+  }
+
+  h3 {
+    @apply text-xl;
+  }
 }
 
 // Copy
@@ -49,8 +63,11 @@ h3 {
 
   > p {
     @apply
-      leading-relaxed
-      mb-6;
+      leading-relaxed;
+  }
+
+  > p:not(:last-of-type) {
+    @apply mb-6;
   }
 
   a {

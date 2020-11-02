@@ -2360,15 +2360,29 @@ h6, .h6 {
 }
 
 h1 {
-  font-size: 2.25rem;
-}
-
-h2 {
   font-size: 1.5rem;
 }
 
-h3 {
+h2 {
   font-size: 1.25rem;
+}
+
+h3 {
+  font-size: 1.125rem;
+}
+
+@media (min-width: 1024px) {
+  h1 {
+    font-size: 2.25rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
 }
 
 .copy h1 + p {
@@ -2377,6 +2391,9 @@ h3 {
 
 .copy > p {
   line-height: 1.625;
+}
+
+.copy > p:not(:last-of-type) {
   margin-bottom: 1.5rem;
 }
 
@@ -19980,6 +19997,36 @@ figure {
   height: 100% !important;
   object-fit: cover;
   object-position: center;
+}
+
+.process-step {
+  position: relative;
+}
+
+.process-step:before, .process-step:after {
+  content: '';
+  width: 0.25rem;
+  height: 1rem;
+  --bg-opacity: 1;
+  background-color: #2a466c;
+  background-color: rgba(42, 70, 108, var(--bg-opacity));
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.process-step:before {
+  top: -1rem;
+  height: 1rem;
+}
+
+.process-step:after {
+  content: '';
+  top: 100%;
+}
+
+.process-step:first-of-type:before {
+  content: none;
 }
 
 @media (min-width: 480px) {

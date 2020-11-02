@@ -8,6 +8,12 @@ function toggleModal(event, element) {
     event.preventDefault();
     modalOverlay.classList.toggle('active');
     modalContent.classList.toggle('active');
+    window.scroll({
+        top: 0,
+        left: 0,
+        behaviour: "smooth",
+    })
+
 }
 
 modalTrigger.forEach( element => {

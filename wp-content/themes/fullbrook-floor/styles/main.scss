@@ -65,3 +65,31 @@
   @apply object-cover object-center;
 }
 
+// Process steps for valuation page
+.process-step {
+  @apply relative;
+
+  &:before,
+  &:after {
+    content: '';
+    @apply w-1 h-4 bg-primary-dark;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);    
+  }
+
+  &:before {
+    top: -1rem;
+    @apply h-4;
+  }
+
+  &:after {
+    content: '';    
+    top: 100%;    
+  }
+
+  &:first-of-type:before {
+    content: none;
+  }
+}
+
