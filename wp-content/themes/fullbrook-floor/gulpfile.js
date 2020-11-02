@@ -89,6 +89,8 @@ gulp.task('styles', function () {
         'cf7mls_next',
         'cf7mls_back',
         'action-button',
+        'lg:pr-2',
+        'lg:pl-2',
       ],
       extractors: [
         {
