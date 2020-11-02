@@ -93,6 +93,7 @@ button {
     }
 }
 
+/* purgecss start ignore */
 #wpcf7-f667-o1 .wpcf7-form {
   @apply max-w-xs mx-auto;
 
@@ -119,7 +120,6 @@ button {
     }
 
     @screen lg {
-
       .your-house-name-number,
       .your-name {
         input {
@@ -141,9 +141,8 @@ button {
         @apply w-1/2 mt-8;
       }
     }
-   
-
 }
+/* purgecss end ignore */
 
 
 
