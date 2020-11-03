@@ -18,12 +18,12 @@
       <source srcset="{{ post.meta('valuation_image').url|resize(1000)|towebp }}" type="image/webp" media="(min-width:640px)">
       <source srcset="{{ post.meta('valuation_image').url|resize(640)|towebp }}" type="image/webp" media="(min-width:375px)">
       <source srcset="{{ post.meta('valuation_image').url|resize(640)|tojpg }}" type="image/jpeg">
-      <img src="{{ post.meta('valuation_image').url|resize(640)|tojpg }}" alt="{{ post.title }}">
+      <img class="object-cover h-full" src="{{ post.meta('valuation_image').url|resize(640)|tojpg }}" alt="{{ post.title }}">
     </picture>
 
     <div class="flex flex-col justify-center p-8 text-center bg-gray-100 lg:w-1/2 lg:p-12 xl:p-16">
 
-        <h2>Start your valuation</h2>
+        <h2 class="text-secondary">Start your valuation</h2>
 
         <p class="mb-8">Provide a few details about your home to get your valuation started&hellip;</p>
 
