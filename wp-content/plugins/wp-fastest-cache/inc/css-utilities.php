@@ -504,6 +504,8 @@
 				
 				if(!$matches[1]){
 					$matches[1] = "";
+				}else if(preg_match("/^\#/", $matches[1])){
+					$matches[1] = $matches[1];
 				}else if(preg_match("/^(\/\/|http|\/\/fonts|data:image|data:application)/", $matches[1])){
 					if(preg_match("/fonts\.googleapis\.com/", $matches[1])){ // for safari browser
 						$matches[1] = '"'.$matches[1].'"';
