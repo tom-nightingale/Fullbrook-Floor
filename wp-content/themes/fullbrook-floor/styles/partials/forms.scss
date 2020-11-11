@@ -94,7 +94,8 @@ button {
 }
 
 /* purgecss start ignore */
-#wpcf7-f667-o1 .wpcf7-form {
+#wpcf7-f667-o1 .wpcf7-form,
+#wpcf7-f675-o1 .wpcf7-form {
   @apply max-w-xs mx-auto;
 
   .cf7mls_next.action-button, .cf7mls_back.action-button {
