@@ -38,9 +38,16 @@
      */
     public function addToContext( $context )
     {
-      // Menus
+      $testimonials = [
+        'post_type' => 'testimonials',
+        'posts_per_page' => 3,
+        'orderby' => 'rand',
+      ];
+      $context['testimonials'] = new Timber\PostQuery($testimonials);
+      // Global      
       $context['site'] = $this;
       $context['options'] = get_fields('option');
+      // Menus
       $context['primaryMenu'] = new Timber\Menu('Primary Menu');
       $context['secondaryMenu'] = new Timber\Menu('Secondary Menu');
       $context['footerMenu'] = new Timber\Menu('Footer Menu');

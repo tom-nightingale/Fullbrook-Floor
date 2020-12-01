@@ -142,3 +142,43 @@ figure {
 .wp-caption-text {
   @apply text-center p-4 text-sm bg-gray-100 mb-8;
 }
+
+.testimonial {
+  @apply relative;
+  &:before,
+  &:after {
+    content: '';
+    @apply text-white absolute text-4xl font-bold opacity-50;
+  }
+
+  &:before {
+    content: open-quote;
+    @apply left-2 top-2;
+  }
+
+  &:after {
+    content: close-quote;
+    @apply bottom-2 right-2;
+  }
+
+
+  @screen lg {
+    &:before {  
+      @apply left-8 top-8;
+    } 
+
+    &:after {
+      @apply bottom-8 right-8;
+    }
+  }
+
+  @screen xl {
+    &:before {  
+      @apply left-12 top-6;
+    } 
+
+    &:after {
+      @apply bottom-6 right-12;
+    }
+  }
+}

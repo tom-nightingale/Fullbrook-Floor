@@ -21,8 +21,7 @@
   </div>
 
   <div class="relative bg-bottom bg-cover md:w-1/2 min-h-96 lg:min-h-128 hero-carousel">
-      {% for image in post.meta('hero_carousel') %}
-                
+      {% for image in post.meta('hero_carousel') %}                
           {% include "_components/picture.twig" with {
             source: image.url,
             breakpoints: {
