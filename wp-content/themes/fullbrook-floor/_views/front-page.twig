@@ -16,9 +16,14 @@
 
 
 {% block page_content %}
+  
+  {% include "_components/testimonials.twig" with {
+    classes : 'border-b border-gray-200 pt-0 mb-8',
+  } %}
   {% include "_components/property-search.twig" %}
   {% include "_components/buckets.twig" %}
   {% include "_components/featured-properties.twig" %}
+
 
   <div class="container flex-wrap flex-grow lg:my-8 xl:my-24 lg:flex lg:px-8 2xl:px-40">
     
@@ -43,7 +48,7 @@
     </aside>
 
   </div>
-  {% include "_components/testimonials.twig" %}
+  
   {% include "_components/team.twig" %}
   
 {% endblock %}

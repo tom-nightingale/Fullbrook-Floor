@@ -6,6 +6,10 @@
     hero_heading : post.meta('hero_heading')|default(post.title),
     has_search_bar : post.meta('has_search_bar'),
   } %}
+
+  {% include "_components/testimonials.twig" with {
+    classes : 'border-b border-gray-200 mb-8',
+  } %}
   
 {% endblock %}
 
@@ -43,8 +47,6 @@
   {% if post.meta('show_buckets') %}
     {% include "_components/buckets.twig" %}
   {% endif %}
-
-  {% include "_components/testimonials.twig" %}
   
   {% if post.meta('show_team') %}
     {% include "_components/team.twig" %}
