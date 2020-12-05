@@ -280,23 +280,26 @@ class PH_Admin_Matching_Applicants {
                 }
             }
 
-            $locations = array();
-            $term_list = wp_get_post_terms($property_id, 'location', array("fields" => "all"));
-            if ( !is_wp_error($term_list) && is_array($term_list) && !empty($term_list) )
+            if ( get_option('propertyhive_applicant_locations_type') != 'text' )
             {
-                foreach ( $term_list as $term )
+                $locations = array();
+                $term_list = wp_get_post_terms($property_id, 'location', array("fields" => "all"));
+                if ( !is_wp_error($term_list) && is_array($term_list) && !empty($term_list) )
                 {
-                    $locations[] = $term->term_id;
-
-                    if ( $term->parent != 0 )
+                    foreach ( $term_list as $term )
                     {
-                        $parent = get_term_by( 'id', $term->parent , 'location' );
-                        $locations[] = $parent->term_id;
+                        $locations[] = $term->term_id;
 
-                        if ( $parent->parent != 0 )
+                        if ( $term->parent != 0 )
                         {
-                            $parent = get_term_by( 'id', $parent->parent , 'location' );
+                            $parent = get_term_by( 'id', $term->parent , 'location' );
                             $locations[] = $parent->term_id;
+
+                            if ( $parent->parent != 0 )
+                            {
+                                $parent = get_term_by( 'id', $parent->parent , 'location' );
+                                $locations[] = $parent->term_id;
+                            }
                         }
                     }
                 }
@@ -493,25 +496,45 @@ class PH_Admin_Matching_Applicants {
                                     }
                                     ++$elements_checked;
 
-                                    if ( 
-                                        !isset($applicant_profile['locations']) ||
-                                        ( isset($applicant_profile['locations']) && empty($applicant_profile['locations']) )
-                                    )
+                                    if ( apply_filters( 'propertyhive_location_used_when_matching_applicants', TRUE, $applicant_profile ) === TRUE )
                                     {
-                                        ++$matching_elements;
-                                    }
-                                    elseif ( isset($applicant_profile['locations']) && !empty($applicant_profile['locations']) )
-                                    {
-                                        foreach ( $applicant_profile['locations'] as $applicant_location )
+                                        if ( get_option('propertyhive_applicant_locations_type') != 'text' )
                                         {
-                                            if ( in_array($applicant_location, $locations) )
+                                            if (
+                                                !isset($applicant_profile['locations']) ||
+                                                ( isset($applicant_profile['locations']) && empty($applicant_profile['locations']) )
+                                            )
                                             {
                                                 ++$matching_elements;
-                                                break;
+                                            }
+                                            elseif ( isset($applicant_profile['locations']) && !empty($applicant_profile['locations']) )
+                                            {
+                                                foreach ( $applicant_profile['locations'] as $applicant_location )
+                                                {
+                                                    if ( in_array($applicant_location, $locations) )
+                                                    {
+                                                        ++$matching_elements;
+                                                        break;
+                                                    }
+                                                }
                                             }
                                         }
+                                        else
+                                        {
+                                            if ( !isset($applicant_profile['location_text']) || trim($applicant_profile['location_text']) == '' )
+                                            {
+                                                ++$matching_elements;
+                                            }
+                                            else
+                                            {
+                                                if ( propertyhive_is_location_in_address($property, $applicant_profile['location_text']) === true )
+                                                {
+                                                    ++$matching_elements;
+                                                }
+                                            }
+                                        }
+                                        ++$elements_checked;
                                     }
-                                    ++$elements_checked;
                                 }
 
                                 $additional_checks = apply_filters( 'propertyhive_matching_applicants_check', true, $property, get_the_ID(), $applicant_profile );

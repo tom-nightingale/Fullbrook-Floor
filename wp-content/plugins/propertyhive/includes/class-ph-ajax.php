@@ -107,6 +107,7 @@ class PH_AJAX {
             'dismiss_notice_missing_search_results' => false,
             'dismiss_notice_missing_google_maps_api_key' => false,
             'dismiss_notice_invalid_expired_license_key' => false,
+            'dismiss_notice_email_cron_not_running' => false,
 		);
 
 		foreach ( $ajax_events as $ajax_event => $nopriv ) {
@@ -149,6 +150,11 @@ class PH_AJAX {
         // Quit out
         die();
     }
+
+	public function dismiss_notice_email_cron_not_running()
+	{
+		update_option( 'email_cron_not_running_dismissed', 'yes' );
+	}
 
 	/**
 	 * Output headers for JSON requests
@@ -583,6 +589,11 @@ class PH_AJAX {
                 $applicant_profile['locations'] = is_array(ph_clean($_POST['location'])) ? ph_clean($_POST['location']) : array(ph_clean($_POST['location']));
             }
 
+            if ( isset($_POST['location_text']) && !empty($_POST['location_text']) )
+            {
+                $applicant_profile['location_text'] = ph_clean($_POST['location_text']);
+            }
+
             $applicant_profile['notes'] = ( ( isset($_POST['additional_requirements']) ) ? sanitize_textarea_field($_POST['additional_requirements']) : '' );
 
             $applicant_profile['send_matching_properties'] = 'yes';
@@ -926,6 +937,11 @@ class PH_AJAX {
             if ( isset($_POST['location']) && !empty($_POST['location']) )
             {
                 $applicant_profile['locations'] = array(ph_clean($_POST['location']));
+            }
+
+            if ( isset($_POST['location_text']) && !empty($_POST['location_text']) )
+            {
+                $applicant_profile['location_text'] = ph_clean($_POST['location_text']);
             }
 
             $applicant_profile['notes'] = ( ( isset($_POST['additional_requirements']) ) ? sanitize_textarea_field($_POST['additional_requirements']) : '' );

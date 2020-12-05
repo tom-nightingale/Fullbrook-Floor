@@ -816,6 +816,15 @@ class PH_Query {
         		$address_keywords[] = str_replace("-", " ", ph_clean($_REQUEST['address_keyword']));
         	}
 
+			if ( strpos( $_REQUEST['address_keyword'], '.' ) !== FALSE )
+			{
+				$address_keywords[] = str_replace(".", "", ph_clean($_REQUEST['address_keyword']));
+			}
+			if ( stripos( $_REQUEST['address_keyword'], 'st ' ) !== FALSE )
+			{
+				$address_keywords[] = str_ireplace("st ", "st. ", ph_clean($_REQUEST['address_keyword']));
+			}
+
 	      	$meta_query = array('relation' => 'OR');
 
 	      	$address_fields_to_query = array(
@@ -1447,9 +1456,16 @@ class PH_Query {
             )
         )
         {
+			$value =  ph_clean( $_REQUEST['minimum_floor_area'] );
+			if ( apply_filters('propertyhive_default_commercial_search_floor_area_unit', 'sqft') != 'sqft' )
+			{
+				// Convert value from square metres to square feet
+				$value =  $value * 10.76391041671;
+			}
+
             $meta_query = array(
                 'key'     => '_floor_area_from_sqft',
-                'value'   => ph_clean( $_REQUEST['minimum_floor_area'] ),
+                'value'   => $value,
                 'compare' => '>=',
                 'type'    => 'NUMERIC' 
             );
@@ -1477,9 +1493,16 @@ class PH_Query {
             )
         )
         {
+			$value =  ph_clean( $_REQUEST['maximum_floor_area'] );
+			if ( apply_filters('propertyhive_default_commercial_search_floor_area_unit', 'sqft') != 'sqft' )
+			{
+				// Convert value from square metres to square feet
+				$value =  $value * 10.76391041671;
+			}
+
             $meta_query = array(
                 'key'     => '_floor_area_to_sqft',
-                'value'   => ph_clean( $_REQUEST['maximum_floor_area'] ),
+                'value'   => $value,
                 'compare' => '<=',
                 'type'    => 'NUMERIC' 
             );
@@ -1504,15 +1527,24 @@ class PH_Query {
             isset( $_REQUEST['maximum_floor_area'] ) && $_REQUEST['maximum_floor_area'] != ''
         )
         {
+			$maximum_floor_area = ph_clean( $_REQUEST['maximum_floor_area'] );
+			$minimum_floor_area = ph_clean( $_REQUEST['minimum_floor_area'] );
+			if ( apply_filters('propertyhive_default_commercial_search_floor_area_unit', 'sqft') != 'sqft' )
+			{
+				// Convert value from square metres to square feet
+				$maximum_floor_area =  $maximum_floor_area * 10.76391041671;
+				$minimum_floor_area =  $minimum_floor_area * 10.76391041671;
+			}
+
             $meta_query[] = array(
                 'key'     => '_floor_area_from_sqft',
-                'value'   => ph_clean( $_REQUEST['maximum_floor_area'] ),
+                'value'   => $maximum_floor_area,
                 'compare' => '<=',
                 'type'    => 'NUMERIC' 
             );
             $meta_query[] = array(
                 'key'     => '_floor_area_to_sqft',
-                'value'   => ph_clean( $_REQUEST['minimum_floor_area'] ),
+                'value'   => $minimum_floor_area,
                 'compare' => '>=',
                 'type'    => 'NUMERIC' 
             );
@@ -1889,6 +1921,15 @@ class PH_Query {
         	{
         		$keywords[] = str_replace("-", " ", ph_clean($_REQUEST['keyword']));
         	}
+
+			if ( strpos( $_REQUEST['keyword'], '.' ) !== FALSE )
+			{
+				$keywords[] = str_replace(".", "", ph_clean($_REQUEST['keyword']));
+			}
+			if ( stripos( $_REQUEST['keyword'], 'st ' ) !== FALSE )
+			{
+				$keywords[] = str_ireplace("st ", "st. ", ph_clean($_REQUEST['keyword']));
+			}
 
 	      	$meta_query = array( 'relation' => 'OR' );
 

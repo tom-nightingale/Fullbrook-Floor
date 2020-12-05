@@ -724,6 +724,8 @@ class PH_Meta_Box_Contact_Relationships {
                         echo '</div>'; // end 'propertyhive-applicant-commercial-details-' . $key
 
                         // Locations
+                        if ( get_option('propertyhive_applicant_locations_type') != 'text' )
+                        {
                     ?>
                         <p class="form-field"><label for="_applicant_locations_<?php echo $key; ?>"><?php _e( 'Locations', 'propertyhive' ); ?></label>
                         <select id="_applicant_locations_<?php echo $key; ?>" name="_applicant_locations_<?php echo $key; ?>[]" multiple="multiple" data-placeholder="Start typing to add location..." class="multiselect attribute_values">
@@ -798,6 +800,19 @@ class PH_Meta_Box_Contact_Relationships {
                             ?>
                         </select></p>
                     <?php
+                        }
+                        else
+                        {
+                            propertyhive_wp_text_input( array(
+                                'id' => '_applicant_location_text_' . $key,
+                                'label' => __( 'Location', 'propertyhive' ),
+                                'desc_tip' => true,
+                                'description' => __( 'If the applicant has several search locations, you should Add Relationship for each different location', 'propertyhive' ),
+                                'type' => 'text',
+                                'class' => '',
+                                'value' => ( ( isset($applicant_profile['location_text']) ) ? $applicant_profile['location_text'] : '' )
+                            ) );
+                        }
 
                         do_action('propertyhive_contact_applicant_requirements_details_fields', $thepostid, $key);
 
@@ -1011,6 +1026,8 @@ class PH_Meta_Box_Contact_Relationships {
         {
             for ( $i = 0; $i < $num_applicant_profiles; ++$i )
             {
+                $existing_applicant_profile = get_post_meta( $post_id, '_applicant_profile_' . $i, TRUE );
+
                 $applicant_profile = array();
                 $applicant_profile['department'] = ph_clean($_POST['_applicant_department_' . $i]);
                 if ( $_POST['_applicant_department_' . $i] == 'residential-sales' )
@@ -1093,9 +1110,35 @@ class PH_Meta_Box_Contact_Relationships {
                     $applicant_profile['relationship_name'] = ph_clean($_POST['_relationship_name_' . $_POST['_applicant_department_' . $i] . '_' . $i]);
                 }
 
-                if ( isset($_POST['_applicant_locations_' . $i]) && is_array($_POST['_applicant_locations_' . $i]) && !empty($_POST['_applicant_locations_' . $i]) )
+                if ( get_option('propertyhive_applicant_locations_type') != 'text' )
                 {
-                    $applicant_profile['locations'] = ph_clean($_POST['_applicant_locations_' . $i]);
+                    if ( isset($_POST['_applicant_locations_' . $i]) && is_array($_POST['_applicant_locations_' . $i]) && !empty($_POST['_applicant_locations_' . $i]) )
+                    {
+                        $applicant_profile['locations'] = ph_clean($_POST['_applicant_locations_' . $i]);
+                    }
+
+                    // If the other type of location is set for this applicant, retain that data
+                    if ( !empty($existing_applicant_profile) && isset($existing_applicant_profile['location_text']) && $existing_applicant_profile['location_text'] != '' )
+                    {
+                        $applicant_profile['location_text'] = ph_clean($existing_applicant_profile['location_text']);
+                        if ( isset($existing_applicant_profile['location_radius']) && $existing_applicant_profile['location_radius'] != '' )
+                        {
+                            $applicant_profile['location_radius'] = ph_clean($existing_applicant_profile['location_radius']);
+                        }
+                    }
+                }
+                else
+                {
+                    if ( isset($_POST['_applicant_location_text_' . $i]) && !empty($_POST['_applicant_location_text_' . $i]) )
+                    {
+                        $applicant_profile['location_text'] = ph_clean($_POST['_applicant_location_text_' . $i]);
+                    }
+
+                    // If the other type of location is set for this applicant, retain that data
+                    if ( !empty($existing_applicant_profile) && isset($existing_applicant_profile['locations']) && !empty($existing_applicant_profile['locations']) )
+                    {
+                        $applicant_profile['locations'] = ph_clean($existing_applicant_profile['locations']);
+                    }
                 }
 
                 $applicant_profile['notes'] = sanitize_textarea_field($_POST['_applicant_requirement_notes_' . $i]);

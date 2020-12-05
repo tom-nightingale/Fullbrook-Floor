@@ -470,6 +470,17 @@ class PH_Settings_General extends PH_Settings_Page {
                 'default'   => '5',
             ),
 
+            array(
+                'title'   => __( 'When Selecting Applicant Locations', 'propertyhive' ),
+                'id'      => 'propertyhive_applicant_locations_type',
+                'type'    => 'radio',
+                'options' => array(
+                    'text' => __( 'Allow Locations To Be Freetyped', 'propertyhive' ),
+                    '' => __( 'Select From A Predefined List (Editable from \'Custom Fields\')', 'propertyhive' ),
+                ),
+                'desc'  => '<i>' . __( 'When this setting is changed, locations selected using the other method will no longer be used for matching', 'propertyhive' ) . '</i>',
+            ),
+
             array( 'type' => 'sectionend', 'id' => 'applicant_registration_options'),
 
             array( 'title' => __( 'Property Media Storage', 'propertyhive' ), 'type' => 'title', 'desc' => 'By default media attached to properties will be stored in the WordPress media library. If the property media is hosted elsewhere (for example if you import properties from a third party and they allow you to link direct to the files on their server) you can choose to store media as URL\'s. It also means that the images are not downloaded onto your server, thus saving diskspace.<br><br>Note: If you change this you\'ll need to re-add all of the property media for existing properties.<br>Note: Changing this will not delete all existing media or URLs entered.<br>Note: Choosing to store the media as URLs will mean you don\'t benefit from having access to different sized images (i.e. small , medium, large etc).', 'id' => 'media_storage_options' ),

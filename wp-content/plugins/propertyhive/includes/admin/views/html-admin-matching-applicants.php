@@ -111,9 +111,20 @@
                     {
                         //$requirements[] = 'Max Price: ' . $applicant['applicant_profile']['max_price'];
                     }
-                    if ( isset($applicant['applicant_profile']['locations']) && is_array($applicant['applicant_profile']['locations']) && !empty($applicant['applicant_profile']['locations']) )
+
+                    if ( get_option('propertyhive_applicant_locations_type') == 'text' && isset($applicant['applicant_profile']['location_text']) && $applicant['applicant_profile']['location_text'] != '')
                     {
-                        //$requirements[] = 'Max Price: ' . $applicant['applicant_profile']['max_price'];
+                        $location_value = $applicant['applicant_profile']['location_text'];
+
+                        if ( isset($applicant['applicant_profile']['location_radius']) && $applicant['applicant_profile']['location_radius'] != '' )
+                        {
+                            $location_value .= ' (Within '. $applicant['applicant_profile']['location_radius'] .' Miles)';
+                        }
+
+                        $requirements[] = array(
+                            'label' => __( 'Location', 'propertyhive' ),
+                            'value' => $location_value,
+                        );
                     }
 
                     $requirements = apply_filters( 'propertyhive_applicant_requirements_display', $requirements, $applicant['contact_id'], $applicant['applicant_profile'] );

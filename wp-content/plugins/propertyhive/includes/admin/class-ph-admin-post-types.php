@@ -23,6 +23,7 @@ class PH_Admin_Post_Types {
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'include_post_type_handlers' ) );
 		add_filter( 'post_updated_messages', array( $this, 'post_updated_messages' ) );
+		add_action( 'pre_get_posts', array( $this, 'refresh_property_office_filtering' ));
         add_action( 'admin_print_scripts', array( $this, 'remove_month_filter' ) );
 		add_action( 'admin_print_scripts', array( $this, 'disable_autosave' ) );
 
@@ -201,7 +202,7 @@ class PH_Admin_Post_Types {
         $output .= $this->property_availability_filter();
         $output .= $this->property_location_filter();
         $output .= $this->property_office_filter();
-        $output .= $this->property_negotiator_filter();
+        $output .= $this->negotiator_filter();
 
         echo apply_filters( 'propertyhive_property_filters', $output );
     }
@@ -278,29 +279,43 @@ class PH_Admin_Post_Types {
     }
     
     /**
-     * Show a property negotiator filter box
+     * Show a negotiator filter box
      */
-    public function property_negotiator_filter() {
-        global $wp_query, $post;
-        
-        $selected = '';
-        if ( isset( $_GET['_negotiator_id'] ) && ! empty( $_GET['_negotiator_id'] ) )
-        {
-            $selected = (int)$_GET['_negotiator_id'];
-        }
-        
-        $args = array(
+    public function negotiator_filter() {
+
+	    return wp_dropdown_users(array(
             'name' => '_negotiator_id', 
             'id' => 'dropdown_property_negotiator_id',
             'show_option_all' => __( 'All Negotiators', 'propertyhive' ),
-            'selected' => $selected,
+            'selected' => empty( $_GET['_negotiator_id'] ) ? '' : (int) $_GET['_negotiator_id'],
             'echo' => false,
             'role__not_in' => array('property_hive_contact', 'subscriber') 
-        );
-        $output = wp_dropdown_users($args);
-
-        return $output;
+        ));
     }
+
+	/**
+	 * Show a date range selector
+	 */
+	public function date_range_filter() {
+
+		$date_range_label = empty( $_GET['_date_range_label'] ) ? 'Any Time' : $_GET['_date_range_label'];
+
+		// The date picker doesn't have a concept of 'Any Time', so valid dates must be used
+		// I've used the last and first date of the month (reversed) as it's a range that is not selectable, but is within the current month
+		// If I used an already labelled date range (e.g. 'Today'), it would show as 'Today' when selected
+		// If I use a nearby date range (e.g. 'Yesterday'), if someone actually selected that range it would show as 'Any Time'
+		// If I use a unlikely date range (e.g. 01-01-1970 - 31-12-2070), the custom date range picker would open showing Jan 1970.
+		$date_range_from = empty( $_GET['_date_range_from'] ) ? date('Y-m-d', strtotime('last day of this month')) : $_GET['_date_range_from'];
+		$date_range_to = empty( $_GET['_date_range_to'] ) ? date('Y-m-d', strtotime('first day of this month')) : $_GET['_date_range_to'];
+
+		return "
+            <select name='_date_range_label' id='date_range' style='max-width:25rem;'>
+                <option selected>$date_range_label</option>
+            <select/>
+            <input type='hidden' name='_date_range_from' id='date_range_from' value='$date_range_from'>
+            <input type='hidden' name='_date_range_to' id='date_range_to' value='$date_range_to'>
+        ";
+	}
 
     /**
      * Show a property location filter box
@@ -654,7 +669,8 @@ class PH_Admin_Post_Types {
         $output = '';
         
         $output .= $this->appraisal_status_filter();
-        $output .= $this->appraisal_attending_negotiator_filter();
+        $output .= $this->negotiator_filter();
+        $output .= $this->date_range_filter();
 
         echo apply_filters( 'propertyhive_appraisal_filters', $output );
     }
@@ -702,55 +718,18 @@ class PH_Admin_Post_Types {
     }
 
     /**
-     * Show an appraisal attending negotiator filter box
-     */
-    public function appraisal_attending_negotiator_filter() {
-        global $wp_query;
-
-        $selected_negotiator_id = isset( $_GET['_negotiator_id']) ? (int)$_GET['_negotiator_id'] : '';
-        
-        // Status filtering
-        $output = '<select name="_negotiator_id" id="dropdown_appraisal_negotiator_id">';
-            
-            $output .= '<option value="">Attending Negotiator</option>';
-            $output .= '<option value="">All Negotiators</option>';
-
-            $args = array(
-                'number' => 9999,
-                'orderby' => 'display_name',
-                'role__not_in' => array('property_hive_contact', 'subscriber') 
-            );
-            $user_query = new WP_User_Query( $args );
-
-            if ( ! empty( $user_query->results ) ) 
-            {
-                foreach ( $user_query->results as $user ) 
-                {
-                    $output .= '<option value="' . $user->ID . '"';
-                    if ( $user->ID == $selected_negotiator_id )
-                    {
-                        $output .= ' selected';
-                    }
-                    $output .= '>' . $user->display_name . '</option>';
-                }
-            }
-            
-        $output .= '</select>';
-
-        return $output;
-    }
-
-    /**
      * Show a viewing filter box
      */
     public function viewing_filters() {
         global $wp_query;
-        
+
         // Department filtering
         $output = '';
-        
+
         $output .= $this->viewing_status_filter();
-        $output .= $this->viewing_attending_negotiator_filter();
+        $output .= $this->property_office_filter();
+        $output .= $this->negotiator_filter();
+        $output .= $this->date_range_filter();
 
         echo apply_filters( 'propertyhive_viewing_filters', $output );
     }
@@ -801,43 +780,27 @@ class PH_Admin_Post_Types {
         return $output;
     }
 
-    /**
-     * Show a viewing attending negotiator filter box
-     */
-    public function viewing_attending_negotiator_filter() {
-        global $wp_query;
 
-        $selected_negotiator_id = isset( $_GET['_negotiator_id']) ? (int)$_GET['_negotiator_id'] : '';
-        
-        // Status filtering
-        $output = '<select name="_negotiator_id" id="dropdown_viewing_negotiator_id">';
-            
-            $output .= '<option value="">Attending Negotiator</option>';
-            $output .= '<option value="">All Negotiators</option>';
+    public function refresh_property_office_filtering( $query ) {
+        remove_filter('posts_join', array( $this, 'filter_by_property_office')  );
 
-            $args = array(
-                'number' => 9999,
-                'orderby' => 'display_name',
-                'role__not_in' => array('property_hive_contact', 'subscriber') 
-            );
-            $user_query = new WP_User_Query( $args );
+        if ( ! empty( $_GET['_office_id'] ) && in_array( $query->query['post_type'], array(
+	        'viewing',
+	        'offer',
+	        'sale',
+        ))) {
+            add_filter('posts_join', array( $this, 'filter_by_property_office' ) );
+        };
+    }
 
-            if ( ! empty( $user_query->results ) ) 
-            {
-                foreach ( $user_query->results as $user ) 
-                {
-                    $output .= '<option value="' . $user->ID . '"';
-                    if ( $user->ID == $selected_negotiator_id )
-                    {
-                        $output .= ' selected';
-                    }
-                    $output .= '>' . $user->display_name . '</option>';
-                }
-            }
-            
-        $output .= '</select>';
 
-        return $output;
+    public function filter_by_property_office($query) {
+        global $wpdb;
+
+        return $query . '
+           INNER JOIN ' . $wpdb->postmeta . ' AS property_meta ON property_meta.post_id = ' . $wpdb->posts . '.ID AND property_meta.meta_key = "_property_id"
+           INNER JOIN ' . $wpdb->postmeta . ' AS property_office_meta ON property_office_meta.post_id = property_meta.meta_value AND property_office_meta.meta_key = "_office_id"
+             AND property_office_meta.meta_value = ' . (int) $_GET['_office_id'];
     }
 
     /**
@@ -849,6 +812,7 @@ class PH_Admin_Post_Types {
         $output = '';
         
         $output .= $this->offer_status_filter();
+        $output .= $this->property_office_filter();
 
         echo apply_filters( 'propertyhive_offer_filters', $output );
     }
@@ -892,6 +856,7 @@ class PH_Admin_Post_Types {
         $output = '';
         
         $output .= $this->sale_status_filter();
+        $output .= $this->property_office_filter();
 
         echo apply_filters( 'propertyhive_sale_filters', $output );
     }
@@ -1087,6 +1052,8 @@ class PH_Admin_Post_Types {
                     'value' => (int)$_GET['_negotiator_id'],
                 );
             }
+
+            $vars = $this->filter_start_date_time_by_date_range($vars);
         }
         elseif ( 'viewing' === $typenow ) 
         {
@@ -1167,6 +1134,8 @@ class PH_Admin_Post_Types {
                     'value' => (int)$_GET['_negotiator_id'],
                 );
             }
+
+            $vars = $this->filter_start_date_time_by_date_range($vars);
         }
         elseif ( 'offer' === $typenow ) 
         {
@@ -1190,6 +1159,36 @@ class PH_Admin_Post_Types {
         $vars = apply_filters( 'propertyhive_property_filter_query', $vars, $typenow );
 
         return $vars;
+    }
+
+    private function filter_start_date_time_by_date_range($vars)
+    {
+	    if (
+		    ! empty( $_GET['_date_range_label'] )
+		    && ! empty( $_GET['_date_range_from'] )
+		    && ! empty( $_GET['_date_range_to'] )
+		    && $_GET['_date_range_label'] !== 'Any Time'
+		    && DateTime::createFromFormat('Y-m-d', $_GET['_date_range_from']) !== false
+		    && DateTime::createFromFormat('Y-m-d', $_GET['_date_range_to']) !== false
+	    )
+	    {
+		    $vars['meta_query'] = array_merge($vars['meta_query'], array (
+			    array(
+				    'key' => '_start_date_time',
+				    'value' => $_GET['_date_range_from'],
+				    'type'  => 'date',
+				    'compare' => '>='
+			    ),
+			    array(
+				    'key' => '_start_date_time',
+				    'value' => $_GET['_date_range_to'],
+				    'type'  => 'date',
+				    'compare' => '<='
+			    ),
+		    ));
+	    }
+
+	    return $vars;
     }
 
     public function posts_join( $join ) {
