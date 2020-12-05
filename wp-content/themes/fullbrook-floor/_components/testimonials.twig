@@ -2,15 +2,15 @@
 
     <div class="py-8 text-sm bg-white text-primary {{classes ?  classes : 'border-t border-gray-200'}}">
 
-        <div class="container flex-wrap items-center w-full text-center sm:flex">
+        <div class="container flex-wrap w-full text-center sm:flex">
 
-            <div class="w-full lg:w-1/3 xl:px-16">
+            <div class="w-full lg:w-1/3 xl:px-16 sm:flex sm:items-center sm:justify-center">
                 <h3 class="text-xl lg:text-2xl text-primary-dark">What our clients say...</h3>
             </div>
 
             {% for testimonial in testimonials %}
 
-                <div class="w-full p-4 sm:w-1/2 lg:w-1/3 xl:px-16 testimonial">
+                <div class="w-full p-4 sm:flex-1 sm:flex sm:flex-col sm:justify-between sm:w-1/2 lg:w-1/3 xl:px-16 testimonial">
 
                     <div class="mb-4 text-xl text-yellow-400 stars">
                         {{function('icon', 'star')}}
@@ -31,7 +31,7 @@
                         {{ text|join(' ') }}
                     {% endif %}
                 
-                    <p class="mt-4 text-base font-bold text-primary-dark">{{testimonial.meta('name')}}, <span class="text-secondary">{{testimonial.meta('location')}}</span></p>
+                    <p class="mt-4 text-base font-bold text-primary-dark">{{testimonial.meta('name')}}</p>
                     
                 </div>
 
