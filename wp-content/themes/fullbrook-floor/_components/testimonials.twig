@@ -20,16 +20,18 @@
                         {{function('icon', 'star')}}
                     </div>
 
-                    {% set text = testimonial.meta('testimonial')|split(' ') %}
+                    {# {% set text = testimonial.meta('testimonial')|split(' ') %} #}
                     
-                    {% if text|length > 35 %}
+                    {# {% if text|length > 35 %}
                         {% for t in text|slice(0, 35) %}
                             {{ t }}
                         {% endfor %}
                         ...
                     {% else %}
                         {{ text|join(' ') }}
-                    {% endif %}
+                    {% endif %} #}
+
+                    {{testimonial.meta('testimonial')}}
                 
                     <p class="mt-4 text-base font-bold text-primary-dark">{{testimonial.meta('name')}}</p>
                     
