@@ -113,21 +113,7 @@ h3 {
   }
 
   iframe {
-    margin: 0 auto !important;
-  }
-
-  figure {
-    @apply my-4;
-
-    .alignleft {
-     @apply mr-4;
-    }
-    .aligncenter {
-      @apply mx-auto;
-    }
-    .alignright {
-      @apply ml-4;
-    }
+    margin: 1rem auto !important;
   }
 }
 
@@ -142,7 +128,7 @@ h3 {
     }
 
     .aligncenter {
-      @apply float-none mx-auto my-0;
+      @apply float-none mx-auto my-4;
     }
 
     .alignright {
