@@ -250,7 +250,7 @@ class PH_AJAX {
         {
             // Check has associated contact CPT and is published
             $args = array(
-                'post_type' => 'contact',
+                'post_type' => apply_filters( 'propertyhive_allowed_login_post_type', array( 'contact' ) ),
                 'fields' => 'ids',
                 'posts_per_page' => 1,
                 'post_status' => array( 'publish' ),
@@ -1130,7 +1130,9 @@ class PH_AJAX {
                         'address_four' => $contact->_address_four,
                         'address_postcode' => $contact->_address_postcode,
                         'address_country' => $contact->_address_country,
-                        'address_full_formatted' => $contact->get_formatted_full_address('<br>'),
+                        'address_full_formatted' => $contact->get_formatted_full_address(', '),
+                        'telephone_number' => $contact->_telephone_number,
+                        'email_address' => $contact->_email_address,
                     );
                 }
             }
@@ -1177,7 +1179,55 @@ class PH_AJAX {
                 'fields' => 'ids'
             );
 
-            $meta_query = array();
+            $meta_query = array(
+                'relation' => 'OR',
+                array(
+                    'key' => '_address_name_number',
+                    'value' => ph_clean($_POST['keyword']),
+                    'compare' => 'LIKE'
+                ),
+                array(
+                    'key' => '_address_street',
+                    'value' => ph_clean($_POST['keyword']),
+                    'compare' => 'LIKE'
+                ),
+                array(
+                    'key' => '_address_name_number_street',
+                    'value' => ph_clean($_POST['keyword']),
+                    'compare' => 'LIKE'
+                ),
+                array(
+                    'key' => '_address_street',
+                    'value' => ph_clean($_POST['keyword']),
+                    'compare' => 'LIKE'
+                ),
+                array(
+                    'key' => '_address_two',
+                    'value' => ph_clean($_POST['keyword']),
+                    'compare' => 'LIKE'
+                ),
+                array(
+                    'key' => '_address_three',
+                    'value' => ph_clean($_POST['keyword']),
+                    'compare' => 'LIKE'
+                ),
+                array(
+                    'key' => '_address_four',
+                    'value' => ph_clean($_POST['keyword']),
+                    'compare' => 'LIKE'
+                ),
+                array(
+                    'key' => '_address_postcode',
+                    'value' => ph_clean($_POST['keyword']),
+                    'compare' => 'LIKE'
+                ),
+                array(
+                    'key' => '_reference_number',
+                    'value' => ph_clean($_POST['keyword']),
+                    'compare' => '='
+                ),
+            );
+
             if ( isset($_POST['department']) && $_POST['department'] != '' )
             {
                 $meta_query[] = array(
@@ -1185,18 +1235,13 @@ class PH_AJAX {
                     'value' => ph_clean($_POST['department']),
                 );
             }
+
             if ( !empty($meta_query) )
             {
                 $args['meta_query'] = $meta_query;
             }
 
-            add_filter( 'posts_join', array( $this, 'search_properties_join' ), 10, 2 );
-            add_filter( 'posts_where', array( $this, 'search_properties_where' ), 10, 2 );
-            
             $property_query = new WP_Query( $args );
-            
-            remove_filter( 'posts_join', array( $this, 'search_properties_join' ) );
-            remove_filter( 'posts_where', array( $this, 'search_properties_where' ) );
             
             if ( $property_query->have_posts() )
             {
@@ -1236,37 +1281,6 @@ class PH_AJAX {
         die();
     }
 
-    public function search_properties_join( $joins )
-    {
-        global $wpdb;
-
-        $joins .= " INNER JOIN {$wpdb->postmeta} AS mt1 ON {$wpdb->posts}.ID = mt1.post_id ";
-
-        return $joins;
-    }
-
-    public function search_properties_where( $where )
-    {
-        global $wpdb; 
-        $where .= " AND (
-            (mt1.meta_key='_address_name_number' AND mt1.meta_value LIKE '" . esc_sql( $wpdb->esc_like( ph_clean($_POST['keyword']) ) ) . "%')
-            OR
-            (mt1.meta_key='_address_street' AND mt1.meta_value LIKE '" . esc_sql( $wpdb->esc_like( ph_clean($_POST['keyword']) ) ) . "%')
-            OR
-            (mt1.meta_key='_address_2' AND mt1.meta_value LIKE '" . esc_sql( $wpdb->esc_like( ph_clean($_POST['keyword']) ) ) . "%')
-            OR
-            (mt1.meta_key='_address_3' AND mt1.meta_value LIKE '" . esc_sql( $wpdb->esc_like( ph_clean($_POST['keyword']) ) ) . "%')
-            OR
-            (mt1.meta_key='_address_4' AND mt1.meta_value LIKE '" . esc_sql( $wpdb->esc_like( ph_clean($_POST['keyword']) ) ) . "%')
-            OR
-            (mt1.meta_key='_address_postcode' AND mt1.meta_value LIKE '" . esc_sql( $wpdb->esc_like( ph_clean($_POST['keyword']) ) ) . "%')
-            OR
-            (mt1.meta_key='_reference_number' AND mt1.meta_value = '" . esc_sql(ph_clean($_POST['keyword'])) . "')
-        ) ";
-        
-        return $where;
-    }
-
     /**
      * Search users/negotiators via ajax
      */
@@ -1287,7 +1301,7 @@ class PH_AJAX {
                 'number' => 9999,
                 'search' => $keyword . '*',
                 'orderby' => 'display_name',
-                'role__not_in' => array('property_hive_contact', 'subscriber') 
+                'role__not_in' => apply_filters( 'property_negotiator_exclude_roles', array('property_hive_contact', 'subscriber') )
             );
             
             $user_query = new WP_User_Query( $args );
@@ -3196,7 +3210,15 @@ class PH_AJAX {
         
             <label for="">' . __('Status', 'propertyhive') . '</label>
             
-            ' . ucwords(str_replace("_", " ", $viewing->status));
+            ' . __( ucwords(str_replace("_", " ", $viewing->status)), 'propertyhive' );
+
+            // Add text if this a second, third etc viewing
+            $applicant_contact_ids = get_post_meta( $viewing->id, '_applicant_contact_id' );
+            $viewing_number = ph_count_viewing_number($viewing->id, $viewing->property_id, $viewing->start_date_time, $applicant_contact_ids);
+            if ( $viewing_number > 1 )
+            {
+                echo ' - ' . ph_ordinal_suffix($viewing_number) . ' Viewing' ;
+            }
 
         if ( $viewing->status == 'offer_made' )
         {
@@ -3232,7 +3254,7 @@ class PH_AJAX {
             propertyhive_wp_textarea_input( $args );
         }
 
-        if ( $viewing->status == 'carried_out' )
+        if ( $viewing->status == 'carried_out' || $viewing->status == 'offer_made' )
         {
             echo '<p class="form-field">
         
@@ -3242,22 +3264,22 @@ class PH_AJAX {
             {
                 case "interested":
                 {
-                    echo 'Interested';
+                    echo __( 'Interested', 'propertyhive' );
                     break;
                 }
                 case "not_interested":
                 {
-                    echo 'Not Interested';
+                    echo __( 'Not Interested', 'propertyhive' );
                     break;
                 }
                 case "not_required":
                 {
-                    echo 'Feedback Not Required';
+                    echo __( 'Feedback Not Required', 'propertyhive' );
                     break;
                 }
                 default:
                 {
-                    echo 'Awaiting Feedback';
+                    echo __( 'Awaiting Feedback', 'propertyhive' );
                 }
             }
 
@@ -3279,13 +3301,13 @@ class PH_AJAX {
             }
         }
 
-        if ( $viewing->status == 'carried_out' && ( $viewing->feedback_status == 'interested' || $viewing->feedback_status == 'not_interested' ) )
+        if ( ($viewing->status == 'carried_out' || $viewing->status == 'offer_made') && ( $viewing->feedback_status == 'interested' || $viewing->feedback_status == 'not_interested' ) )
         {
             echo '<p class="form-field">
         
                 <label for="">' . __('Feedback Passed On', 'propertyhive') . '</label>';
 
-                echo ( ($viewing->feedback_passed_on == 'yes') ? 'Yes' : 'No' );
+                echo ( ($viewing->feedback_passed_on == 'yes') ? __( 'Yes', 'propertyhive' ) : __( 'No', 'propertyhive' ) );
 
             echo '</p>';
         }
@@ -3988,7 +4010,8 @@ class PH_AJAX {
                     $viewings_query->the_post();
 
                     echo '<tr>';
-                        echo '<td style="text-align:left;"><a href="' . get_edit_post_link( get_the_ID(), '' ) . '">' . date("H:i jS F Y", strtotime(get_post_meta(get_the_ID(), '_start_date_time', TRUE))) . '</a></td>';
+                        $viewing_start_date_time = get_post_meta(get_the_ID(), '_start_date_time', TRUE);
+                        echo '<td style="text-align:left;"><a href="' . get_edit_post_link( get_the_ID(), '' ) . '">' . date("H:i jS F Y", strtotime($viewing_start_date_time)) . '</a></td>';
                         echo '<td style="text-align:left;">';
                         $applicant_contact_ids = get_post_meta(get_the_ID(), '_applicant_contact_id');
                         if (!empty($applicant_contact_ids))
@@ -4025,7 +4048,7 @@ class PH_AJAX {
                                 }
                                 else
                                 {
-                                    echo '<em>Unknown user</em>';
+                                    echo '<em>' . __( 'Unknown user', 'propertyhive' ) . '</em>';
                                 }
                                 ++$i;
                             }
@@ -4039,7 +4062,7 @@ class PH_AJAX {
                         echo '<td style="text-align:left;">';
 
                         $status = get_post_meta(get_the_ID(), '_status', TRUE);
-                        echo ucwords(str_replace("_", " ", $status));
+                        echo __( ucwords(str_replace("_", " ", $status)), 'propertyhive' );
                         if ( $status == 'pending' )
                         {
                             echo '<br>';
@@ -4059,17 +4082,24 @@ class PH_AJAX {
                             $feedback_status = get_post_meta(get_the_ID(), '_feedback_status', TRUE);
                             switch ( $feedback_status )
                             {
-                                case "interested": { echo 'Applicant Interested'; break; }
-                                case "not_interested": { echo 'Applicant Not Interested'; break; }
-                                case "not_required": { echo 'Feedback Not Required'; break; }
-                                default: { echo 'Awaiting Feedback'; }
+                                case "interested": { echo __( 'Applicant Interested', 'propertyhive' ); break; }
+                                case "not_interested": { echo __( 'Applicant Not Interested', 'propertyhive' ); break; }
+                                case "not_required": { echo __( 'Feedback Not Required', 'propertyhive' ); break; }
+                                default: { echo __( 'Awaiting Feedback', 'propertyhive' ); }
                             }
 
                             if ( $feedback_status == 'interested' || $feedback_status == 'not_interested' )
                             {
                                 $feedback_passed_on = get_post_meta(get_the_ID(), '_feedback_passed_on', TRUE);
-                                echo '<br>' . ( ($feedback_passed_on == 'yes') ? 'Feedback Passed On' : 'Feedback Not Passed On' );
+                                echo '<br>' . ( ($feedback_passed_on == 'yes') ? __( 'Feedback Passed On', 'propertyhive' ) : __( 'Feedback Not Passed On', 'propertyhive' ) );
                             }
+                        }
+
+                        // Add text if this a second, third etc viewing
+                        $viewing_number = ph_count_viewing_number(get_the_ID(), $_POST['post_id'], $viewing_start_date_time, $applicant_contact_ids);
+                        if ( $viewing_number > 1 )
+                        {
+                            echo '<br>' . ph_ordinal_suffix($viewing_number) . ' Viewing' ;
                         }
                         echo '</td>';
                     echo '</tr>';
@@ -4141,7 +4171,8 @@ class PH_AJAX {
                     $property = new PH_Property((int)get_post_meta(get_the_ID(), '_property_id', TRUE));
 
                     echo '<tr>';
-                        echo '<td style="text-align:left;"><a href="' . get_edit_post_link( get_the_ID(), '') . '">' . date("H:i jS F Y", strtotime(get_post_meta(get_the_ID(), '_start_date_time', TRUE))) . '</a></td>';
+                        $viewing_start_date_time = get_post_meta(get_the_ID(), '_start_date_time', TRUE);
+                        echo '<td style="text-align:left;"><a href="' . get_edit_post_link( get_the_ID(), '') . '">' . date("H:i jS F Y", strtotime($viewing_start_date_time)) . '</a></td>';
                         echo '<td style="text-align:left;">';
                         if ( get_post_meta(get_the_ID(), '_property_id', TRUE) != '' )
                         {
@@ -4185,7 +4216,7 @@ class PH_AJAX {
                         echo '<td style="text-align:left;">';
 
                         $status = get_post_meta(get_the_ID(), '_status', TRUE);
-                        echo ucwords(str_replace("_", " ", $status));
+                        echo __( ucwords(str_replace("_", " ", $status)), 'propertyhive' );
                         if ( $status == 'pending' )
                         {
                             echo '<br>';
@@ -4205,17 +4236,25 @@ class PH_AJAX {
                             $feedback_status = get_post_meta(get_the_ID(), '_feedback_status', TRUE);
                             switch ( get_post_meta(get_the_ID(), '_feedback_status', TRUE) )
                             {
-                                case "interested": { echo 'Applicant Interested'; break; }
-                                case "not_interested": { echo 'Applicant Not Interested'; break; }
-                                case "not_required": { echo 'Feedback Not Required'; break; }
-                                default: { echo 'Awaiting Feedback'; }
+                                case "interested": { echo __( 'Applicant Interested', 'propertyhive' ); break; }
+                                case "not_interested": { echo __( 'Applicant Not Interested', 'propertyhive' ); break; }
+                                case "not_required": { echo __( 'Feedback Not Required', 'propertyhive' ); break; }
+                                default: { echo __( 'Awaiting Feedback', 'propertyhive' ); }
                             }
 
                             if ( $feedback_status == 'interested' || $feedback_status == 'not_interested' )
                             {
                                 $feedback_passed_on = get_post_meta(get_the_ID(), '_feedback_passed_on', TRUE);
-                                echo '<br>' . ( ($feedback_passed_on == 'yes') ? 'Feedback Passed On' : 'Feedback Not Passed On' );
+                                echo '<br>' . ( ($feedback_passed_on == 'yes') ? __( 'Feedback Passed On', 'propertyhive' ) : __( 'Feedback Not Passed On', 'propertyhive' ) );
                             }
+                        }
+
+                        // Add text if this a second, third etc viewing
+                        $applicant_contact_ids = get_post_meta( get_the_ID(), '_applicant_contact_id' );
+                        $viewing_number = ph_count_viewing_number(get_the_ID(), $property->id, $viewing_start_date_time, $applicant_contact_ids);
+                        if ( $viewing_number > 1 )
+                        {
+                            echo '<br>' . ph_ordinal_suffix($viewing_number) . ' Viewing' ;
                         }
                         echo '</td>';
                     echo '</tr>';
@@ -4467,7 +4506,7 @@ class PH_AJAX {
             
                 <label for="">' . __('Status', 'propertyhive') . '</label>
                 
-                ' . ucwords(str_replace("_", " ", $offer->status)) . '    
+                ' . __( ucwords(str_replace("_", " ", $offer->status)), 'propertyhive' ) . '    
             
             </p>';
         }
@@ -4762,7 +4801,7 @@ class PH_AJAX {
                         echo '<td style="text-align:left;">' . $offer->get_formatted_amount() . '</td>';
                         echo '<td style="text-align:left;">';
                         $status = get_post_meta(get_the_ID(), '_status', TRUE);
-                        echo ucwords(str_replace("_", " ", $status));
+                        echo __( ucwords(str_replace("_", " ", $status)), 'propertyhive' );
                         echo '</td>';
                     echo '</tr>';
                 }
@@ -4865,7 +4904,7 @@ class PH_AJAX {
                         echo '<td style="text-align:left;">' . $offer->get_formatted_amount() . '</td>';
                         echo '<td style="text-align:left;">';
                         $status = get_post_meta(get_the_ID(), '_status', TRUE);
-                        echo ucwords(str_replace("_", " ", $status));
+                        echo __( ucwords(str_replace("_", " ", $status)), 'propertyhive' );
                         echo '</td>';
                     echo '</tr>';
                 }
@@ -4911,7 +4950,7 @@ class PH_AJAX {
             
                 <label for="">' . __('Status', 'propertyhive') . '</label>
                 
-                ' . ucwords(str_replace("_", " ", $sale->status)) . '    
+                ' . __( ucwords(str_replace("_", " ", $sale->status)), 'propertyhive' ) . '    
             
             </p>';
         }
@@ -5145,7 +5184,7 @@ class PH_AJAX {
                         echo '<td style="text-align:left;">' . $sale->get_formatted_amount() . '</td>';
                         echo '<td style="text-align:left;">';
                         $status = get_post_meta(get_the_ID(), '_status', TRUE);
-                        echo ucwords(str_replace("_", " ", $status));
+                        echo __( ucwords(str_replace("_", " ", $status)), 'propertyhive' );
                         echo '</td>';
                     echo '</tr>';
                 }
@@ -5249,7 +5288,7 @@ class PH_AJAX {
                         echo '<td style="text-align:left;">' . $sale->get_formatted_amount() . '</td>';
                         echo '<td style="text-align:left;">';
                         $status = get_post_meta(get_the_ID(), '_status', TRUE);
-                        echo ucwords(str_replace("_", " ", $status));
+                        echo __( ucwords(str_replace("_", " ", $status)), 'propertyhive' );
                         echo '</td>';
                     echo '</tr>';
                 }

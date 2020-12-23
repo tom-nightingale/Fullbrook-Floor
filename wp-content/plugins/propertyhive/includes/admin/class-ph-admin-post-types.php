@@ -289,7 +289,7 @@ class PH_Admin_Post_Types {
             'show_option_all' => __( 'All Negotiators', 'propertyhive' ),
             'selected' => empty( $_GET['_negotiator_id'] ) ? '' : (int) $_GET['_negotiator_id'],
             'echo' => false,
-            'role__not_in' => array('property_hive_contact', 'subscriber') 
+            'role__not_in' => apply_filters( 'property_negotiator_exclude_roles', array('property_hive_contact', 'subscriber') )
         ));
     }
 
@@ -1197,7 +1197,21 @@ class PH_Admin_Post_Types {
         if ( !isset($_GET['s']) || ( isset($_GET['s']) && ph_clean($_GET['s']) == '' ) )
             return $join;
 
-        if ( 'appraisal' === $typenow ) 
+        if ( 'contact' === $typenow ) 
+        {
+            $join .= " 
+LEFT JOIN " . $wpdb->postmeta . " AS ph_contact_filter_meta_company_name ON " . $wpdb->posts . ".ID = ph_contact_filter_meta_company_name.post_id AND ph_contact_filter_meta_company_name.meta_key = '_company_name'
+LEFT JOIN " . $wpdb->postmeta . " AS ph_contact_filter_meta_name_number ON " . $wpdb->posts . ".ID = ph_contact_filter_meta_name_number.post_id AND ph_contact_filter_meta_name_number.meta_key = '_address_name_number'
+LEFT JOIN " . $wpdb->postmeta . " AS ph_contact_filter_meta_street ON " . $wpdb->posts . ".ID = ph_contact_filter_meta_street.post_id AND ph_contact_filter_meta_street.meta_key = '_address_street'
+LEFT JOIN " . $wpdb->postmeta . " AS ph_contact_filter_meta_2 ON " . $wpdb->posts . ".ID = ph_contact_filter_meta_2.post_id AND ph_contact_filter_meta_2.meta_key = '_address_two'
+LEFT JOIN " . $wpdb->postmeta . " AS ph_contact_filter_meta_3 ON " . $wpdb->posts . ".ID = ph_contact_filter_meta_3.post_id AND ph_contact_filter_meta_3.meta_key = '_address_three'
+LEFT JOIN " . $wpdb->postmeta . " AS ph_contact_filter_meta_4 ON " . $wpdb->posts . ".ID = ph_contact_filter_meta_4.post_id AND ph_contact_filter_meta_4.meta_key = '_address_four'
+LEFT JOIN " . $wpdb->postmeta . " AS ph_contact_filter_meta_postcode ON " . $wpdb->posts . ".ID = ph_contact_filter_meta_postcode.post_id AND ph_contact_filter_meta_postcode.meta_key = '_address_postcode'
+LEFT JOIN " . $wpdb->postmeta . " AS ph_contact_filter_meta_email_address ON " . $wpdb->posts . ".ID = ph_contact_filter_meta_email_address.post_id AND ph_contact_filter_meta_email_address.meta_key = '_email_address'
+LEFT JOIN " . $wpdb->postmeta . " AS ph_contact_filter_meta_telephone_number ON " . $wpdb->posts . ".ID = ph_contact_filter_meta_telephone_number.post_id AND ph_contact_filter_meta_telephone_number.meta_key = '_telephone_number_clean'
+";
+        }
+        elseif ( 'appraisal' === $typenow ) 
         {
             $join .= " 
 LEFT JOIN " . $wpdb->postmeta . " AS ph_appraisal_filter_meta_name_number ON " . $wpdb->posts . ".ID = ph_appraisal_filter_meta_name_number.post_id AND ph_appraisal_filter_meta_name_number.meta_key = '_address_name_number'
@@ -1215,6 +1229,7 @@ LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta ON " . $wpdb->posts
 LEFT JOIN " . $wpdb->posts . " AS ph_property_filter_posts ON ph_property_filter_posts.ID = ph_property_filter_meta.meta_value
 LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_name_number ON ph_property_filter_posts.ID = ph_property_filter_meta_name_number.post_id AND ph_property_filter_meta_name_number.meta_key = '_address_name_number'
 LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_street ON ph_property_filter_posts.ID = ph_property_filter_meta_street.post_id AND ph_property_filter_meta_street.meta_key = '_address_street' 
+LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_name_number_street ON ph_property_filter_posts.ID = ph_property_filter_meta_name_number_street.post_id AND ph_property_filter_meta_name_number_street.meta_key = '_address_name_number_street'
 LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_2 ON ph_property_filter_posts.ID = ph_property_filter_meta_2.post_id AND ph_property_filter_meta_2.meta_key = '_address_2' 
 LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_3 ON ph_property_filter_posts.ID = ph_property_filter_meta_3.post_id AND ph_property_filter_meta_3.meta_key = '_address_3' 
 LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_4 ON ph_property_filter_posts.ID = ph_property_filter_meta_4.post_id AND ph_property_filter_meta_4.meta_key = '_address_4' 
@@ -1234,7 +1249,36 @@ LEFT JOIN " . $wpdb->posts . " AS ph_applicant_filter_posts ON ph_applicant_filt
         if ( !isset($_GET['s']) || ( isset($_GET['s']) && ph_clean($_GET['s']) == '' ) )
             return $where;
 
-        if ( 'appraisal' === $typenow ) 
+        if ( 'contact' === $typenow ) 
+        {
+            $phone_number = preg_replace( "/[^0-9,]/", "", ph_clean($_GET['s']) );
+
+            $where = preg_replace(
+                "/\(\s*" . $wpdb->posts . ".post_title\s+LIKE\s*(\'[^\']+\')\s*\)/",
+                "(
+                    (" . $wpdb->posts . ".post_title LIKE $1) 
+                    OR
+                    (ph_contact_filter_meta_company_name.meta_value LIKE $1)
+                    OR 
+                    (ph_contact_filter_meta_name_number.meta_value LIKE $1)
+                    OR 
+                    (ph_contact_filter_meta_street.meta_value LIKE $1)
+                    OR 
+                    (ph_contact_filter_meta_2.meta_value LIKE $1)
+                    OR 
+                    (ph_contact_filter_meta_3.meta_value LIKE $1)
+                    OR 
+                    (ph_contact_filter_meta_4.meta_value LIKE $1)
+                    OR 
+                    (ph_contact_filter_meta_postcode.meta_value LIKE $1)
+                    OR 
+                    (ph_contact_filter_meta_email_address.meta_value LIKE $1)
+                    " . ( $phone_number != '' ? "OR (ph_contact_filter_meta_telephone_number.meta_value LIKE '%" . $phone_number . "%')" : '' ) . "
+                )", 
+                $where 
+            );
+        }
+        elseif ( 'appraisal' === $typenow ) 
         {
             $where = preg_replace(
                 "/\(\s*" . $wpdb->posts . ".post_title\s+LIKE\s*(\'[^\']+\')\s*\)/",
@@ -1268,6 +1312,8 @@ LEFT JOIN " . $wpdb->posts . " AS ph_applicant_filter_posts ON ph_applicant_filt
                     (ph_property_filter_meta_name_number.meta_value LIKE $1)
                     OR 
                     (ph_property_filter_meta_street.meta_value LIKE $1)
+                    OR
+                    (ph_property_filter_meta_name_number_street.meta_value LIKE $1)
                     OR 
                     (ph_property_filter_meta_2.meta_value LIKE $1)
                     OR 

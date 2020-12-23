@@ -197,11 +197,11 @@ class PH_Admin_CPT_Viewing extends PH_Admin_CPT {
                 {
                     echo '-';
                 }
-                
+
                 break;
             case 'status' :
                 
-                echo ucwords(str_replace("_", " ", $the_viewing->status));
+                echo __( ucwords(str_replace("_", " ", $the_viewing->status)), 'propertyhive' );
                 if ( $the_viewing->status == 'pending' )
                 {
                 	echo '<br>';
@@ -220,17 +220,25 @@ class PH_Admin_CPT_Viewing extends PH_Admin_CPT {
                     echo '<br>';
                     switch ( $the_viewing->feedback_status )
                     {
-                        case "interested": { echo 'Applicant Interested'; break; }
-                        case "not_interested": { echo 'Applicant Not Interested'; break; }
-                        case "not_required": { echo 'Feedback Not Required'; break; }
-                        default: { echo 'Awaiting Feedback'; }
+                        case "interested": { echo __( 'Applicant Interested', 'propertyhive' ); break; }
+                        case "not_interested": { echo __( 'Applicant Not Interested', 'propertyhive' ); break; }
+                        case "not_required": { echo __( 'Feedback Not Required', 'propertyhive' ); break; }
+                        default: { echo __( 'Awaiting Feedback', 'propertyhive' ); }
                     }
 
                     if ( $the_viewing->feedback_status == 'interested' || $the_viewing->feedback_status == 'not_interested' )
                     {
-                    	echo '<br>' . ( ($the_viewing->feedback_passed_on == 'yes') ? 'Feedback Passed On' : 'Feedback Not Passed On' );
+                    	echo '<br>' . ( ($the_viewing->feedback_passed_on == 'yes') ? __( 'Feedback Passed On', 'propertyhive' ) : __( 'Feedback Not Passed On', 'propertyhive' ) );
                     }
-                }
+				}
+
+				// Add text if this a second, third etc viewing
+				$applicant_contact_ids = get_post_meta( $post->ID, '_applicant_contact_id' );
+				$viewing_number = ph_count_viewing_number($post->ID, $the_viewing->property_id, $the_viewing->start_date_time, $applicant_contact_ids);
+				if ( $viewing_number > 1 )
+				{
+					echo '<br>' . ph_ordinal_suffix($viewing_number) . ' Viewing' ;
+				}
                 
                 break;
             case 'negotiators' :
