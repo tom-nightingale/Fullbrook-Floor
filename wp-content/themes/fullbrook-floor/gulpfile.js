@@ -91,6 +91,9 @@ gulp.task('styles', function () {
         'action-button',
         'lg:pr-2',
         'lg:pl-2',
+        'alignleft',
+        'aligncenter',
+        'alignright'
       ],
       extractors: [
         {

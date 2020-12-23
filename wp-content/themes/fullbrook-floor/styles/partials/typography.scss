@@ -111,6 +111,24 @@ h3 {
       mb-8
       bg-gray-100;
   }
+
+  iframe {
+    @apply mx-auto;
+  }
+
+  figure {
+    @apply my-4;
+
+    .alignleft {
+     @apply mr-4;
+    }
+    .aligncenter {
+      @apply mx-auto;
+    }
+    .alignright {
+      @apply ml-4;
+    }
+  }
 }
 
 @screen md {
