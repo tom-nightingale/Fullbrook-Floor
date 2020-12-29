@@ -44,6 +44,7 @@
         'orderby' => 'rand',
       ];
       $context['testimonials'] = new Timber\PostQuery($testimonials);
+      $context['team_members'] = get_field('team_members', 16);
       // Global      
       $context['site'] = $this;
       $context['options'] = get_fields('option');
@@ -51,7 +52,6 @@
       $context['primaryMenu'] = new Timber\Menu('Primary Menu');
       $context['secondaryMenu'] = new Timber\Menu('Secondary Menu');
       $context['footerMenu'] = new Timber\Menu('Footer Menu');
-      $context['team_members'] = get_field('team_members', 16);
       return $context;
     }
 
