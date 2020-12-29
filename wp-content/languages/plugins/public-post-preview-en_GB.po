@@ -1,0 +1,50 @@
+# Translation of Plugins - Public Post Preview - Stable (latest release) in English (UK)
+# This file is distributed under the same license as the Plugins - Public Post Preview - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2018-11-27 11:39:17+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/3.0.0-alpha.2\n"
+"Language: en_GB\n"
+"Project-Id-Version: Plugins - Public Post Preview - Stable (latest release)\n"
+
+#: public-post-preview.php:220 js/dist/gutenberg-integration.js:1
+#: js/src/components/preview-toggle/index.js:204
+msgid "Copy and share this preview URL."
+msgstr "Copy and share this preview URL."
+
+#. Plugin URI of the plugin
+msgid "https://dominikschilling.de/wp-plugins/public-post-preview/en/"
+msgstr "https://dominikschilling.de/wp-plugins/public-post-preview/en/"
+
+#: public-post-preview.php:126
+msgid "Disabled!"
+msgstr "Disabled!"
+
+#. Author of the plugin
+msgid "Dominik Schilling"
+msgstr "Dominik Schilling"
+
+#: public-post-preview.php:215 js/dist/gutenberg-integration.js:1
+#: js/src/components/preview-toggle/index.js:156
+msgid "Enable public preview"
+msgstr "Enable public preview"
+
+#: public-post-preview.php:125
+msgid "Enabled!"
+msgstr "Enabled!"
+
+#. Plugin Name of the plugin
+msgid "Public Post Preview"
+msgstr "Public Post Preview"
+
+#: public-post-preview.php:143
+msgid "Public Preview"
+msgstr "Public Preview"
+
+#: public-post-preview.php:490
+msgid "No public preview available!"
+msgstr "No public preview available!"
