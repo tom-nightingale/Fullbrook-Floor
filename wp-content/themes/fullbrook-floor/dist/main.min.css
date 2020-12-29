@@ -2455,6 +2455,10 @@ h3 {
   background-color: rgba(247, 250, 252, var(--bg-opacity));
 }
 
+.copy iframe {
+  margin: 1rem auto !important;
+}
+
 @media (min-width: 768px) {
   .copy img {
     width: auto;
@@ -2471,8 +2475,8 @@ h3 {
     float: none;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 0;
-    margin-bottom: 0;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 
   .copy .alignright {

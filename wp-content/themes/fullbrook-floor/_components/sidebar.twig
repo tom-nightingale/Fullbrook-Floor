@@ -32,21 +32,37 @@
   </div>
 {% endif %}
 
+
+
 <div class="relative w-full my-8 text-center text-white bg-primary-dark {{cta_padding ? cta_padding}}">
 
-  <img class="lazyload absolute top-0 left-0 w-full h-full opacity-10 z-0 object-cover object-bottom" data-src="{{options.cta_placeholder.url|resize('800')}}" alt="Get a FREE property Valuation image">
+  <img class="absolute top-0 left-0 z-0 object-cover object-bottom w-full h-full lazyload opacity-10" data-src="{{options.cta_placeholder.url|resize('800')}}" alt="Get a FREE property Valuation image">
 
   <div class="relative z-10">
   
     <img class="block mx-auto max-w-36 lg:max-w-48 lazyload" data-src="{{options.logo_horizontal_white.url}}" alt="{{site.title}} Logo">
-    
-    <p class="my-4 text-lg font-bold leading-snug lg:text-xl">Find out how much your property is worth!</p>
-    
-    <p class="text-sm lg:text-base">Get an accurate market appraisal of your property and find out exactly how much it's worth!</p>
 
-    {% include "_components/btn-free-valuation.twig" with {
-      classes : "inline-block mt-8 text-sm lg:text-base btn btn-white",
-    } %}
+    {% if not front_page %}
+    
+      <p class="my-4 text-lg font-bold leading-snug lg:text-xl">Find out how much your property is worth!</p>
+      
+      <p class="text-sm lg:text-base">Get an accurate market appraisal of your property and find out exactly how much it's worth!</p>
+
+      {% include "_components/btn-free-valuation.twig" with {
+        classes : "inline-block mt-8 text-sm lg:text-base btn btn-white",
+      } %}
+
+    {% else %}
+
+        {% for section in options.ekt_section %}
+
+          <p class="mt-8 text-xl font-bold">{{section.title}}</p>
+          
+          <p>{{section.text}}</p>
+
+        {% endfor %}
+
+    {% endif %}
 
   </div>
 
