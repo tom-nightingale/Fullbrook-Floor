@@ -20,9 +20,10 @@
     {% include "_components/pattern-house.twig" %}
   </div>
 
-  <div class="relative bg-bottom bg-cover md:w-1/2 min-h-96 lg:min-h-128 hero-carousel">
+  <div class="relative bg-bottom bg-cover md:w-1/2 min-h-96 lg:min-h-128 carousel">
       {% for image in post.meta('hero_carousel') %}                
           {% include "_components/picture.twig" with {
+            pictureClasses: 'carousel-image',
             source: image.url,
             breakpoints: {
               "1600px" : {
@@ -42,7 +43,7 @@
               },
             },
             img: {
-              classes: 'absolute top-0 left-0 object-cover object-top w-full h-full carousel-image',
+              classes: 'absolute top-0 left-0 object-cover object-top w-full h-full lazyload',
               alt: site.title,
               w: null,
               h: 600,

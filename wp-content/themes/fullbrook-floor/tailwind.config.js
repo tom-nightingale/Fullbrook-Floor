@@ -42,6 +42,7 @@ module.exports = {
         '84': '21rem',
         '96': '24rem',
         '128': '32rem',
+        '160': '40rem',
       },
       inset: (theme, { negative }) => ({
         'full': '100%',

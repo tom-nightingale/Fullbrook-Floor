@@ -17,8 +17,62 @@
     
       <div class="flex flex-wrap items-center my-8 sm:w-1/2 sm:p-6 lg:w-full lg:my-0">
         
-        <div class="relative w-1/2 mx-auto mb-8 {{loop.index is even ? "lg:order-2" }}">
-          <img class="block object-cover object-top mx-auto rounded-full w-36 h-36 lazyload lg:rounded-none lg:w-auto lg:h-auto lg:p-8 lg:max-w-xs" data-src="{{member.profile_photo.url}}" alt="{{member.name}}">
+        <div class="overflow-hidden relative w-36 h-36 lg:h-160 lg:w-1/2 mx-auto mb-8 {{loop.index is even ? "lg:order-2" }} carousel-{{loop.index}}">
+
+          <picture class="w-full carousel-image">
+            <source type="image/webp" srcset="{{ member.profile_photo.url|letterbox(1200, 1200, '#ffffff')|towebp }}"
+              media="(min-width: 1600px)">
+            <source type="image/jpeg" srcset="{{ member.profile_photo.url|letterbox(1200, 1200, '#ffffff')|tojpg }}"
+              media="(min-width: 1600px)">
+          
+            <source type="image/webp" srcset="{{ member.profile_photo.url|letterbox(800, 600, '#ffffff')|towebp }}"
+              media="(min-width: 1024px)">
+            <source type="image/jpeg" srcset="{{ member.profile_photo.url|letterbox(800, 600, '#ffffff')|tojpg }}"
+              media="(min-width: 1024px)">
+          
+            <source type="image/webp" srcset="{{ member.profile_photo.url|letterbox(800, 800, '#ffffff')|towebp }}"
+              media="(min-width: 768px)">
+            <source type="image/jpeg" srcset="{{ member.profile_photo.url|letterbox(800, 800, '#ffffff')|tojpg }}"
+              media="(min-width: 768px)">
+          
+            <source type="image/webp" srcset="{{ member.profile_photo.url|letterbox(400, 400, '#ffffff')|towebp }}"
+              media="(min-width: 320px)">
+            <source type="image/jpeg" srcset="{{ member.profile_photo.url|letterbox(400, 400, '#ffffff')|tojpg }}"
+              media="(min-width: 320px)">
+          
+            <img src="{{ member.profile_photo.url|letterbox(400, 400, '#ffffff') }}" alt="{{ member.name }}"
+              class="absolute top-0 block object-cover object-center w-32 h-32 mx-auto rounded-full lg:rounded-none lg:w-auto lg:h-auto lg:p-8 lg:max-w-full">
+          
+          </picture>
+          
+          <picture class="w-full carousel-image">
+            <source type="image/webp" srcset="{{ member.casual_photo.url|letterbox(1200, 1200, '#ffffff')|towebp }}"
+              media="(min-width: 1600px)">
+            <source type="image/jpeg" srcset="{{ member.casual_photo.url|letterbox(1200, 1200, '#ffffff')|tojpg }}"
+              media="(min-width: 1600px)">
+
+            <source type="image/webp" srcset="{{ member.casual_photo.url|letterbox(800, 600, '#ffffff')|towebp }}"
+              media="(min-width: 1024px)">
+            <source type="image/jpeg" srcset="{{ member.casual_photo.url|letterbox(800, 600, '#ffffff')|tojpg }}"
+              media="(min-width: 1024px)">
+
+            <source type="image/webp" srcset="{{ member.casual_photo.url|letterbox(800, 800, '#ffffff')|towebp }}"
+              media="(min-width: 768px)">
+            <source type="image/jpeg" srcset="{{ member.casual_photo.url|letterbox(800, 800, '#ffffff')|tojpg }}"
+              media="(min-width: 768px)">
+
+            <source type="image/webp" srcset="{{ member.casual_photo.url|letterbox(400, 400, '#ffffff')|towebp }}"
+              media="(min-width: 320px)">
+            <source type="image/jpeg" srcset="{{ member.casual_photo.url|letterbox(400, 400, '#ffffff')|tojpg }}"
+              media="(min-width: 320px)">
+
+            <img 
+              src="{{ member.casual_photo.url|letterbox(400, 400, '#ffffff') }}" 
+              alt="{{ member.name }}" 
+              class="absolute top-0 block object-cover object-center w-32 h-32 mx-auto rounded-full lg:rounded-none lg:w-auto lg:h-auto lg:p-8 lg:max-w-full">
+
+          </picture>
+
         </div>
         
         <div class="lg:w-1/2">
