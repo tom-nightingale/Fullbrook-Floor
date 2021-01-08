@@ -7,7 +7,7 @@
 
     <div class="flex flex-wrap justify-center my-8">
 
-      {% for property in featured_properties %}
+      {% for property in featured_properties|slice(0,4) %}
 
         {# set default property_availability #}
         {% set property_availability = "" %}
@@ -17,6 +17,8 @@
             {% set property_availability = term.name %}
           {% endif %}
         {% endfor %}
+
+        {# {{dump(property.terms)}} #}
 
           {% include "_components/property-card.twig" with {
               property : property,
