@@ -4,15 +4,16 @@ $context = Timber::context();
 $context['post'] = new Timber\Post();
 
 $featured_query = [
-    'posts_per_page' => 3,
+    'posts_per_page' => -1,
     'orderby' => 'date',
     'post_type' => 'property',
-    // 'meta_query'  => array(
-    //     array(
-    //         'key' => '_featured',
-    //         'value' => 'yes'
-    //     )
-    // )
+    'tax_query' => array (
+        array (
+            'taxonomy' => 'availability',
+            'field' => 'slug',
+            'terms' => 'for-sale',
+        )
+    )
 ];
 $featured_properties = new Timber\PostQuery($featured_query);
 $context['featured_properties'] = $featured_properties;
