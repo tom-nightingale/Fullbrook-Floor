@@ -31,7 +31,10 @@
 
         <p class="mb-8">Provide a few details about your home to get your valuation started&hellip;</p>
 
-        {{ function('do_shortcode', '[contact-form-7 id="675"]') }}
+        {# {{ function('do_shortcode', '[contact-form-7 id="675"]') }} #}
+
+        <a href="{{site.url}}/instant-valuation" class="mt-4 text-sm btn btn-secondary xl:mt-12 lg:text-base">Get an INSTANT
+          online evaluation</a>
 
     </div>
   
@@ -69,7 +72,7 @@
         {% endfor %}
 
         <div class="mt-12 text-center">
-          <a href="{{site.url}}/contact-us" class="mx-auto btn btn-secondary">Start your valuation</a>
+          <a href="{{site.url}}/instant-valuation" class="mx-auto btn btn-secondary">Start your valuation</a>
         </div>
 
       </div>

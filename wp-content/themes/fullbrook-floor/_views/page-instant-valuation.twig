@@ -1,0 +1,29 @@
+{% extends 'base.twig' %}
+
+{% block hero %}
+{% endblock %}
+
+{% block page_content %} 
+
+<script src="https://assets.lead.pro/js/widgets/proval/v1/page.js" defer></script>
+<script>
+  (function (w, d, n, a, m) {
+    w[n] = w[n] || function () {
+      (w[n].q = w[n].q || []).push(arguments);
+    };
+  })(window, document, 'LeadPro');
+
+  LeadPro('init', {
+    app_id: '0f44ebd6-84bb-4a4f-a066-a332a03ffe4d',
+    brand_color: '#005dff', // Set brand colour here using HEX value.
+    background_image: 'https://www.fullbrookandfloor.co.uk/wp-content/uploads/2020/08/iStock-177495800.jpg', // Specify a path for your image."
+    logo_url: 'https://s3.eu-west-2.amazonaws.com/images.lead.pro/account-logo/1794-e249b400-30dc-4a43-b84e-e4ca820a1d7d.jpeg', // Specify a path for your logo."
+    container: 'lead-pro-widget' // This is the ID for the container where the widget will be displayed."
+  });
+</script>
+<div id='lead-pro-widget'></div>
+
+{% endblock %}
+
+
+
