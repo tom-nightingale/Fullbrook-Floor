@@ -29,7 +29,6 @@ $sold = [
     )
 ];
 
-
 $for_sale = new Timber\PostQuery($for_sale_query);
 $sold = new Timber\PostQuery($sold);
 

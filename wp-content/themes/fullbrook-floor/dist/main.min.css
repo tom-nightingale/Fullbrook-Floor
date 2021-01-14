@@ -859,6 +859,7 @@ Cookie Notice *********************************************/
 #wp-notification-toggle {
   display: block;
   margin-top: 1rem;
+  margin-bottom: 2rem;
   --bg-opacity: 1;
   background-color: #fff;
   background-color: rgba(255, 255, 255, var(--bg-opacity));

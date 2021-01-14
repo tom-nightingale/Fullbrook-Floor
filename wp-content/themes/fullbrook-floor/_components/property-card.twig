@@ -3,7 +3,7 @@
   <a href="{{link}}" class="relative block transition-all bg-white group hover:shadow-lg">
 
     {% if availability == "Under Offer" %}
-      <span class="absolute top-0 left-0 z-10 p-2 text-sm text-white bg-secondary">{{availability}}</span>
+      <span class="absolute top-0 left-0 p-2 text-sm text-white bg-secondary">{{availability}}</span>
     {% endif %}
 
     {% include "_components/picture.twig" with {
