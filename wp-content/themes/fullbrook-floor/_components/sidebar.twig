@@ -48,9 +48,11 @@
       
       <p class="text-sm lg:text-base">Get an accurate market appraisal of your property and find out exactly how much it's worth!</p>
 
-      {% include "_components/btn-free-valuation.twig" with {
+      {# {% include "_components/btn-free-valuation.twig" with {
         classes : "inline-block mt-8 text-sm lg:text-base btn btn-white",
-      } %}
+      } %} #}
+      <a href="{{site.url}}/instant-valuation" class="inline-block mt-8 text-sm lg:text-base btn btn-white">Get an INSTANT
+        online evaluation</a>
 
     {% else %}
 
