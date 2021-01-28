@@ -952,6 +952,9 @@ Desktop Navs **********************************************/
     left: 0;
     z-index: 50;
     opacity: 0;
+    --bg-opacity: 1;
+    background-color: #fff;
+    background-color: rgba(255, 255, 255, var(--bg-opacity));
     display: none;
   }
 

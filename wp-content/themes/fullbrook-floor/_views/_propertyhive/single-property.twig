@@ -20,6 +20,8 @@
     </div>
 
     <div class="w-full lg:p-16 full lg:w-6/12">
+
+        {# {{dump(post)}} #}
         
         <p class="text-secondary">{{post._address_street}}, {{post._address_three}}, {{post._address_postcode}}</p>
         <h1 class="mb-0">{{post.post_title}}</h1>
@@ -88,7 +90,7 @@
             reception_rooms: post._reception_rooms,
         } %}
 
-        <div class="relative p-4 pb-8 text-center text-white bg-primary-dark lg:p-8 lg:pb-16">
+        <div class="relative p-4 pb-8 mb-8 text-center text-white bg-primary-dark lg:p-8 lg:pb-16">
             <p class="text-2xl font-bold">Book a viewing</p>
             <p class="my-4">Get in touch to view this property</p>
             <div class="items-center justify-center lg:flex">
@@ -98,6 +100,26 @@
             {% include "_components/pattern-house.twig" %}
         </div>
 
+        <div class="relative items-center p-4 pb-8 text-center bg-primary-light lg:p-8 xl:flex xl:justify-center">
+
+            {% if 'Hitchin' in post._address_two or 'Hitchin' in post._address_three %}
+                {% set location = "Hitchin" %}
+                {% set url = "hitchin-hertfordshire" %}
+            {% elseif 'St. Albans' in post._address_two or 'St. Albans' in post._address_three or 'St Albans' in post._address_two or 'St Albans' in post._address_three %}
+                {% set location = "St. Albans" %}
+                {% set url = "st-albans" %}
+            {% else %}
+                {% set location = "St. Albans" %}
+                {% set url = "st-albans" %}
+            {% endif %}
+
+            <p class="my-4">Read our local guide to <span class="block font-bold lg:inline-block">{{location}}</span></p>
+
+            <a class="inline-block text-sm btn btn-white xl:ml-4" href="{{site.url}}/help-advice/why-live-in-{{url}}/">Read now</a>
+
+            {% include "_components/pattern-house.twig" %}
+        </div>
+        
     </div>
 
     <div class="flex-wrap w-full mt-8 lg:flex">
