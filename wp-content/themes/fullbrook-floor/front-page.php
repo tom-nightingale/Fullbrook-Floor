@@ -13,7 +13,14 @@ $for_sale_query = [
             'field' => 'slug',
             'terms' => 'for-sale',
         )
-    )
+    ),
+    'meta_query' => array(
+        array(
+            'key'     => '_on_market',
+            'value'   => array( 'Yes' ),
+            'compare' => 'IN',
+        ),
+    ),
 ];
 
 $under_offer = [
