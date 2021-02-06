@@ -16,7 +16,7 @@ $for_sale_query = [
     )
 ];
 
-$sold = [
+$under_offer = [
     'posts_per_page' => 4,
     'orderby' => 'date',
     'post_type' => 'property',
@@ -24,15 +24,22 @@ $sold = [
         array (
             'taxonomy' => 'availability',
             'field' => 'slug',
-            'terms' => 'under-offer',
+            'terms' => ['under-offer', 'sold'],
         )
-    )
+    ),
+    'meta_query' => array(
+        array(
+            'key'     => '_on_market',
+            'value'   => array( 'Yes' ),
+            'compare' => 'IN',
+        ),
+    ),
 ];
 
 $for_sale = new Timber\PostQuery($for_sale_query);
-$sold = new Timber\PostQuery($sold);
+$under_offer = new Timber\PostQuery($under_offer);
 
-$featured_posts = array_merge($for_sale->get_posts(), $sold->get_posts());
+$featured_posts = array_merge($for_sale->get_posts(), $under_offer->get_posts());
 
 $context['featured_properties'] = $featured_posts;
 

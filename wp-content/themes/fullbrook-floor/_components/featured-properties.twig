@@ -18,21 +18,19 @@
           {% endif %}
         {% endfor %}
 
-        {# {{dump(property.terms)}} #}
-
-          {% include "_components/property-card.twig" with {
-              property : property,
-              property_id : property.id,
-              image : property.thumbnail,
-              title : property.post_title,
-              street : property._address_postcode,
-              link: property.link,
-              bedrooms : property._bedrooms,
-              bathrooms : property._bathrooms,
-              reception_rooms : property._reception_rooms,
-              availability : property_availability,
-              }
-          %}
+        {% include "_components/property-card.twig" with {
+            property : property,
+            property_id : property.id,
+            image : property.thumbnail,
+            title : property.post_title,
+            street : property._address_postcode,
+            link: property.link,
+            bedrooms : property._bedrooms,
+            bathrooms : property._bathrooms,
+            reception_rooms : property._reception_rooms,
+            availability : property_availability,
+            }
+        %}
           
       {% endfor %}
       

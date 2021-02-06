@@ -2,7 +2,7 @@
   
   <a href="{{link}}" class="relative block transition-all bg-white group hover:shadow-lg">
 
-    {% if availability == "Under Offer" %}
+    {% if (availability == "Under Offer") or (availability == "Sold") %}
       <span class="absolute top-0 left-0 z-10 p-2 text-sm text-white bg-secondary">{{availability}}</span>
     {% endif %}
 
@@ -27,8 +27,6 @@
 
 
     <div class="p-4 text-sm lg:p-8">
-
-      {# {{dump(property)}} #}
 
       {% set heading = title|split(',') %}
       <p class="text-2xl font-bold leading-snug">
