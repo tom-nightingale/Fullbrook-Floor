@@ -1,6 +1,82 @@
 {% if front_page %}
 
+<div class="relative w-full bg-white lg:mt-48 xl:mt-40 lg:min-h-96 xl:min-h-128 2xl:min-h-160">
+
+  {% for image in post.meta('hero_carousel')|slice(0,1) %}                
+        {% include "_components/picture.twig" with {
+          source: image.url,
+          pictureClasses : 'hero--home',
+          breakpoints: {
+            "1600px" : {
+              w: 2048,
+              h: 1366,
+              crop: 'center'
+            },
+            "768px" : {
+              w: 800,
+              h: 600,
+              crop: 'center'
+            },
+            "640px" : {
+              w: 400,
+              h: 300,
+              crop: 'center'
+            },
+          },
+          img: {
+            classes: 'absolute top-0 left-0 z-0 object-cover object-center w-full h-full opacity-20 lg:opacity-100',
+            alt: site.title,
+            w: null,
+            h: 600,
+            crop: 'center',
+          }
+        }
+      %}
+    {% endfor %}   
+
+
+  <div class="container relative lg:min-h-96 xl:min-h-128 2xl:min-h-160 z-1 lg:flex">
+
+    <div class="flex flex-wrap items-center justify-between w-full min-h-full">
+
+      <div class="flex flex-col w-full max-w-sm p-8 mx-auto text-center lg:py-16 lg:mx-0 lg:text-left lg:w-5/12">
+
+        <p class="text-2xl leading-snug text-primary-dark 2xl:text-4xl">
+          Your <strong>local, experienced</strong> <span class="block">Estate Agents</span>
+        </p>
+
+        <p class="mt-4 mb-8 leading-snug lg:text-xl 2xl:text-lg text-primary-darkest">Start your property journey with <span class="font-bold">{{site.name}}</span>.</p>
+
+        <div>
+        
+          <a href="{{site.url}}/instant-valuation" class="block mt-4 text-sm text-center lg:mr-4 btn btn-secondary lg:inline-flex xl:mt-12 lg:text-base">
+            Get an INSTANT online valuation
+          </a>
+          
+          <a href="{{site.url}}/buy-a-home" class="inline-flex mt-4 text-sm text-center lg:mr-4 lg:text-base btn btn-white">
+            Search homes for sale
+          </a>
+          
+        </div>
+
+      </div>
+
+
+      <div class="hidden w-3/12 p-4 leading-snug text-center bg-white rounded xl:w-2/12 xl:mr-12 lg:p-6 xl:p-8 lg:block">
+
+        <p class="text-xl font-bold">Get your <span class="text-primary">FREE</span> property valuation today!</p>
+
+        <p class="my-4 text-sm">Tell us a few details about your property and you'll get an instant valuation, online in less than 2 minutes!</p>        
+
+        <a class="inline-block mt-4 btn btn-secondary" href="{{site.url}}/instant-valuation/">Get started</a>
+
+      </div>
+
+    </div>
+    
+  </div>
   
+</div> 
 
 {% else %}
 
