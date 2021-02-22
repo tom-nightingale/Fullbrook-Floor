@@ -20368,6 +20368,20 @@ figure {
   content: none;
 }
 
+@media (min-width: 1024px) {
+  .header-container {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    transition-property: all;
+    transition-duration: 300ms;
+  }
+
+  .header-container.active {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+}
+
 @media (min-width: 480px) {
   .xs\:space-y-0 > :not(template) ~ :not(template) {
     --space-y-reverse: 0;
@@ -38092,6 +38106,20 @@ figure {
 
   .xs\:bg-none {
     background-image: none;
+  }
+
+  @media (min-width: 1024px) {
+    .xs\:header-container {
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
+      transition-property: all;
+      transition-duration: 300ms;
+    }
+
+    .header-container.xs\:active {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
   }
 }
 
@@ -55820,6 +55848,20 @@ figure {
   .sm\:bg-none {
     background-image: none;
   }
+
+  @media (min-width: 1024px) {
+    .sm\:header-container {
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
+      transition-property: all;
+      transition-duration: 300ms;
+    }
+
+    .header-container.sm\:active {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+  }
 }
 
 @media (min-width: 768px) {
@@ -73546,6 +73588,20 @@ figure {
 
   .md\:bg-none {
     background-image: none;
+  }
+
+  @media (min-width: 1024px) {
+    .md\:header-container {
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
+      transition-property: all;
+      transition-duration: 300ms;
+    }
+
+    .header-container.md\:active {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
   }
 }
 
@@ -91274,6 +91330,20 @@ figure {
   .lg\:bg-none {
     background-image: none;
   }
+
+  @media (min-width: 1024px) {
+    .lg\:header-container {
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
+      transition-property: all;
+      transition-duration: 300ms;
+    }
+
+    .header-container.lg\:active {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+  }
 }
 
 @media (min-width: 1280px) {
@@ -109000,6 +109070,20 @@ figure {
 
   .xl\:bg-none {
     background-image: none;
+  }
+
+  @media (min-width: 1024px) {
+    .xl\:header-container {
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
+      transition-property: all;
+      transition-duration: 300ms;
+    }
+
+    .header-container.xl\:active {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
   }
 }
 
@@ -126728,6 +126812,20 @@ figure {
   .\32xl\:bg-none {
     background-image: none;
   }
+
+  @media (min-width: 1024px) {
+    .\32xl\:header-container {
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
+      transition-property: all;
+      transition-duration: 300ms;
+    }
+
+    .header-container.\32xl\:active {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+  }
 }
 
 @media (min-width: 1800px) {
@@ -144454,5 +144552,19 @@ figure {
 
   .\33xl\:bg-none {
     background-image: none;
+  }
+
+  @media (min-width: 1024px) {
+    .\33xl\:header-container {
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
+      transition-property: all;
+      transition-duration: 300ms;
+    }
+
+    .header-container.\33xl\:active {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
   }
 }

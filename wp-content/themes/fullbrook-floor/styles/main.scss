@@ -93,3 +93,20 @@
   }
 }
 
+// scroll header classess
+
+@responsive {
+
+  @screen lg {
+    .header-container {
+      @apply py-6 transition-all duration-300;
+
+      &.active {
+        @apply py-2;
+      }
+    }
+  }  
+
+}
+
+
