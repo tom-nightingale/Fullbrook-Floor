@@ -1,63 +1,6 @@
 {% if front_page %}
 
-<div class="relative flex flex-col w-full md:flex-row md:flex-wrap hero min-h-96 lg:min-h-128 lg:mt-36">
-
-  <div class="absolute top-0 left-0 z-10 flex flex-col items-center justify-center w-full p-4 text-center text-white lg:p-16 xl:p-24 xl:pb-36 bg-opacity-90 md:bg-opacity-100 min-h-96 lg:min-h-128 bg-primary-darkest md:w-1/2 md:relative">
-
-    <p class="text-lg leading-snug lg:mt-8">{{top_line}} <span class="block mt-4 text-2xl font-bold text-secondary-light">{{middle_line}}</span> <span class="block text-2xl font-bold xl:text-4xl 2xl:text-5xl">{{main_line}}</span></p>
-
-    {# <p class="flex flex-wrap justify-center my-4">
-      <span class="flex flex-wrap items-center justify-center mx-1 text-lg font-bold"><span class="inline-block w-2 h-2 mr-1 rounded-full bg-secondary"></span> Knowledge</span>
-      <span class="flex flex-wrap items-center justify-center mx-1 text-lg font-bold"><span class="inline-block w-2 h-2 mr-1 rounded-full bg-secondary"></span> Experience</span>
-      <span class="flex flex-wrap items-center justify-center mx-1 text-lg font-bold"><span class="inline-block w-2 h-2 mr-1 rounded-full bg-secondary"></span> Trust</span>
-    </p> #}
-    
-    {# {% include "_components/btn-free-valuation.twig" with {
-      classes : "mt-4 btn btn-secondary xl:mt-12 text-sm lg:text-base",
-    } %} #}
-    <a href="{{site.url}}/instant-valuation" class="mt-4 text-sm btn btn-secondary xl:mt-12 lg:text-base">Get an INSTANT online valuation</a>
-    <a href="{{site.url}}/buy-a-home" class="mt-4 text-sm bg-opacity-75 btn btn-white hover:bg-opacity-100">Search homes for sale</a>
-
-    {% include "_components/pattern-house.twig" %}
-  </div>
-
-  <div class="relative bg-bottom bg-cover md:w-1/2 min-h-96 lg:min-h-128 carousel">
-      {% for image in post.meta('hero_carousel') %}                
-          {% include "_components/picture.twig" with {
-            pictureClasses: 'carousel-image',
-            source: image.url,
-            breakpoints: {
-              "1600px" : {
-                w: 1200,
-                h: 800,
-                crop: 'center'
-              },
-              "768px" : {
-                w: 800,
-                h: 600,
-                crop: 'center'
-              },
-              "640px" : {
-                w: 400,
-                h: 300,
-                crop: 'center'
-              },
-            },
-            img: {
-              classes: 'absolute top-0 left-0 object-cover object-top w-full h-full lazyload',
-              alt: site.title,
-              w: null,
-              h: 600,
-              crop: 'center',
-            }
-          }
-        %}
-    {% endfor %}   
-    
-  </div>
-
-
-</div>
+  
 
 {% else %}
 
