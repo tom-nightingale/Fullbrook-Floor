@@ -903,13 +903,15 @@ Desktop Navs **********************************************/
     display: block;
     padding: 0.5rem;
     font-size: 0.875rem;
-    border-radius: 9999px;
+    --text-opacity: 1;
+    color: #fff;
+    color: rgba(255, 255, 255, var(--text-opacity));
   }
 
   .menu-primary a:hover {
-    --bg-opacity: 1;
-    background-color: #f7fafc;
-    background-color: rgba(247, 250, 252, var(--bg-opacity));
+    --text-opacity: 1;
+    color: #CDE4F2;
+    color: rgba(205, 228, 242, var(--text-opacity));
   }
 
   .menu-primary a:hover + .sub-menu {
@@ -933,16 +935,16 @@ Desktop Navs **********************************************/
   .menu-primary .current-menu-parent > a,
   .menu-primary .current_page_parent > a {
     --text-opacity: 1;
-    color: #F26B24;
-    color: rgba(242, 107, 36, var(--text-opacity));
+    color: #CDE4F2;
+    color: rgba(205, 228, 242, var(--text-opacity));
   }
 
   .menu-primary .current-menu-item > a:hover,
     .menu-primary .current-menu-parent > a:hover,
     .menu-primary .current_page_parent > a:hover {
     --text-opacity: 1;
-    color: #F26B24;
-    color: rgba(242, 107, 36, var(--text-opacity));
+    color: #CDE4F2;
+    color: rgba(205, 228, 242, var(--text-opacity));
   }
 
   .menu-primary .sub-menu {
@@ -952,9 +954,6 @@ Desktop Navs **********************************************/
     left: 0;
     z-index: 50;
     opacity: 0;
-    --bg-opacity: 1;
-    background-color: #fff;
-    background-color: rgba(255, 255, 255, var(--bg-opacity));
     display: none;
   }
 
@@ -965,12 +964,17 @@ Desktop Navs **********************************************/
   }
 
   .menu-primary .sub-menu a {
-    --bg-opacity: 1;
-    background-color: #fff;
-    background-color: rgba(255, 255, 255, var(--bg-opacity));
-    border-radius: 9999px;
+    --text-opacity: 1;
+    color: #fff;
+    color: rgba(255, 255, 255, var(--text-opacity));
     padding-left: 1rem;
     padding-right: 1rem;
+  }
+
+  .menu-primary .sub-menu a:hover {
+    --text-opacity: 1;
+    color: #CDE4F2;
+    color: rgba(205, 228, 242, var(--text-opacity));
   }
 }
 

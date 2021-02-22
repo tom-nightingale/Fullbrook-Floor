@@ -14,11 +14,11 @@ Desktop Navs **********************************************/
         block
         p-2
         text-sm
-        rounded-full;
+        text-white;
 
         &:hover {
-          @apply
-            bg-gray-100;
+          @apply text-primary-light;
+            
 
           & + .sub-menu {
             @apply
@@ -44,10 +44,10 @@ Desktop Navs **********************************************/
     .current-menu-parent > a,
     .current_page_parent > a {
       @apply
-        text-secondary;
+        text-primary-light;
 
         &:hover {
-          @apply text-secondary;
+          @apply text-primary-light;
         }
     }
 
@@ -59,7 +59,6 @@ Desktop Navs **********************************************/
         left-0
         z-50
         opacity-0
-        bg-white
         hidden;
 
         &:hover {
@@ -70,7 +69,11 @@ Desktop Navs **********************************************/
         }
 
         a {
-          @apply bg-white rounded-full px-4;
+          @apply text-white px-4;
+
+          &:hover {
+            @apply text-primary-light;
+          }
         }
     }
   }
