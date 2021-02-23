@@ -1,0 +1,10 @@
+<div class="relative p-4 pb-8 mb-8 text-center text-white bg-primary-dark lg:p-8 lg:pb-16">
+    <p class="text-2xl font-bold">Book a viewing</p>
+    <p class="my-4">Get in touch to view this property</p>
+    <div class="items-center justify-center lg:flex">
+        <p>Call {% include "_components/phone-number.twig" %}</p>
+        <a href="javascript:;" class="inline-block my-4 lg:my-0 btn btn-white lg:mx-4" data-fancybox
+            data-src="#makeEnquiry{{post.id}}">Request a viewing</a>
+    </div>
+    {% include "_components/pattern-house.twig" %}
+</div>

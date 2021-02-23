@@ -1,6 +1,6 @@
 {% if front_page %}
 
-<div class="relative w-full bg-white lg:mt-48 xl:mt-40 lg:min-h-96 xl:min-h-128 2xl:min-h-160">
+<div class="relative w-full bg-white lg:mt-32 xl:mt-30 lg:min-h-96 xl:min-h-128 2xl:min-h-160">
 
   {% for image in post.meta('hero_carousel')|slice(0,1) %}                
         {% include "_components/picture.twig" with {
@@ -80,9 +80,9 @@
 
 {% else %}
 
-  <div class="relative w-full text-white bg-primary lg:mt-36">
+  <div class="relative w-full text-white bg-primary lg:mt-36 xl:mt-32">
     <div class="container">
-      <p class="px-6 text-2xl font-bold text-center {{has_search_bar ? "py-8 lg:p-12 lg:py-16" : "py-8 lg:p-12 lg:py-16 lg:pt-20" }} xl:text-4xl 2xl:text-5xl">{{hero_heading}}</p>
+      <p class="px-6 py-8 text-2xl font-bold text-center lg:p-12 lg:py-16 xl:text-4xl 2xl:text-5xl">{{hero_heading}}</p>
     </div>
     {% include "_components/pattern-house.twig" %}
   </div>

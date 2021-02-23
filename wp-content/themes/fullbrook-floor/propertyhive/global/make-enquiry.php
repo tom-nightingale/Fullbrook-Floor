@@ -14,7 +14,7 @@ global $post;
 
 <li class="block w-full p-2 action-make-enquiry">
     
-    <a class="block p-4 font-bold text-center text-white bg-primary-dark hover:text-secondary" data-fancybox data-src="#makeEnquiry<?php echo $post->ID; ?>" href="javascript:;"><?php _e( 'Make Enquiry', 'propertyhive' ); ?></a>
+    <a class="block p-4 font-bold text-center text-white bg-primary-dark hover:bg-primary" data-fancybox data-src="#makeEnquiry<?php echo $post->ID; ?>" href="javascript:;"><?php _e( 'Make Enquiry', 'propertyhive' ); ?></a>
 
     <!-- LIGHTBOX FORM -->
     <div id="makeEnquiry<?php echo $post->ID; ?>" style="display:none;">

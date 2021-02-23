@@ -16,7 +16,7 @@ global $post, $property;
 
 	<?php do_action( 'propertyhive_property_actions_start' ); ?>
     
-    <ul class="flex-wrap w-full lg:flex">
+    <ul class="flex-wrap w-full my-8 lg:flex">
         
         <?php 
            /**
@@ -42,7 +42,7 @@ global $post, $property;
                        echo ' ' . $key . '="' . $value . '"';
                    }
                }
-               echo '><a class="block p-4 font-bold text-center bg-primary-light hover:bg-primary hover:text-white" href="' . $action['href'] . '"';
+               echo '><a class="block p-4 font-bold text-center border border-primary-light hover:border-primary" href="' . $action['href'] . '"';
                if ( isset( $action['attributes'] ) && ! empty( $action['attributes'] ) )
                {
                    foreach ( $action['attributes'] as $key => $value )
