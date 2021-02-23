@@ -30,6 +30,9 @@ class PH_Post_types {
 
         add_action( 'save_post', array( __CLASS__, 'create_name_number_street_meta' ), 99, 3 );
         add_action( 'save_post', array( __CLASS__, 'create_concatenated_indexable_meta' ), 99, 3 );
+
+        add_action( 'save_post', array( __CLASS__, 'store_related_viewings' ), 99, 3 );
+        add_action( 'updated_post_meta', array( __CLASS__, 'store_related_viewings_meta_change' ), 10, 4 );
 	}
 
 	/**
@@ -212,6 +215,19 @@ class PH_Post_types {
                 'public'                => true
             )
         );
+
+		register_taxonomy( 'management_key_date_type',
+			'key_date',
+			array(
+				'label'                 => __( 'Management Dates', 'propertyhive' ),
+				'hierarchical'          => true,
+				'show_ui'               => false,
+				'show_in_nav_menus'     => false,
+				'query_var'             => is_admin(),
+				'rewrite'               => false,
+				'public'                => true
+			)
+		);
 			
 		do_action( 'do_action_after_register_taxonomies' );
 	}
@@ -509,7 +525,77 @@ class PH_Post_types {
                 )
             )
         );
-        
+
+        register_post_type( "tenancy",
+            apply_filters( 'propertyhive_register_post_type_tenancy',
+                array(
+                    'labels' => array(
+                        'name'                  => __( 'Tenancies', 'propertyhive' ),
+                        'singular_name'         => __( 'Tenancy', 'propertyhive' ),
+                        'menu_name'             => _x( 'Tenancies', 'Admin menu name', 'propertyhive' ),
+                        'add_new'               => __( 'Add Tenancy', 'propertyhive' ),
+                        'add_new_item'          => __( 'Add New Tenancy', 'propertyhive' ),
+                        'edit'                  => __( 'Edit', 'propertyhive' ),
+                        'edit_item'             => __( 'Edit Tenancy', 'propertyhive' ),
+                        'new_item'              => __( 'New Tenancy', 'propertyhive' ),
+                        'view'                  => __( 'View Tenancy', 'propertyhive' ),
+                        'view_item'             => __( 'View Tenancy', 'propertyhive' ),
+                        'search_items'          => __( 'Search Tenancies', 'propertyhive' ),
+                        'not_found'             => __( 'No tenancies found', 'propertyhive' ),
+                        'not_found_in_trash'    => __( 'No tenancies found in trash', 'propertyhive' ),
+                        'parent'                => __( 'Parent Tenancy', 'propertyhive' )
+                    ),
+                    'public'                => false,
+                    'show_ui'               => true,
+                    'capability_type'       => 'post',
+                    'map_meta_cap'          => true,
+                    'publicly_queryable'    => false,
+                    'exclude_from_search'   => true,
+                    'hierarchical'          => false, // Hierarchical causes memory issues - WP loads all records!
+                    'query_var'             => true,
+                    'supports'              => false,
+                    'show_in_nav_menus'     => false,
+                    'show_in_menu'          => false
+                )
+            )
+        );
+
+		register_post_type( "key_date",
+			apply_filters( 'propertyhive_register_post_type_key_date',
+				array(
+					'labels' => array(
+						'name'                  => __( 'Key Dates', 'propertyhive' ),
+						'singular_name'         => __( 'Key Date', 'propertyhive' ),
+						'menu_name'             => _x( 'Management', 'Admin menu name', 'propertyhive' ),
+						'add_new'               => __( 'Add Key Date', 'propertyhive' ),
+						'add_new_item'          => __( 'Add New Key Date', 'propertyhive' ),
+						'edit'                  => __( 'Edit', 'propertyhive' ),
+						'edit_item'             => __( 'Edit Key Date', 'propertyhive' ),
+						'new_item'              => __( 'New Key Date', 'propertyhive' ),
+						'view'                  => __( 'View Key Date', 'propertyhive' ),
+						'view_item'             => __( 'View Key Date', 'propertyhive' ),
+						'search_items'          => __( 'Search Key Dates', 'propertyhive' ),
+						'not_found'             => __( 'No key dates found', 'propertyhive' ),
+						'not_found_in_trash'    => __( 'No key dates found in trash', 'propertyhive' ),
+						'parent'                => __( 'Parent Key Date', 'propertyhive' )
+					),
+					'public'                => false,
+					'show_ui'               => true,
+					'capability_type'       => 'post',
+					'map_meta_cap'          => true,
+					'publicly_queryable'    => false,
+					'exclude_from_search'   => true,
+					'hierarchical'          => false, // Hierarchical causes memory issues - WP loads all records!
+					'query_var'             => true,
+					'supports'              => false,
+					'show_in_nav_menus'     => false,
+					'show_in_menu'          => false,
+					'capabilities' => array(
+						'create_posts' => 'do_not_allow'
+					),
+				)
+			)
+		);
         do_action( 'propertyhive_after_register_post_types' );
 	}
 
@@ -782,6 +868,155 @@ class PH_Post_types {
             if( !$existing_concat || $existing_concat !== $descs_concat )
             {
                 update_post_meta($post_id, '_descriptions_concatenated', $descs_concat);
+            }
+        }
+    }
+
+    /**
+     * @param  int $post_id
+     * @param  object $post
+     */
+    public static function store_related_viewings( $post_id, $post, $update )
+    {
+        // $post_id and $post are required
+        if ( empty( $post_id ) || empty( $post ) ) {
+            return;
+        }
+
+        // Dont' save meta boxes for revisions or autosaves
+        if ( defined( 'DOING_AUTOSAVE' ) || is_int( wp_is_post_revision( $post ) ) || is_int( wp_is_post_autosave( $post ) ) ) {
+            return;
+        }
+
+        if ( $post->post_type !== 'property' && $post->post_type !== 'contact' && $post->post_type !== 'viewing' ) {
+            return;
+        }
+
+        $viewing_ids = array();
+
+        switch ( $post->post_type )
+        {
+            case "property":
+            {
+                // get all viewings for this property
+                $meta_query = array(
+                    array(
+                        'key' => '_property_id',
+                        'value' => $post_id,
+                    )
+                );
+
+                $args = array(
+                    'fields'   => 'ids',
+                    'post_type' => 'viewing',
+                    'nopaging' => true,
+                    'post_status' => 'publish',
+                    'meta_query' => $meta_query,
+                    'orderby' => 'none'
+                );
+
+                $viewings_query = new WP_Query( $args );
+
+                if ( $viewings_query->have_posts() )
+                {
+                    while ( $viewings_query->have_posts() )
+                    {
+                        $viewings_query->the_post();
+
+                        $viewing_ids[] = get_the_ID();
+                    }
+                }
+                wp_reset_postdata();
+
+                break;
+            }
+            case "contact":
+            {
+                // get all viewings for this contact
+                $meta_query = array(
+                    array(
+                        'key' => '_applicant_contact_id',
+                        'value' => $post_id,
+                    )
+                );
+
+                $args = array(
+                    'fields'   => 'ids',
+                    'post_type' => 'viewing',
+                    'nopaging' => true,
+                    'post_status' => 'publish',
+                    'meta_query' => $meta_query,
+                    'orderby' => 'none'
+                );
+
+                $viewings_query = new WP_Query( $args );
+
+                if ( $viewings_query->have_posts() )
+                {
+                    while ( $viewings_query->have_posts() )
+                    {
+                        $viewings_query->the_post();
+
+                        $viewing_ids[] = get_the_ID();
+                    }
+                }
+                wp_reset_postdata();
+
+                break;
+            }
+            case "viewing":
+            {
+                $viewing_ids[] = $post_id;
+
+                break;
+            }
+        }
+
+        if ( !empty($viewing_ids) )
+        {
+            foreach ( $viewing_ids as $viewing_id )
+            {
+                $viewing = new PH_Viewing( $viewing_id );
+
+                $related_viewings = $viewing->get_related_viewings();
+
+                update_post_meta( $post_id, '_related_viewings', $related_viewings );
+
+                if ( !empty($related_viewings['all']) )
+                {
+                    foreach ( $related_viewings['all'] as $related_viewing_id )
+                    {
+                        $other_viewing = new PH_Viewing( $related_viewing_id );
+
+                        $other_related_viewings = $other_viewing->get_related_viewings();
+
+                        update_post_meta( $related_viewing_id, '_related_viewings', $other_related_viewings );
+                    }
+                }
+            }
+        }
+    }
+
+    public static function store_related_viewings_meta_change( $meta_id, $object_id, $meta_key, $meta_value )
+    {
+        if ( get_post_type($object_id) == 'viewing' && ( $meta_key == '_status' || $meta_key == '_start_date_time' ) )
+        {
+            $viewing = new PH_Viewing( $object_id );
+
+            $related_viewings = $viewing->get_related_viewings();
+
+            update_post_meta( $object_id, '_related_viewings', $related_viewings );
+
+            if ( !empty($related_viewings['all']) )
+            {
+                foreach ( $related_viewings['all'] as $related_viewing_id )
+                {
+                    $other_viewing = new PH_Viewing( $related_viewing_id );
+
+                    $other_related_viewings = $other_viewing->get_related_viewings();
+
+                    update_post_meta( $related_viewing_id, '_related_viewings', $other_related_viewings );
+                }
             }
         }
     }

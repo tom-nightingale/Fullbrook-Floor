@@ -55,26 +55,29 @@ class PH_Admin_Menus {
         if ( get_option('propertyhive_module_disabled_enquiries', '') != 'yes' )
 	    {
 	    	$count = '';
-	    	$args = array(
-	    		'post_type' => 'enquiry',
-	    		'nopaging' => true,
-	    		'fields' => 'ids',
-	    		'meta_query' => array(
-	    			array(
-	    				'key' => '_status',
-	    				'value' => 'open'
-	    			),
-	    			array(
-	    				'key' => '_negotiator_id',
-	    				'value' => ''
-	    			),
-	    		),
-	    	);
-	    	$enquiry_query = new WP_Query( $args );
-	    	if ( $enquiry_query->have_posts() )
+	    	if ( apply_filters( 'propertyhive_show_admin_menu_enquiry_count', TRUE ) === TRUE )
 	    	{
-	    		$count = ' <span class="update-plugins count-' . $enquiry_query->found_posts . '"><span class="plugin-count">' . $enquiry_query->found_posts . '</span></span>';
-	    	}
+		    	$args = array(
+		    		'post_type' => 'enquiry',
+		    		'nopaging' => true,
+		    		'fields' => 'ids',
+		    		'meta_query' => array(
+		    			array(
+		    				'key' => '_status',
+		    				'value' => 'open'
+		    			),
+		    			array(
+		    				'key' => '_negotiator_id',
+		    				'value' => ''
+		    			),
+		    		),
+		    	);
+		    	$enquiry_query = new WP_Query( $args );
+		    	if ( $enquiry_query->have_posts() )
+		    	{
+		    		$count = ' <span class="update-plugins count-' . $enquiry_query->found_posts . '"><span class="plugin-count">' . $enquiry_query->found_posts . '</span></span>';
+		    	}
+		    }
         	add_submenu_page( 'propertyhive', __( 'Enquiries', 'propertyhive' ), __( 'Enquiries', 'propertyhive' ) . $count, 'manage_propertyhive', 'edit.php?post_type=enquiry'/*, array( $this, 'attributes_page' )*/ );
         }
         
@@ -92,6 +95,36 @@ class PH_Admin_Menus {
 	    {
 	        add_submenu_page( 'propertyhive', __( 'Offers', 'propertyhive' ), __( 'Offers', 'propertyhive' ), 'manage_propertyhive', 'edit.php?post_type=offer'/*, array( $this, 'attributes_page' )*/ );
 	        add_submenu_page( 'propertyhive', __( 'Sales', 'propertyhive' ), __( 'Sales', 'propertyhive' ), 'manage_propertyhive', 'edit.php?post_type=sale'/*, array( $this, 'attributes_page' )*/ );
+	    }
+
+	    if ( get_option('propertyhive_module_disabled_tenancies', '') != 'yes' )
+	    {
+	        add_submenu_page( 'propertyhive', __( 'Tenancies', 'propertyhive' ), __( 'Tenancies', 'propertyhive' ), 'manage_propertyhive', 'edit.php?post_type=tenancy'/*, array( $this, 'attributes_page' )*/ );
+
+            $count = '';
+            $args = array(
+                'post_type' => 'key_date',
+                'nopaging' => true,
+                'fields' => 'ids',
+                'meta_query' => array(
+                    array(
+                        'key' => '_key_date_status',
+                        'value' => 'pending'
+                    ),
+                    array(
+                        'key' => '_date_due',
+                        'value' => date('Y-m-d'),
+                        'type' => 'date',
+                        'compare' => '<=',
+                    ),
+                ),
+            );
+            $enquiry_query = new WP_Query( $args );
+            if ( $enquiry_query->have_posts() )
+            {
+                $count = ' <span class="update-plugins count-' . $enquiry_query->found_posts . '"><span class="plugin-count">' . $enquiry_query->found_posts . '</span></span>';
+            }
+            add_submenu_page( 'propertyhive', __( 'Management', 'propertyhive' ), __( 'Management', 'propertyhive' ) . $count, 'manage_propertyhive', 'edit.php?post_type=key_date&orderby=date_due&order=asc&status=upcoming_and_overdue&filter_action=Filter' );
 	    }
 
     	if ( get_option('propertyhive_module_disabled_contacts', '') != 'yes' )
@@ -142,7 +175,7 @@ class PH_Admin_Menus {
 	    
 		global $menu, $submenu, $parent_file, $submenu_file, $self, $post_type, $taxonomy;
 
-		$to_highlight_types = array( 'property', 'contact', 'enquiry', 'appraisal', 'viewing', 'offer', 'sale' );
+		$to_highlight_types = array( 'property', 'contact', 'enquiry', 'appraisal', 'viewing', 'offer', 'sale', 'tenancy', 'key_date' );
 
 		if ( isset( $post_type ) ) {
 			if ( in_array( $post_type, $to_highlight_types ) ) {
@@ -234,7 +267,8 @@ class PH_Admin_Menus {
 	 */
 	public function generate_applicant_list_page() {
 		include_once( 'class-ph-admin-applicant-list.php' );
-		PH_Admin_Applicant_List::output();
+		$ph_admin_applicant_list = new PH_Admin_Applicant_List();
+		$ph_admin_applicant_list->output();
 	}
 
 	/**

@@ -425,33 +425,9 @@ function ph_get_user_details_form_fields()
  *
  * @return array
  */
-function ph_get_applicant_requirements_form_fields()
+function ph_get_applicant_requirements_form_fields($applicant_profile = false)
 {
     global $post;
-
-    if ( is_user_logged_in() )
-    {
-        $current_user = wp_get_current_user();
-        $applicant_profile = false;
-
-        if ( $current_user instanceof WP_User )
-        {
-            $contact = new PH_Contact( '', $current_user->ID );
-
-            if ( is_array($contact->contact_types) && in_array('applicant', $contact->contact_types) )
-            {
-                if (
-                    $contact->applicant_profiles != '' &&
-                    $contact->applicant_profiles > 0 &&
-                    $contact->applicant_profile_0 != '' &&
-                    is_array($contact->applicant_profile_0)
-                )
-                {
-                    $applicant_profile = $contact->applicant_profile_0;
-                }
-            }
-        }
-    }
 
     $fields = array();
 
@@ -613,12 +589,13 @@ function ph_get_applicant_requirements_form_fields()
                 'label' => __( 'Property Type', 'propertyhive' ),
                 'before' => '<div class="control control-property_type residential-only">',
                 'required' => false,
+                'multiselect' => true,
                 'options' => $options,
             );
 
             if ( is_user_logged_in() && isset($applicant_profile['property_types']) && is_array($applicant_profile['property_types']) && !empty($applicant_profile['property_types']) )
             {
-                $fields['property_type']['value'] = $applicant_profile['property_types'][0];
+                $fields['property_type']['value'] = $applicant_profile['property_types'];
             }
         }
     }
@@ -711,12 +688,13 @@ function ph_get_applicant_requirements_form_fields()
                 'label' => __( 'Property Type', 'propertyhive' ),
                 'before' => '<div class="control control-commercial_property_type commercial-only">',
                 'required' => false,
+                'multiselect' => true,
                 'options' => $options,
             );
 
             if ( is_user_logged_in() && isset($applicant_profile['commercial_property_types']) && is_array($applicant_profile['commercial_property_types']) && !empty($applicant_profile['commercial_property_types']) )
             {
-                $fields['commercial_property_type']['value'] = $applicant_profile['commercial_property_types'][0];
+                $fields['commercial_property_type']['value'] = $applicant_profile['commercial_property_types'];
             }
         }
     }
@@ -762,12 +740,13 @@ function ph_get_applicant_requirements_form_fields()
                 'type' => 'select',
                 'label' => __( 'Location', 'propertyhive' ),
                 'required' => false,
+                'multiselect' => true,
                 'options' => $options,
             );
 
             if ( is_user_logged_in() && isset($applicant_profile['locations']) && is_array($applicant_profile['locations']) && !empty($applicant_profile['locations']) )
             {
-                $fields['location']['value'] = $applicant_profile['locations'][0];
+                $fields['location']['value'] = $applicant_profile['locations'];
             }
         }
     }
@@ -1092,12 +1071,16 @@ function ph_form_field( $key, $field )
                 }
                 else
                 {
-                    if ( isset($_REQUEST[$key]) && is_array($_REQUEST[$key]) && in_array($option_key, $_REQUEST[$key]) )
+                    if ( 
+                        ( isset($_REQUEST[$key]) && is_array($_REQUEST[$key]) && in_array($option_key, $_REQUEST[$key]) )
+                        ||
+                        ( !isset($_REQUEST[$key]) && is_array($field['value']) && in_array($option_key, $field['value']) )
+                    ) 
                     {
                         $output .= ' selected';
                     }
                 }
-                $output .= '>' . esc_html( $value ) . '</option>';
+                $output .= '>' . esc_html( __( $value, 'propertyhive' ) ) . '</option>';
             }
 
             $output .= '</select>';
