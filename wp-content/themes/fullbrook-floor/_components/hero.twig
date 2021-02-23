@@ -2,24 +2,40 @@
 
 <div class="relative w-full bg-white lg:mt-32 xl:mt-30 lg:min-h-96 xl:min-h-128 2xl:min-h-160">
 
-  {% for image in post.meta('hero_carousel')|slice(0,1) %}                
+    <div class="w-full h-full carousel">
+    {% for image in post.meta('hero_carousel') %}                
         {% include "_components/picture.twig" with {
           source: image.url,
-          pictureClasses : 'hero--home',
+          pictureClasses : 'hero--home carousel-image',
           breakpoints: {
-            "1600px" : {
-              w: 2048,
-              h: 1366,
+            "1530px" : {
+              w: 2000,
+              h: 650,
+              crop: 'center'
+            },
+            "1280px" : {
+              w: 1600,
+              h: 520,
+              crop: 'center'
+            },
+            "1024px" : {
+              w: 1280,
+              h: 400,
               crop: 'center'
             },
             "768px" : {
-              w: 800,
-              h: 600,
+              w: 1024,
+              h: 310,
               crop: 'center'
             },
             "640px" : {
-              w: 400,
-              h: 300,
+              w: 768,
+              h: 315,
+              crop: 'center'
+            },
+            "375px" : {
+              w: 640,
+              h: 320,
               crop: 'center'
             },
           },
@@ -32,7 +48,8 @@
           }
         }
       %}
-    {% endfor %}   
+    {% endfor %}
+  </div>
 
 
   <div class="container relative lg:min-h-96 xl:min-h-128 2xl:min-h-160 z-1 lg:flex">
