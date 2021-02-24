@@ -95,6 +95,9 @@ gulp.task('styles', function () {
         'aligncenter',
         'alignright',
         'select',
+        '2xl:p-2',
+        '3xl:p-4',
+        '2xl:w-1/4'
       ],
       extractors: [
         {
