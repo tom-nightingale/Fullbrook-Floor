@@ -22,6 +22,14 @@ button,
   }
 }
 
+.btn-tertiary {
+  @apply bg-tertiary text-white;
+
+  &:hover {
+    @apply bg-tertiary-dark;
+  }
+}
+
 .btn-white {
   @apply bg-white text-primary-dark;
 

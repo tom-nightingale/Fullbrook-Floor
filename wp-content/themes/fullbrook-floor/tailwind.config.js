@@ -30,6 +30,11 @@ module.exports = {
           default: '#F26B24',
           dark: '#d6520d',
         },
+        tertiary: {
+          light: '#cd5480',
+          default: '#b70a4a',
+          dark: '#800734',
+        },
       },
       screens: {
         '2xl': '1530px',
