@@ -2,42 +2,53 @@
 
     <div class="py-8 text-sm bg-white text-primary {{classes ?  classes : 'border-t border-gray-200'}}">
 
-        <div class="container flex-wrap w-full text-center sm:flex">
+        <div class="container flex-wrap w-full text-center">
 
-            <div class="w-full lg:w-1/3 xl:px-16 sm:flex sm:items-center sm:justify-center">
-                <h3 class="text-xl lg:text-2xl text-primary-dark">What our clients say...</h3>
-            </div>
+            <h3 class="text-xl lg:text-2xl text-primary-dark">What our clients say...</h3>
 
-            {% for testimonial in testimonials %}
 
-                <div class="w-full p-4 sm:flex-1 sm:flex sm:flex-col sm:justify-between sm:w-1/2 lg:w-1/3 xl:px-16 testimonial">
 
-                    <div class="mb-4 text-xl text-yellow-400 stars">
-                        {{function('icon', 'star')}}
-                        {{function('icon', 'star')}}
-                        {{function('icon', 'star')}}
-                        {{function('icon', 'star')}}
-                        {{function('icon', 'star')}}
-                    </div>
+            <div class="relative flex justify-center w-full px-4 ml-auto lg:px-6">
+            
+                <ul class="flex w-full overflow-x-auto scrolling-touch md:-mx-5 2xl:-mx-8 carousel-container">
 
-                    {# {% set text = testimonial.meta('testimonial')|split(' ') %} #}
-                    
-                    {# {% if text|length > 35 %}
-                        {% for t in text|slice(0, 35) %}
-                            {{ t }}
-                        {% endfor %}
-                        ...
-                    {% else %}
-                        {{ text|join(' ') }}
-                    {% endif %} #}
+                    {% for testimonial in testimonials %}
 
-                    {{testimonial.meta('testimonial')}}
+                        <li class="flex-none w-full px-5 sm:w-1/2 lg:w-1/3 carousel-item">
+
+                            <div class="mb-4 text-xl text-yellow-500 stars">
+                                {{function('icon', 'star')}}
+                                {{function('icon', 'star')}}
+                                {{function('icon', 'star')}}
+                                {{function('icon', 'star')}}
+                                {{function('icon', 'star')}}
+                            </div>
+
+                            <div class="text-primary-dark">{{testimonial.meta('testimonial')}}</div>
+                        
+                            <p class="mt-4 text-base font-bold text-primary">{{testimonial.meta('name')}}</p>
+                            
+                        </li>
+
+                    {% endfor %}
+
+                </ul>
+
+                <div class="absolute top-0 left-0 flex items-center h-full">
+                    <button class="px-2 py-2 text-lg bg-transparent opacity-25 carousel-arrow carousel-arrow-left text-primary-dark hover:bg-transparent">
+                        {{function('icon', 'angle-left')}}
+                    </button>
+                </div>
                 
-                    <p class="mt-4 text-base font-bold text-primary-dark">{{testimonial.meta('name')}}</p>
-                    
+                <div class="absolute top-0 right-0 flex items-center h-full">
+                    <button class="px-2 py-2 text-lg bg-transparent carousel-arrow carousel-arrow-right text-primary-dark hover:bg-transparent">
+                        {{function('icon', 'angle-right')}}
+                    </button>
                 </div>
 
-            {% endfor %}
+            </div>
+
+
 
         </div>
         

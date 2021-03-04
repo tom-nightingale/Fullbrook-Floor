@@ -40,7 +40,7 @@
     {
       $testimonials = [
         'post_type' => 'testimonials',
-        'posts_per_page' => 2,
+        'posts_per_page' => -1,
         'orderby' => 'rand',
       ];
       $context['testimonials'] = new Timber\PostQuery($testimonials);
