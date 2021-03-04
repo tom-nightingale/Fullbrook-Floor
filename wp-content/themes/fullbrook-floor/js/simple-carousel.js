@@ -8,8 +8,6 @@ var autoIndex = 0;
 var carouselItems = document.querySelectorAll('.carousel-item');
 var totalItems = carouselItems.length;
 
-// console.log(totalItems);
-
 var carouselArrows = document.querySelectorAll(".carousel-arrow");
 
 carouselArrows.forEach((arrow) => {
