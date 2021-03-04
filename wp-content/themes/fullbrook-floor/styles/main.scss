@@ -156,6 +156,10 @@
       }
     }
 
+    input {
+      @apply rounded-full text-center;
+    }
+
     input[type=checkbox] {
       &::checked {
         @apply bg-secondary-light;

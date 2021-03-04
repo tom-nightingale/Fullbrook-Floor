@@ -20672,6 +20672,11 @@ figure {
   margin-right: 0.5rem;
 }
 
+#mc_embed_signup .mc-field-group input {
+  border-radius: 9999px;
+  text-align: center;
+}
+
 #mc_embed_signup .mc-field-group input[type=checkbox]::checked {
   --bg-opacity: 1;
   background-color: #cd5480;
