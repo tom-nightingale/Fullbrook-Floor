@@ -985,8 +985,8 @@ Desktop Navs **********************************************/
     padding-left: 1rem;
     padding-right: 1rem;
     --bg-opacity: 1;
-    background-color: #2d3748;
-    background-color: rgba(45, 55, 72, var(--bg-opacity));
+    background-color: #2a466c;
+    background-color: rgba(42, 70, 108, var(--bg-opacity));
     border-bottom-width: 1px;
     --border-opacity: 1;
     border-color: #fff;
@@ -994,9 +994,9 @@ Desktop Navs **********************************************/
   }
 
   .menu-primary .sub-menu a:hover {
-    --text-opacity: 1;
-    color: #CDE4F2;
-    color: rgba(205, 228, 242, var(--text-opacity));
+    --bg-opacity: 1;
+    background-color: #2d3748;
+    background-color: rgba(45, 55, 72, var(--bg-opacity));
   }
 
   .menu-primary .sub-menu li:last-of-type a {
@@ -20650,6 +20650,7 @@ figure {
   color: #fff;
   color: rgba(255, 255, 255, var(--text-opacity));
   margin-bottom: 0.5rem;
+  text-align: center;
 }
 
 #mc_embed_signup .mc-field-group ul {

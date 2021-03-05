@@ -69,11 +69,11 @@ Desktop Navs **********************************************/
         }
 
         a {
-          @apply text-white px-4 bg-primary-darkest border-b border-white;
+          @apply text-white px-4 bg-primary-dark border-b border-white;
 
           
           &:hover {
-            @apply text-primary-light;
+            @apply bg-primary-darkest;
           }
         }
 
