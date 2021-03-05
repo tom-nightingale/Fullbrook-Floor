@@ -20689,6 +20689,7 @@ figure {
   --text-opacity: 1;
   color: #cd5480;
   color: rgba(205, 84, 128, var(--text-opacity));
+  text-align: center;
   font-size: 0.875rem;
   font-weight: 400;
   padding-left: 0;
