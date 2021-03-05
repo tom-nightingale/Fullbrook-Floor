@@ -900,8 +900,8 @@ Cookie Notice *********************************************/
   #wp-notification-toggle,
   .wp-notification-container a {
     display: inline-block;
+    margin: 0;
     margin-left: 1rem;
-    margin-top: 0;
   }
 }
 
