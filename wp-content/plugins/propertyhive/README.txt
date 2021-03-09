@@ -3,8 +3,8 @@ Contributors: PropertyHive,BIOSTALL
 Tags: property, real estate, estate agents, estate agent, property management, propertyhive, property hive, properties, property plugin, estate agent plugin, rightmove, zoopla, blm, rtdf, jupix, vebra, expertagent, dezrez, expert agent, expertagent, reapit, reaxml, letmc, acquaint
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=N68UHATHAEDLN&lc=GB&item_name=BIOSTALL&no_note=0&cn=Add%20special%20instructions%20to%20the%20seller%3a&no_shipping=1&currency_code=GBP&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 Requires at least: 3.8
-Tested up to: 5.6
-Stable tag: 1.4.74
+Tested up to: 5.6.1
+Stable tag: 1.4.78
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -89,6 +89,39 @@ Automatic updates should work like a charm; as always though, ensure you backup 
 14. The 'Settings' section gives you control over which departments are active, add and edit offices, and edit the custom fields (types, locations etc) that appear within your install
 
 == Changelog ==
+
+= 1.4.78 - 2021-02-22 =
+* Added ability to export generated applicant lists to CSV
+* Display applicant phone number and email in Viewing, Offer, Sale and Tenancy grids on property records
+* Corrected/added actions in tenancy and management meta boxes to allow adding of custom fields using Template Assistant add on
+* Added new 'propertyhive_subgrid_link_target' filter to specify links in subgrids should open in a new tab
+* Tweaks surrounding storing, querying and displaying of properties on enquiries
+* Improve readibility of labels output on enquiry details page (i.e. change email_address to 'Email Address')
+
+= 1.4.77 - 2021-02-12 =
+* Added new Elementor widget: Embedded Virtual Tours
+* Added ability to add embedded virtual tours to 'Tabbed Details' Elementor widget
+* Added new filter 'propertyhive_show_admin_menu_enquiry_count' to determine if open enquiry count in admin menu should be calculated and displayed. Should return true or false, defaults to true
+* Corrected issue with viewing grids not loading on property and contact records when multiple attending staff
+
+= 1.4.76 - 2021-02-11 =
+* Added Barbados as supported country
+* Added 'country' attribute to [properties] shortcode
+* Refactored recently added second/third viewing functionality to have less impact on performance on large sites. Note: Will only effect viewings saved going forward
+* Added 'Select All' checkbox to custom field grids
+* Restructed the viewing, offers and sales grids on property and contact records with added filters so columns in these grids can be modified
+* Added new actions and filters surrounding maps and coordinates to add support for the upcoming what3words add on
+* Improved logic surrounding searching for contacts by telephone number
+* Released v1 of the new tenancies/management module in BETA
+* Declared compatibility for WordPress 5.6.1
+
+= 1.4.75 - 2021-01-04 =
+* Display all applicant profiles when editing requirements, if multiple exist
+* Added support for multi-select dropdowns in registration and requirements forms on frontend for locations, property types and any custom fields of type multi-select
+* Increased default max zoom level of OpenStreetMap on property edit screen
+* Optimisations to recent 2nd/3rd viewing functionality
+* Corrected issue with notes grid not re-loading after adding a note. Occured when mailouts existed in the notes history
+* Add new actions to property coordinates meta box in preparation for upcoming what3words add on
 
 = 1.4.74 - 2020-12-16 =
 * Ensure viewing feedback is still shown on a property record even after it's progressed to an offer

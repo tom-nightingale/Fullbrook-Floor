@@ -1,24 +1,133 @@
-form.wpcf7-form fieldset.fieldset-cf7mls:not(:first-of-type) {
-  height: 0;
+.wpcf7-form{
+  position: relative;
+  /* border : 1px solid #eaeaea; */
   overflow: hidden;
-  opacity: 0;
-  visibility: hidden;
 }
-.cf7mls_next.action-button, .cf7mls_back.action-button {
-    background: #27ae60 none repeat scroll 0 0;
+.wpcf7-form .fieldset-cf7mls{
+  border: none;
+  background: none;
+}
+.cf7mls-btns .cf7mls_next.action-button, .cf7mls-btns .cf7mls_back.action-button {
+  margin: 25px 0px 26px;
+}
+.cf7mls_next.action-button {
+  background-color: #0073aa;
+  border: 0 none;
+  border-radius: 3px;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: bold;
+  margin: 25px 0px 26px;
+  padding: 13px 5px;
+  min-width: 100px;
+  position: relative;
+}
+.cf7mls_back.action-button {
+  background-color: #e3e3e3;
+  border: 0 none;
+  border-radius: 3px;
+  color: #23282d;
+  cursor: pointer;
+  font-weight: bold;
+  margin: 16px 0px 26px;
+  padding: 13px 5px;
+  min-width: 100px;
+  position: relative;
+}
+.fieldset-cf7mls .wpcf7-form-control.wpcf7-cf7mls_preview_step {
+    background-color: #27ae60;
     border: 0 none;
-    border-radius: 1px;
+    border-radius: 3px;
     color: white;
     cursor: pointer;
     font-weight: bold;
-    margin: 10px 5px;
-    padding: 10px 5px;
+    margin: 26px 0px 32px;
+    padding: 13px 5px;
     min-width: 100px;
     position: relative;
+}
+.cf7mls_back.action-button {
+  margin-right: 10px;
+  float: left;
+}
+
+.cf7mls_next.action-button:hover,
+.cf7mls_back.action-button:hover,
+.fieldset-cf7mls .wpcf7-form-control.wpcf7-cf7mls_preview_step:hover {
+    opacity: 0.8;
+}
+.fieldset-cf7mls .cf7mls_back{
+  float: left;
+}
+.fieldset-cf7mls .cf7mls_next {
+  float: right;
+}
+
+form.cf7mls input.wpcf7-form-control.wpcf7-submit {
+  border-radius: 3px;
+  padding: 13px 29px;
+  font-weight: bold;
+  margin: 16px 0px 26px;
+  float: right;
+  /* background-color: #0073aa; */
+  /* color: #ffffff; */
+}
+
+form.cf7mls input.wpcf7-form-control.wpcf7-submit:hover {
+  opacity: 0.8;
+}
+
+
+.cf7mls_reviewing_overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 100;
+    display: none;
+}
+
+form.wpcf7-form.cf7mls_reviewing {
+    position: relative;
+    z-index: 999999;
+    background-color: #fff;
+}
+form.wpcf7-form.cf7mls_reviewing:before{
+  content: '';
+  position: absolute;
+  background: rgba(0,0,0,0.8);
+  width: 100000px;
+  height: 100000px;
+  left: -30000px;
+  top: -30000px;
+  z-index: 1;
+}
+form.wpcf7-form.cf7mls_reviewing > *{
+  position: relative;
+  z-index: 3;
+}
+form.wpcf7-form.cf7mls_reviewing .cf7mls_close_preview {
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 0;
+}
+form.wpcf7-form.cf7mls_reviewing:after{
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -20px;
+  right: -20px;
+  bottom: -10px;
+  background: #ffffff;
+  z-index: 2;
 }
 /*
  * Animation
 */
+/*
 button.cf7mls_btn:not(.disabled):before {
   content: '';
   position: absolute;
@@ -79,12 +188,10 @@ button.cf7mls_btn:not(.disabled).sending:not(.expand) {
   text-align: left;
 }
 button.cf7mls_btn:not(.disabled).sending:before {
-  /*
   -moz-transition-delay: 0.5s;
   -o-transition-delay: 0.5s;
   -webkit-transition-delay: 0.5s;
   transition-delay: 0.5s;
-  */
   -moz-transition-duration: 1s;
   -o-transition-duration: 1s;
   -webkit-transition-duration: 1s;
@@ -112,5 +219,107 @@ button.cf7mls_btn:not(.disabled).sending:after {
     -ms-transform: rotate(360deg);
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
+  }
+}
+*/
+.cf7mls_next.action-button img {
+  display: none;
+    width: 20px;
+    position: absolute;
+    right: 5px;
+    top: 10px;
+}
+.cf7mls_next.action-button.sending img {
+  display: inline-block;
+}
+.cf7mls_next.action-button:focus,
+.cf7mls_back.action-button:focus {
+    outline: none;
+}
+.fieldset-cf7mls-wrapper{
+  position: relative;
+  overflow: hidden;
+}
+.fieldset-cf7mls-wrapper .fieldset-cf7mls{
+  width: 100%;
+  opacity: 0;
+  visibility: hidden;
+  -webkit-transition: all 800ms cubic-bezier(0.680, 0, 0.265, 1); /* older webkit */
+-webkit-transition: all 800ms cubic-bezier(0.680, -0.550, 0.265, 1.550); 
+   -moz-transition: all 800ms cubic-bezier(0.680, -0.550, 0.265, 1.550); 
+     -o-transition: all 800ms cubic-bezier(0.680, -0.550, 0.265, 1.550); 
+        transition: all 800ms cubic-bezier(0.680, -0.550, 0.265, 1.550); /* easeInOutBack */
+
+-webkit-transition-timing-function: cubic-bezier(0.680, 0, 0.265, 1); /* older webkit */
+-webkit-transition-timing-function: cubic-bezier(0.680, -0.550, 0.265, 1.550); 
+   -moz-transition-timing-function: cubic-bezier(0.680, -0.550, 0.265, 1.550); 
+     -o-transition-timing-function: cubic-bezier(0.680, -0.550, 0.265, 1.550); 
+        transition-timing-function: cubic-bezier(0.680, -0.550, 0.265, 1.550); /* easeInOutBack */
+}
+.cf7mls-no-moving-animation .fieldset-cf7mls-wrapper .fieldset-cf7mls {
+  transition: none;
+}
+.fieldset-cf7mls-wrapper .cf7mls_back_fs{
+  position: absolute;
+  left: 0;
+  top: 15px;
+  transform: translate(-110%,0);
+  -webkit-transform: translate(-110%,0);
+  -moz-transform: translate(-110%,0);
+}
+.fieldset-cf7mls-wrapper .cf7mls_current_fs ~ .fieldset-cf7mls{
+  position: absolute;
+  left: 0;
+  top: 15px;
+  transform: translate(110%,0);
+  -webkit-transform: translate(110%,0);
+  -moz-transform: translate(110%,0);
+}
+.wpcf7-form .cf7mls_progress_bar ~ .fieldset-cf7mls-wrapper fieldset {
+  padding-top: 0px;
+  margin-top: 0px;
+  padding-bottom: 2px;
+  margin-bottom: 20px;
+}
+.fieldset-cf7mls-wrapper .cf7mls_current_fs{
+  opacity: 1;
+  visibility: visible
+}
+.fieldset-cf7mls.cf7mls_preview_fs {
+  height: auto;
+  overflow: visible;
+  opacity: 1;
+  visibility: visible;
+  transform: translate(0,0);
+  -webkit-transform: translate(0,0);
+  -moz-transform: translate(0,0);
+  position: relative;
+}
+.fieldset-cf7mls-wrapper .wpcf7-not-valid-tip {
+  font-size: 13px;
+}
+.fieldset-cf7mls-wrapper div.wpcf7-validation-errors {
+  border: none;
+  display: block;
+  color: #f00;
+  font-size: 13px;
+  padding-left: 0px;
+  margin-left: 0px;
+}
+.fieldset-cf7mls-wrapper div.wpcf7-validation-errors .wpcf7-icon-wraning {
+  display: block;
+  float: left;
+  margin-right: 8px;
+  margin-top: 2px;
+  fill: #f00;
+}
+.fieldset-cf7mls-wrapper .fieldset-cf7mls span.ajax-loader {
+  position: absolute;
+  right: 39px;
+  margin-top: 33px;
+}
+@media only screen and (max-width: 767px) {
+  .fieldset-cf7mls input, .wpcf7-form .fieldset-cf7mls textarea{
+    width: 100%;
   }
 }

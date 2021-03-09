@@ -19,11 +19,7 @@ class Breadcrumb extends Abstract_Schema_Piece {
 			return false;
 		}
 
-		if ( $this->context->breadcrumbs_enabled ) {
-			return true;
-		}
-
-		return false;
+		return true;
 	}
 
 	/**
@@ -74,7 +70,7 @@ class Breadcrumb extends Abstract_Schema_Piece {
 
 				// Store the breadcrumbs home variable before dropping the parent page from the Schema.
 				$breadcrumbs_home = $breadcrumbs[0]['text'];
-				$breadcrumbs = [ \array_pop( $breadcrumbs ) ];
+				$breadcrumbs      = [ \array_pop( $breadcrumbs ) ];
 
 				// Make the child page show the breadcrumbs home variable rather than its own title.
 				$breadcrumbs[0]['text'] = $breadcrumbs_home;

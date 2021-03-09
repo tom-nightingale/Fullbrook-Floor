@@ -16,7 +16,7 @@ global $post, $property;
 
 	<?php do_action( 'propertyhive_property_actions_start' ); ?>
     
-    <ul class="flex-wrap w-full lg:flex">
+    <ul class="flex-wrap w-full my-8 md:flex">
         
         <?php 
            /**
@@ -34,7 +34,7 @@ global $post, $property;
                $action['class'] = ( isset( $action['class'] ) ) ? $action['class'] : '';
                
                echo '
-               <li class="inline-block w-full p-2 lg:w-1/3 ' . $action['class'] . '"';
+               <li class="inline-block w-full p-2 md:w-1/2 2xl:w-1/4 ' . $action['class'] . '"';
                if ( isset( $action['parent_attributes'] ) && ! empty( $action['parent_attributes'] ) )
                {
                    foreach ( $action['parent_attributes'] as $key => $value )
@@ -42,7 +42,7 @@ global $post, $property;
                        echo ' ' . $key . '="' . $value . '"';
                    }
                }
-               echo '><a class="block p-4 font-bold text-center bg-primary-light hover:bg-primary hover:text-white" href="' . $action['href'] . '"';
+               echo '><a class="flex items-center justify-center h-full p-4 font-bold text-center border 2xl:p-2 3xl:p-4 border-primary-light hover:border-primary" href="' . $action['href'] . '"';
                if ( isset( $action['attributes'] ) && ! empty( $action['attributes'] ) )
                {
                    foreach ( $action['attributes'] as $key => $value )

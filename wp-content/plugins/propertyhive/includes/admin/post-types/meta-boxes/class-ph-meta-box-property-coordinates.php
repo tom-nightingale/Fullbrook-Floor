@@ -65,6 +65,8 @@ class PH_Meta_Box_Property_Coordinates {
             <a href="#" onclick="do_address_lookup( true ); return false;">' . __( 'Obtain Co-ordinates', 'propertyhive' ) . '</a>
         </p>';
 
+        do_action('propertyhive_property_coordinates_fields');
+
         echo '<div class="map_canvas" id="map_canvas" style="height:350px;"></div>';
         
         
@@ -204,7 +206,8 @@ class PH_Meta_Box_Property_Coordinates {
                     map = L.map("map_canvas").setView([' . $latitude . ', ' . $longitude . '], ' . $zoom . ');
 
                     L.tileLayer(\'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png\', {
-                        attribution: \'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors\'
+                        attribution: \'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors\',
+                        maxZoom: 19,
                     }).addTo(map);
 
                     if (markerSet)
@@ -437,6 +440,8 @@ class PH_Meta_Box_Property_Coordinates {
         
         update_post_meta( $post_id, '_latitude', ph_clean($_POST['_latitude']) );
         update_post_meta( $post_id, '_longitude', ph_clean($_POST['_longitude']) );
+
+        do_action('propertyhive_save_property_coordinates', $post_id);
     }
 
 }

@@ -3,11 +3,11 @@
  * Plugin Name: Property Hive
  * Plugin URI: https://wordpress.org/plugins/propertyhive/
  * Description: Estate Agency Property Software Plugin for WordPress
- * Version: 1.4.74
+ * Version: 1.4.78
  * Author: PropertyHive
  * Author URI: https://wp-property-hive.com
  * Requires at least: 3.8
- * Tested up to: 5.6
+ * Tested up to: 5.6.1
  * 
  * Text Domain: propertyhive
  * Domain Path: /i18n/languages/
@@ -27,14 +27,14 @@ if ( ! class_exists( 'PropertyHive' ) )
     * Main PropertyHive Class
     *
     * @class PropertyHive
-    * @version 1.4.74
+    * @version 1.4.78
     */
     final class PropertyHive {
          
         /**
          * @var string
          */
-        public $version = '1.4.74';
+        public $version = '1.4.78';
          
         /**
          * @var PropertyHive The single instance of the class
@@ -122,10 +122,30 @@ if ( ! class_exists( 'PropertyHive' ) )
             add_action( 'init', array( 'PH_Shortcodes', 'init' ) );
             add_action( 'rest_api_init', array( $this, 'rest_api_includes' ) );
             add_action( 'after_setup_theme', array( $this, 'setup_environment' ) );
+            add_action( 'wp_update_comment_count', array( $this, 'exclude_notes_from_comment_count' ) );
     
             // Loaded action
             do_action( 'propertyhive_loaded' );
         }
+
+        public function exclude_notes_from_comment_count($post_id) {
+	        global $wpdb;
+	        $post_id = (int)$post_id;
+	        if ( !$post_id ) {
+		        return false;
+	        }
+	        if ( !$post = get_post($post_id) ) {
+		        return false;
+	        }
+
+	        $new = (int) $wpdb->get_var( $wpdb->prepare("SELECT COUNT(*)
+				FROM $wpdb->comments
+				WHERE comment_post_ID = %d AND comment_approved = '1' AND comment_type != 'propertyhive_note' ", $post_id) );
+	        $wpdb->update( $wpdb->posts, array('comment_count' => $new), array('ID' => $post_id) );
+
+	        clean_post_cache( $post );
+        }
+
         
         /**
          * Show action links on the plugin screen

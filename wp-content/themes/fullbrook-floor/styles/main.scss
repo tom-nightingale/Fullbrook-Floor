@@ -93,3 +93,128 @@
   }
 }
 
+// scroll header classess
+
+@responsive {
+
+  @screen lg {
+    .header-container {
+      @apply py-6 transition-all duration-300;
+
+      &.active {
+        @apply py-2;
+      }
+    }
+
+    // .hero--home:after {
+    //   content:'';
+    //   @apply absolute top-0 left-0 w-full h-full;
+      
+    //   /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#ffffff+0,ffffff+100&1+0,0+100 */
+    //   background: -moz-linear-gradient(-45deg,  rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%); /* FF3.6-15 */
+    //   background: -webkit-linear-gradient(-45deg,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* Chrome10-25,Safari5.1-6 */
+    //   background: linear-gradient(135deg,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    //   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+    // }
+
+  }  
+
+}
+
+/* Carousel container */
+.carousel-container {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+.carousel-container::-webkit-scrollbar { /* WebKit */
+  display: none;
+}
+
+/* Mailchimp form styles */
+#mc_embed_signup {
+
+  .mc-field-group {
+    @apply w-full mb-4;
+
+    label {
+      @apply text-white mb-2 text-center;
+    }
+
+    ul {
+      @apply w-full mt-2;
+    }
+
+    li {
+      @apply flex items-center;
+
+      input, label {
+        @apply w-auto m-0 font-normal;
+      }
+
+      input {
+        @apply mr-2;
+      }
+    }
+
+    input {
+      @apply rounded-full text-center;
+    }
+
+    input[type=checkbox] {
+      &::checked {
+        @apply bg-secondary-light;
+      }
+    }
+
+    div.mce_inline_error {
+      @apply bg-transparent text-secondary-light text-center text-sm font-normal px-0 mb-0;
+    }
+
+    .date-label {
+      @apply inline w-auto;
+    }
+
+    .datefield {
+      @apply w-full; 
+
+      span {
+        @apply w-auto;
+
+        &.subfield {
+          @apply px-1;
+        }
+
+      }
+
+      input {
+        @apply w-auto;
+      }
+
+      .small-meta {
+        @apply text-xs opacity-50;
+      }
+
+    }
+
+    @screen md {
+      @apply w-1/2 p-4;
+
+      &.input-group {
+        @apply w-full my-0 text-center;
+
+        ul {
+          @apply flex justify-center;
+        }
+
+        li {
+          @apply mr-6 text-sm;
+        }
+      }
+    }
+
+    @screen lg {
+      @apply w-1/4;
+    }
+  }
+}
+

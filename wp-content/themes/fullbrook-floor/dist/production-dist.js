@@ -334,9 +334,70 @@
   		}
           window.addEventListener('resize', addDropdownIcon);
 
+
+  		// --------------------------------------------------------------------------------------------------
+  		// Add icon to menu items with children
+  		// --------------------------------------------------------------------------------------------------
+  		$(window).scroll(function() {    
+  			var scroll = $(window).scrollTop();
+  			if (scroll > 500) {
+  				$(".header-container").addClass("active");
+  			}
+  			else {
+  				$(".header-container").removeClass("active");
+  			}
+  		});
+
   	});
 
   }(jQuery));
+
+  // --------------------------------------------------------------------------------------------------
+  var autoIndex = 0;
+  var carouselItems = document.querySelectorAll('.carousel-item');
+  var totalItems = carouselItems.length;
+
+  var carouselArrows = document.querySelectorAll(".carousel-arrow");
+
+  carouselArrows.forEach((arrow) => {
+  	arrow.addEventListener("click", function() {
+          moveCarousel(arrow, arrow.classList);
+  	});
+
+      arrow.addEventListener("mousedown", function() {
+          clearInterval(autoScroll);
+      });
+  });
+
+  function moveCarousel(arrow, arrowClass) {
+
+      arrow.parentNode.parentNode.querySelector('.carousel-arrow-left').classList.add('opacity-100');
+
+      var carouselContainer = arrow.parentNode.parentNode.querySelector('.carousel-container');
+      var carouselItem = arrow.parentNode.parentNode.querySelectorAll('.carousel-item');
+      var x;
+
+      if (arrowClass.contains('carousel-arrow-right')) {
+          x = (carouselItem[0].offsetWidth) + carouselContainer.scrollLeft;
+          carouselContainer.scrollTo({
+              left: x,
+              behavior: "smooth",
+          });
+      } else {
+          x = (carouselItem[0].offsetWidth) - carouselContainer.scrollLeft;
+          carouselContainer.scrollTo({
+              left: -x,
+              behavior: "smooth",
+          });
+      }
+  }
+
+  var autoScroll = setInterval(function() {
+      if(autoIndex >= 0 && autoIndex <= totalItems) {
+          document.querySelector('.carousel-arrow-right').click();
+      }
+      autoIndex++;
+  }, 5000);
 
   (function(){if("undefined"!==typeof window&&window.addEventListener){var e=Object.create(null),l,d=function(){clearTimeout(l);l=setTimeout(n,100);},m=function(){},t=function(){window.addEventListener("resize",d,!1);window.addEventListener("orientationchange",d,!1);if(window.MutationObserver){var k=new MutationObserver(d);k.observe(document.documentElement,{childList:!0,subtree:!0,attributes:!0});m=function(){try{k.disconnect(),window.removeEventListener("resize",d,!1),window.removeEventListener("orientationchange",
   d,!1);}catch(v){}};}else document.documentElement.addEventListener("DOMSubtreeModified",d,!1),m=function(){document.documentElement.removeEventListener("DOMSubtreeModified",d,!1);window.removeEventListener("resize",d,!1);window.removeEventListener("orientationchange",d,!1);};},u=function(k){function e(a){if(void 0!==a.protocol)var c=a;else c=document.createElement("a"),c.href=a;return c.protocol.replace(/:/g,"")+c.host}if(window.XMLHttpRequest){var d=new XMLHttpRequest;var m=e(location);k=e(k);d=void 0===

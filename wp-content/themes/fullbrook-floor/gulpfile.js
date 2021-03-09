@@ -93,7 +93,11 @@ gulp.task('styles', function () {
         'lg:pl-2',
         'alignleft',
         'aligncenter',
-        'alignright'
+        'alignright',
+        'select',
+        '2xl:p-2',
+        '3xl:p-4',
+        '2xl:w-1/4'
       ],
       extractors: [
         {

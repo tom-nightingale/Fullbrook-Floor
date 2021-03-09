@@ -6,7 +6,7 @@ add_action('init', function() {
             'menu_title' 	=> 'Site Options',
             'menu_slug' 	=> 'site-options',
             'position' 		=> 75,
-            'capability' 	=> 'edit_themes',
+            'capability' 	=> 'edit_posts',
             'icon_url' 		=> 'dashicons-hammer',
             'redirect' 		=> false
         ]);

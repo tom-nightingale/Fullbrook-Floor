@@ -75,6 +75,20 @@
 		}
         window.addEventListener('resize', addDropdownIcon);
 
+
+		// --------------------------------------------------------------------------------------------------
+		// Add icon to menu items with children
+		// --------------------------------------------------------------------------------------------------
+		$(window).scroll(function() {    
+			var scroll = $(window).scrollTop();
+			if (scroll > 500) {
+				$(".header-container").addClass("active");
+			}
+			else {
+				$(".header-container").removeClass("active");
+			}
+		});
+
 	});
 
 }(jQuery));

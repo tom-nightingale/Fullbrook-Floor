@@ -1,52 +1,812 @@
+*, ::after, ::before {
+  box-sizing: initial;
+}
+body{
+  line-height: unset;
+  background-color: #f1f1f1;
+}
 .cf7mls-table .wp-picker-holder {
   position: absolute;
   z-index: 100;
 }
-#cf7mls-settings-panel .wp-picker-holder {
+#contact-form-editor .contact-form-editor-panel fieldset legend {
+  font-size: 14px;
+}
+a[class^="thickbox"][href$="cf7mls_step"] {
+  display: none;
+}
+#cf7mls-progress-bar .wp-picker-container .button,
+#cf7mls_multi_step_wrap .wp-picker-container .button {
+  /* padding-right: 0px;
+  margin-right: 0px; */
+}
+/* ========= start form ========= */
+.cf7mls-app-step-content .cf7mls-app-wrap-bt {
+  padding: 3px 0px;
+}
+.cf7mls-app-step-content .cf7mls-app-wrap-bt .hide {
+  display: none !important;
+}
+.cf7mls-wrap-form #cf7mls-app {
+  margin-bottom: 12px;
+}
+#contact-form-editor .contact-form-editor-panel {
+  padding: 16px 28px !important;
+}
+#contact-form-editor .contact-form-editor-panel .cf7mls-title-form {
+  height: 21px;
+  font-size: 18px;
+  color: #23282d;
+  margin-top: 0;
+}
+.cf7mls-wrap-form .cf7mls-description-form {
+  font-size: 13px;
+  color: #23282d;
+  padding-bottom: 4px;
+}
+.cf7mls-wrap-form .cf7mls-description-form a {
+  text-decoration: none;
+}
+.cf7mls-wrap-form #tag-generator-list a.button {
+  line-height: 27px;
+}
+.cf7mls-wrap-form .cf7mls-app-content {
+  display: inline-block;
+  padding: 20px 10px 26px 0px;
+}
+.cf7mls-wrap-form .cf7mls-app-content p {
+  padding: 0px;
+  height: 15px;
+  font-size: 13px;
+  font-style: normal;
+  color: #23282d;
+}
+.cf7mls-wrap-form .cf7mls-app-content input {
+  width: 245px;
+  height: 35px;
+  border-radius: 3px;
+  border: solid 1px #7f8993;
+  background-color: #ffffff;
+}
+.cf7mls-wrap-form .cf7mls-app-steps .nav-tab-active + a {
+  background-color: #fff;
+}
+@media only screen and (max-width: 1024px) {
+  .cf7mls-wrap-form .cf7mls-app-content input {
+    width: 100%;
+  }
+}
+#cf7mls-settings-panel .wp-picker-holder, 
+#cf7mls-progress-bar .wp-picker-holder {
   position: absolute;
   z-index: 100;
 }
+/* ========= end ========= */
 
-/*
- * Free version
- */
-.cf7mls-el-disabled {
-    position: relative;
+/* ========= start multi step setting ========= */
+#cf7mls-settings-panel .cf7mls_multi_step_wrap .cf7mls-title {
+  font-weight: bold;
+}
+#cf7mls-settings-panel .cf7mls_multi_step_wrap .cf7mls-title-color {
+  padding-bottom: 14px;
+  padding-bottom: 14px;
+  font-size: 18px;
+  line-height: 3.94;
+  color: #23282d;
+  margin: -13px 0px;
+  margin-top: -30px;
+  padding: 0px;
+}
+#cf7mls-settings-panel .cf7mls_multi_step_wrap .cf7mls-color-caption {
+  padding-bottom: 21px;
+}
+#cf7mls-settings-panel .cf7mls-group-color-bt-back p.cf7mls-title,
+#cf7mls-settings-panel .cf7mls-group-color-bt-next p.cf7mls-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #23282d;
+  margin-bottom: -3px;
+}
+#cf7mls-settings-panel .cf7mls-group-color-bt-back, 
+#cf7mls-settings-panel .cf7mls-group-color-bt-next {
+  float: left;
+  width: 260px;
+}
+#cf7mls-settings-panel  .cf7mls-group-color-bt-back .cf7mls-wrap-bg-color,
+#cf7mls-settings-panel  .cf7mls-group-color-bt-next .cf7mls-wrap-bg-color {
+  float: left;
+  width: 40%;
+  margin-right: 60px;
+}
+#cf7mls-settings-panel  .cf7mls-wrap-text-color .cf7mls-label,
+#cf7mls-settings-panel  .cf7mls-wrap-text-color .cf7mls-label 
+#cf7mls-settings-panel  .cf7mls-wrap-bg-color .cf7mls-label,
+#cf7mls-settings-panel  .cf7mls-wrap-bg-color .cf7mls-label{
+  margin: 1em 0px 5px 0px;
+}
+#cf7mls-settings-panel  .cf7mls-group-color-bt-back .cf7mls-wrap-text-color,
+#cf7mls-settings-panel  .cf7mls-group-color-bt-next .cf7mls-wrap-text-color {
+  float: left;
+}
+#cf7mls-settings-panel  .cf7mls-group-color-bt-back .cf7mls-wrap-text-color button.button,
+#cf7mls-settings-panel  .cf7mls-group-color-bt-next .cf7mls-wrap-text-color button.button,
+#cf7mls-settings-panel  .cf7mls-group-color-bt-back .cf7mls-wrap-bg-color button.button,
+#cf7mls-settings-panel  .cf7mls-group-color-bt-next .cf7mls-wrap-bg-color button.button {
+  padding: 0 0 0 36px;
+  border-radius: 4px;
 }
 
-.cf7mls-el-disabled:before {
-    content: " ";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background-color: rgba(255, 255, 255, 0.6);
-    cursor: not-allowed;
-    z-index: 100;
-}
-a.cf7mls_premium_btn {
-    background-color: #2ecc71;
-    color: #fff;
-    text-decoration: none;
-    padding: 10px 20px;
-    display: inline-block;
-    border-radius: 4px;
-    margin: 10px 0 0;
-    border-bottom: 2px solid #1fb960;
+#cf7mls-settings-panel  .cf7mls-group-color-bt-back .cf7mls-wrap-text-color span.wp-picker-input-wrap,
+#cf7mls-settings-panel  .cf7mls-group-color-bt-next .cf7mls-wrap-text-color span.wp-picker-input-wrap,
+#cf7mls-settings-panel  .cf7mls-group-color-bt-back .cf7mls-wrap-bg-color span.wp-picker-input-wrap,
+#cf7mls-settings-panel  .cf7mls-group-color-bt-next .cf7mls-wrap-bg-color span.wp-picker-input-wrap,
+#cf7mls-progress-bar .cf7mls-group-color-bt-next .cf7mls-wrap-bg-color span.wp-picker-input-wrap {
+  position: absolute;
 }
 
-a.cf7mls_premium_btn:hover {
-    background-color: #39da7d;
-    border-bottom: 2px solid #25c569;
+#cf7mls-settings-panel .cf7mls-auto-scroll-wrap h2,
+#cf7mls-settings-panel .cf7mls-transition-effects-wrap h2 {
+  float: left;
 }
-
-.cf7mls_premium_banner img {
+#cf7mls-settings-panel .cf7mls-auto-scroll-wrap .cf7mls-auto-scroll-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #23282d;
+}
+#cf7mls-settings-panel .cf7mls-auto-scroll-wrap img{
   display: block;
-  /*width: 100%;*/
+  margin-top: 14px;
+  float: left;
+  margin-left: 8px;
 }
-span.cf7mls_premium_text {
-    color: #ff0000;
-    font-weight: bold;
-    font-size: 14px;
+#cf7mls-settings-panel .cf7mls-auto-scroll-wrap {
+  width: 250px;
+  margin-top: 31px;
+  overflow: hidden;
+}
+#cf7mls-settings-panel .cf7mls-transition-effects-wrap {
+  width: 250px;
+  margin-top: 20px;
+  overflow: hidden;
+}
+#cf7mls-settings-panel .cf7mls-transition-effects-wrap h2 {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  text-align: left;
+  line-height: normal !important;
+  color: #23282d;
+}
+#cf7mls-settings-panel .cf7mls-stype-transition-wrap {
+  float: left;
+  width: 100%;
+  margin-top: 27px;
+}
+#cf7mls-settings-panel .cf7mls_select_stype_transition {
+  clear: both;
+  padding-top: 4px;
+  font-size: 14px;
+  color: #23282d;
+  padding-bottom: 14px;
+}
+#cf7mls-settings-panel #cf7mls_select_stype_transition {
+  min-width: 250px;
+}
+
+/* ========= end ========= */
+
+/* ========= start Progress Bar ========= */
+#cf7mls-progress-bar .cf7mls_pogress_bar_wrap h2 {
+  font-size: 15px !important;
+  color: #23282d;
+}
+#cf7mls-progress-bar .cf7mls_pogress_bar_wrap {
+  float: left;
+  width: 35%;
+  pointer-events: none;
+}
+#cf7mls-progress-bar {
+  overflow: hidden;
+}
+#cf7mls-progress-bar #cf7_mls_list_step_name_wrap {
+  display: none;
+}
+#cf7mls-progress-bar .cf7mls-group-pogress-bar {
+  padding-top: 10px;
+}
+#cf7mls-progress-bar .cf7mls-group-pogress-bar,
+#cf7mls-progress-bar .cf7mls_preview
+ {
+  opacity: 0.3;
+}
+#cf7mls-progress-bar .cf7mls-group-pogress-bar .cf7mls_bg_color_wrap {
+  margin-top: 26px;
+  margin-bottom: 26px;
+}
+#cf7mls-progress-bar .cf7mls-group-pogress-bar .cf7mls_bg_color_wrap,
+#cf7mls-progress-bar .cf7mls-group-pogress-bar .cf7mls-pogress-bar {
+  overflow: hidden;
+}
+#cf7mls-progress-bar .cf7mls-group-pogress-bar .cf7mls-wrap-switch {
+  margin-right: 6px;
+  float: right;
+}
+#cf7mls-progress-bar .cf7mls-title-pogress-bar {
+  font-size: 15px !important;
+  color: #23282d !important;
+  float: left;
+  margin-top: 4px;
+}
+#cf7mls-progress-bar .cf7mls_progress_bar_filter, #cf7mls-progress-bar .cf7mls_bg_color_wrap h2{
+  float: left;
+}
+#cf7mls-progress-bar .cf7mls_bg_color_wrap h2 {
+  font-size: 15px !important;
+  color: #23282d;
+  margin-top: 5px !important;
+}
+#cf7mls-progress-bar .cf7mls_style_progess_bar_wrap {
+  position: relative;
+}
+#cf7mls_progress_bar_style,
+#cf7mls_progress_bar_icon_style {
+  display: block;
+  width: 100%;
+  height: 35px;
+  margin-bottom: 35px;
+  border-color: #7f8993;
+  max-width: 100%;
+}
+#cf7mls_progress_bar_icon_style[disabled=disabled] {
+  cursor: not-allowed;
+}
+#cf7mls-progress-bar .cf7mls-select-style-text {
+  padding-bottom: 50px;
+  overflow: hidden;
+  border-bottom: 1px solid #e3e3e3;
+  display: flex;
+}
+#cf7mls-progress-bar .cf7mls-select-style-text .cf7mls-style-text-wrap {
+  width: 33%;
+  text-align: center;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  float: left;
+}
+#cf7mls-progress-bar .cf7mls-select-style-text .cf7mls-style-text {
+  color: #5c5d5f;
+  padding: 8px 10px 8px 10px;
+  line-height: 0;
+  font-size: 15px;
+  font-weight: normal;
+  margin: 1em 0;
+}
+#cf7mls-progress-bar .cf7mls-select-style-text .active {
+  border: 1px solid #396e8f;
+  color: #396a84;
+}
+#cf7mls-progress-bar .cf7mls-select-style-text .active p {
+  color: #396a84;
+}
+#cf7mls-progress-bar .cf7mls-style-text-wrap:hover p {
+  color: #396a84;
+}
+#cf7mls-progress-bar .cf7mls-select-style-text div[data-style-text=horizontal] {
+  border-radius: 4px 0px 0px 4px;
+}
+#cf7mls-progress-bar .cf7mls-select-style-text div[data-style-text=no] {
+  border-radius: 0px 4px 4px 0px;
+}
+#cf7mls-progress-bar .cf7mls-pogress-bar-percent {overflow: hidden;padding-bottom:25px;margin-top: 25px;border-bottom: 1px solid #e3e3e3;}
+#cf7mls-progress-bar .cf7mls-pogress-bar-percent .cf7mls-title-pogress-bar-percent {font-size: 15px !important;color: #23282d !important;float: left;}
+#cf7mls-progress-bar .cf7mls-pogress-bar-percent .cf7mls-wrap-switch {
+}
+#cf7mls-progress-bar .cf7mls-pogress-bar-percent .cf7mls_bg_color_wrap {
+  clear: both;
+  padding-top: 45px;
+}
+#cf7mls-progress-bar .cf7mls-pogress-bar-percent .cf7mls_bg_color_wrap {
+  margin: 0px;
+}
+#cf7mls-progress-bar .cf7mls-pogress-bar-percent .wp-picker-container {
+  padding-top: 4px;
+}
+#cf7mls-progress-bar .cf7mls-allow-choose-step-wrap .cf7mls-allow-choose-step {
+  float: left;
+  margin-right: 10px;
+}
+#cf7mls-progress-bar .cf7mls-allow-choose-step-wrap .cf7mls-allow-choose-step input {
+  width: 18px;
+  height: 18px;
+}
+#cf7mls-progress-bar .cf7mls-allow-choose-step-wrap .cf7mls-allow-choose-step input:checked {
+}
+#cf7mls-progress-bar .cf7mls-allow-choose-step-wrap .cf7mls-text {
+  font-size: 15px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.62;
+  letter-spacing: normal;
+  text-align: left;
+  color: #23282d;
+  float: left;
+  margin: 0px;
+  padding: 0px;
+}
+#cf7mls-progress-bar .cf7mls_bt_wrap {
+  overflow: hidden;
+}
+/* #cf7mls-progress-bar .cf7mls_progress_bar_percent_wrap {
+	margin-top: 20px;
+	width: 63%;
+} */
+#cf7mls-progress-bar .wp-picker-container {
+  float: right;
+  padding: 0px;
+  margin: 0px 1px 0px 0px;
+}
+#cf7mls-progress-bar .cf7mls-allow-choose-step-wrap {padding-top: 25px;}
+#cf7mls-progress-bar .cf7mls-allow-choose-step-wrap label {
+  position: relative;
+  min-height: 34px;
+  /* display: block; */
+  padding-left: 40px;
+  margin-bottom: 0;
+  cursor: text;
+}
+#cf7mls-progress-bar .cf7mls-allow-choose-step-wrap span.cf7mls-allow-choose-step-text{
+  position: absolute;
+  /* top: 50%;
+  transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -moz-transform: translateY(-50%); */
+  margin-top: 9px;
+}
+#cf7mls-progress-bar .cf7mls-allow-choose-step-wrap label:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 4px;
+  width: 22px;
+  height: 22px;
+  transition: transform 0.28s ease;
+  border-radius: 3px;
+  border: 1px solid #d9d9d9;
+  cursor: pointer;
+}
+#cf7mls-progress-bar .cf7mls-allow-choose-step-wrap label[data-checked=on]:before {
+  background: #0073aa;
+  border: 1px solid #0073aa;
+}
+#cf7mls-progress-bar .cf7mls-allow-choose-step-wrap label:after {
+  content: '';
+  display: block;
+  width: 10px;
+  height: 5px;
+  border-bottom: 2px solid #fff;
+  border-left: 2px solid #fff;
+  transform: rotate(-45deg) scale(0);
+  -webkit-transform: rotate(-45deg) scale(0);
+  -ms-transform: rotate(-45deg) scale(0);
+  -moz-transform: rotate(-45deg) scale(0);
+  transition: transform ease 0.25s;
+  position: absolute;
+  top: 12px;
+  left: 10px;
+  cursor: pointer;
+}
+#cf7mls-progress-bar .cf7mls-allow-choose-step-wrap input[type="checkbox"]:checked ~ label:after  {
+  transform: rotate(-45deg) scale(1);
+  -webkit-transform: rotate(-45deg) scale(1);
+  -ms-transform: rotate(-45deg) scale(1);
+  -moz-transform: rotate(-45deg) scale(1);
+}
+#cf7mls-progress-bar .cf7mls-allow-choose-step-wrap input {
+  display: none;
+}
+/* ========= end ========= */
+
+/* ========= start css for switch ========= */
+.cf7mls_multi_step_wrap .cf7mls-wrap-switch,
+#cf7mls-progress-bar .cf7mls-wrap-switch {
+  float: right;
+  margin-top: 8px;
+}
+#cf7mls-settings-panel .cf7mls_switch,
+#cf7mls-progress-bar .cf7mls_switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+#cf7mls-progress-bar .cf7mls_switch {
+  cursor: auto;
+}
+#cf7mls-settings-panel .cf7mls_switch input,
+#cf7mls-progress-bar .cf7mls_switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+#cf7mls-settings-panel .cf7mls_switch .cf7mls_slider,
+#cf7mls-progress-bar .cf7mls_switch .cf7mls_slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+#cf7mls-settings-panel .cf7mls_switch .cf7mls_slider:before,
+#cf7mls-progress-bar .cf7mls_switch .cf7mls_slider:before{
+  position: absolute;
+  content: "";
+  height: 27px;
+  width: 27px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+  top: 2px;
+  left: 2px;
+}
+#cf7mls-settings-panel .cf7mls_switch input:checked + .cf7mls_slider,
+#cf7mls-progress-bar .cf7mls_switch input:checked + .cf7mls_slider {
+  background-color: #0073aa;
+}
+#cf7mls-settings-panel .cf7mls_switch input:focus + .cf7mls_slider,
+#cf7mls-progress-bar .cf7mls_switch input:focus + .cf7mls_slider {
+  /* box-shadow: 0 0 1px #2196F3; */
+}
+#cf7mls-settings-panel .cf7mls_switch input:checked + .cf7mls_slider:before,
+#cf7mls-progress-bar .cf7mls_switch input:checked + .cf7mls_slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+  left: -4px;
+  
+}
+#cf7mls-settings-panel .cf7mls_switch .cf7mls_round,
+#cf7mls-progress-bar .cf7mls_switch .cf7mls_round {
+  border-radius: 34px;
+  height: 20px;
+  width: 40px;
+}
+#cf7mls-settings-panel .cf7mls_switch .cf7mls_round:before,
+#cf7mls-progress-bar .cf7mls_switch .cf7mls_round:before {
+  border-radius: 50%;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.15);
+  height: 16px;
+  width: 16px;
+}
+
+/* =========  end =========  */
+
+/* ========= tooltip ========= */
+#cf7mls-settings-panel .cf7mls-auto-scroll-title-wrap .cf7mls-tooltip {
+  position: absolute;
+}
+
+#cf7mls-settings-panel .cf7mls-tooltip {
+  cursor: auto;
+}
+#cf7mls-settings-panel .cf7mls-tooltip:hover:after {
+  display: block;
+  -webkit-justify-content: center;
+  justify-content: center;
+  content: attr(tooltip);
+  padding: 12px 10px;
+  background-color: #23282d;
+  width: 255px;
+  font-size: 13px;
+  font-style: normal;
+  line-height: 1.38;
+  text-align: left;
+  color: #ffffff;
+  position: absolute;
+  z-index: 99;
+  margin-top: 10px;
+}
+#cf7mls-settings-panel .cf7mls-auto-scroll-title-wrap .cf7mls-tooltip:hover:after {
+  margin-top: 42px;
+}
+#cf7mls-settings-panel .cf7mls-transition-effects-wrap .cf7mls-tooltip:hover:before {
+  display: none;
+}
+#cf7mls-settings-panel .cf7mls-tooltip:hover:before {
+  border: solid;
+  border-color: #23282d transparent;
+  border-width: 0px 6px 8px 6px;
+  content: "";
+  position: absolute;
+  top: 35px;
+  left: 6px;
+}
+#cf7mls-progress-bar .cf7mls-tooltip:hover:after {
+  display: block;
+  -webkit-justify-content: center;
+  justify-content: center;
+  content: attr(tooltip);
+  padding: 12px 10px;
+  font-size: 13px;
+  font-style: normal;
+  line-height: 1.38;
+  text-align: left;
+  color: #ffffff;
+  margin-top: -30px;
+  position: absolute;
+  z-index: 99;
+  width: 199px;
+  background-color: #23282d;
+  margin-left: 30px;
+}
+#cf7mls-progress-bar .cf7mls-tooltip {
+  padding-top: 2px;
+  padding-left: 6px;
+  position: absolute;
+  cursor: default;
+}
+#cf7mls-progress-bar .cf7mls-tooltip img{
+  vertical-align: unset;
+}
+#cf7mls-progress-bar .cf7mls-tooltip:hover:before{
+  border: solid;
+  border-color: #23282d transparent;
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 24px;
+  border-top: 8px solid transparent;
+  border-right: 12px solid #23282d;
+  border-bottom: 10px solid transparent;
+}
+
+/* ========= end ========= */
+
+/* ========= start preview ========= */
+#cf7mls-progress-bar .cf7mls_preview {
+  float: left;
+  width: 65%;
+  margin-top: 35px;
+  pointer-events: none;
+}
+#cf7mls-progress-bar .cf7mls_browser {
+  overflow: hidden;
+  border-radius: 7px;
+  box-shadow: 0 1px 0 0 #e3e3e3;
+  background-color: #ffffff;
+  margin: 0 auto;
+  padding-bottom: 34px;
+  margin-left: 100px;
+  width: 80%;
+}
+#cf7mls-progress-bar .cf7mls_circle_wrap {
+  height: 50px;
+  background-color: #e5f1f6;
+  line-height: 57px;
+  padding-left: 22px;
+  border-radius: 7px 7px 0px 0px;
+}
+#cf7mls-progress-bar .cf7mls_circle {
+  border-radius: 50%;
+  margin-right: 6px;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-color: rgba(0, 115, 170, 0.2);
+}
+#cf7mls-progress-bar .cf7mls_red_circle {
+  border-color: #E44054;
+}
+#cf7mls-progress-bar .cf7mls_yellow_circle {
+  border-color: #FFE372
+}
+#cf7mls-progress-bar .cf7mls_green_circle {
+  border-color: #7ED321
+}
+#cf7mls-progress-bar .cf7mls_block {
+  margin: 0 auto;
+  width: 90%;
+}
+#cf7mls-progress-bar .cf7mls_form_demo_one {
+  width: 100%;
+  height: 45px;
+  border-radius: 3px;
+  background-color: #f3f5f6;
+  margin-top: 5px;
+}
+#cf7mls-progress-bar .cf7mls_form_demo_two {
+  width: 100%;
+  height: 45px;
+  border-radius: 3px;
+  margin-top: 30px;
+  background-color: #f3f5f6;
+}
+#cf7mls-progress-bar .cf7mls_form_textarea_demo {
+  margin-top: 30px;
+  width: 100%;
+  height: 160px;
+  border-radius: 3px;
+  background-color: #f3f5f6;
+}
+#cf7mls-progress-bar .cf7mls_back_demo {
+  width: 100px;
+  height: 45px;
+  border-radius: 3px;
+  background-color: #e3e3e3;
+  margin-top: 30px;
+  float: left;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  color: #23282d;
+  line-height: 47px;
+  float: left;
+}
+#cf7mls-progress-bar .cf7mls_next_demo {
+  width: 100px;
+  height: 45px;
+  border-radius: 3px;
+  background-color: #0073aa;
+  line-height: 47px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  margin-top: 30px;
+  text-align: center;
+  float: left;
+  margin-left: 10px;
+  float: right;
+}
+#cf7mls-progress-bar .cf7mls_preview .cf7mls_note {
+  font-size: 13px;
+  font-style: italic;
+  color: #23282d;
+  width: 67%;
+  margin: 0 auto;
+  padding-top: 18px;
+}
+
+/* ========= end ========= */
+
+#cf7mls-progress-bar .hide {
+  display: none !important;
+}
+
+@media only screen and (max-width: 1024px) {
+  #cf7mls-progress-bar .cf7mls_preview {
+    float: none;
+    width: 100%;
+  }
+  #cf7mls-progress-bar .cf7mls_pogress_bar_wrap {
+    float: none;
+    width: 100%;
+  }
+  #cf7mls-progress-bar  .cf7mls_browser {
+    width: 100%;
+    margin-top: 70px;
+    margin-left: 0px;
+  }
+  /* #cf7mls-progress-bar .cf7mls_progress_bar_percent_wrap {
+    width: 39%;
+  } */
+  #cf7mls-progress-bar .cf7mls_bt_wrap {
+    /* width: 53%; */
+  }
+  #cf7mls-progress-bar .cf7mls_bg_color_wrap h2 {
+  width: 100%;
+  }
+  #cf7mls-progress-bar .cf7mls_preview .cf7mls_note {
+    width: 100%;
+  }
+  #cf7mls-progress-bar .cf7mls-allow-choose-step-wrap .cf7mls-allow-choose-step input {
+    width: auto;
+    height: auto;
+  }
+  #cf7mls-progress-bar .cf7mls-select-style-text .cf7mls-style-text-wrap {
+    width: 32%;
+  }
+
+}
+
+@media only screen and (min-width: 1025px) and (max-width: 1366px) {
+  #cf7mls-progress-bar .cf7mls_pogress_bar_wrap {
+    width: 85%;
+  }
+  #cf7mls-progress-bar .cf7mls_preview {
+    width: 100%;
+    margin-top: 50px;
+  }
+  /* #cf7mls-progress-bar .cf7mls_progress_bar_percent_wrap {
+    width: 45%;
+  } */
+  #cf7mls-progress-bar .cf7mls_bt_wrap {
+    /* width: 46%; */
+  }
+}
+@media only screen and (min-width: 1280px) and (max-width: 1300px){
+  #cf7mls-progress-bar .cf7mls_bt_wrap {
+    /* width: 51%; */
+  }
+  /* #cf7mls-progress-bar .cf7mls_progress_bar_percent_wrap {
+    width: 40%;
+  } */
+}
+@media only screen and (max-width: 415px) {
+  #cf7mls-progress-bar .cf7mls-group-pogress-bar .cf7mls-wrap-switch {
+    margin-left: 0px;
+    clear: both;
+  }
+  #cf7mls-progress-bar .cf7mls-group-pogress-bar .cf7mls-wrap-switch {
+    margin-left: 0px;
+    float: left;
+  }
+  #cf7mls-progress-bar .cf7mls-select-style-text .cf7mls-style-text-wrap {
+    width: 97% !important;
+  }
+  #cf7mls-progress-bar .cf7mls_bt_wrap {
+    /* width: 100%; */
+  }
+  #cf7mls-progress-bar .cf7mls-tooltip:hover:after {
+    width: 116px;
+  }
+  #cf7mls-settings-panel .cf7mls-tooltip:hover:after {
+    width: 130px;
+  }
+  #cf7mls-progress-bar .wp-picker-container {
+    float: left;
+  }
+  #cf7mls-progress-bar .cf7mls-select-style-text {
+    display: block;
+  }
+}
+@media only screen and (min-width: 1301px) and (max-width: 1440px) {
+  #cf7mls-progress-bar .cf7mls_pogress_bar_wrap {
+    width: 100%;
+  }
+  #cf7mls-progress-bar .cf7mls_preview {
+    width: 100%;
+  }
+}
+
+@media only screen and (min-width: 1280px) and (max-width: 1600px){
+  #cf7mls-progress-bar .cf7mls-select-style-text {
+    display: block
+  }
+  #cf7mls-progress-bar .cf7mls-select-style-text .cf7mls-style-text-wrap {
+    width: 99%;
+  }
+}
+
+/* ============ Start Moana Support ============ */
+.moana_design_btn_wrap {
+  display: none;
+}
+/* ============ End ============ */
+
+.cf7mls-remove-step:hover {
+  color: #dd3333;
+}
+#cf7mls-progress-bar .config-error {
+  display: none;
+}
+#cf7mls-progress-bar .cf7mls-progress-bar-upgrade-pro-title {
+  font-weight: 700;
+  text-decoration: underline;
+}
+#cf7mls-progress-bar .cf7mls-progress-bar-upgrade-pro-wrap {
+  height: 43px;
+  margin-top: 16px;
+  border-bottom: 1px solid #d9d9d9;
+}
+#cf7mls-progress-bar span {
+  color: #262626;
+}
+#cf7mls-progress-bar .wp-picker-input-wrap,
+#cf7mls-progress-bar .wp-picker-holder {
+  display: none;
 }

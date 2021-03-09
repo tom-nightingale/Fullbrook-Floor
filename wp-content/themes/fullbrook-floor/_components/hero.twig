@@ -1,69 +1,105 @@
 {% if front_page %}
 
-<div class="relative flex flex-col w-full md:flex-row md:flex-wrap hero min-h-96 lg:min-h-128 lg:mt-36">
+<div class="relative w-full bg-white lg:mt-32 xl:mt-30 lg:min-h-96 xl:min-h-128 2xl:min-h-160">
 
-  <div class="absolute top-0 left-0 z-10 flex flex-col items-center justify-center w-full p-4 text-center text-white lg:p-16 xl:p-24 xl:pb-36 bg-opacity-90 md:bg-opacity-100 min-h-96 lg:min-h-128 bg-primary-dark md:w-1/2 md:relative">
-
-    <p class="text-lg leading-snug lg:mt-8">{{top_line}} <span class="block mt-4 text-2xl font-bold text-secondary-light">{{middle_line}}</span> <span class="block text-2xl font-bold xl:text-4xl 2xl:text-5xl">{{main_line}}</span></p>
-
-    {# <p class="flex flex-wrap justify-center my-4">
-      <span class="flex flex-wrap items-center justify-center mx-1 text-lg font-bold"><span class="inline-block w-2 h-2 mr-1 rounded-full bg-secondary"></span> Knowledge</span>
-      <span class="flex flex-wrap items-center justify-center mx-1 text-lg font-bold"><span class="inline-block w-2 h-2 mr-1 rounded-full bg-secondary"></span> Experience</span>
-      <span class="flex flex-wrap items-center justify-center mx-1 text-lg font-bold"><span class="inline-block w-2 h-2 mr-1 rounded-full bg-secondary"></span> Trust</span>
-    </p> #}
-    
-    {# {% include "_components/btn-free-valuation.twig" with {
-      classes : "mt-4 btn btn-secondary xl:mt-12 text-sm lg:text-base",
-    } %} #}
-    <a href="{{site.url}}/instant-valuation" class="mt-4 text-sm btn btn-secondary xl:mt-12 lg:text-base">Get an INSTANT online valuation</a>
-    <a href="{{site.url}}/buy-a-home" class="mt-4 text-sm bg-opacity-75 btn btn-white hover:bg-opacity-100">Search homes for sale</a>
-
-    {% include "_components/pattern-house.twig" %}
-  </div>
-
-  <div class="relative bg-bottom bg-cover md:w-1/2 min-h-96 lg:min-h-128 carousel">
-      {% for image in post.meta('hero_carousel') %}                
-          {% include "_components/picture.twig" with {
-            pictureClasses: 'carousel-image',
-            source: image.url,
-            breakpoints: {
-              "1600px" : {
-                w: 1200,
-                h: 800,
-                crop: 'center'
-              },
-              "768px" : {
-                w: 800,
-                h: 600,
-                crop: 'center'
-              },
-              "640px" : {
-                w: 400,
-                h: 300,
-                crop: 'center'
-              },
+    <div class="w-full h-full carousel">
+    {% for image in post.meta('hero_carousel') %}                
+        {% include "_components/picture.twig" with {
+          source: image.url,
+          pictureClasses : 'hero--home carousel-image',
+          breakpoints: {
+            "1530px" : {
+              w: 2000,
+              h: 650,
+              crop: 'center'
             },
-            img: {
-              classes: 'absolute top-0 left-0 object-cover object-top w-full h-full lazyload',
-              alt: site.title,
-              w: null,
-              h: 600,
-              crop: 'center',
-            }
+            "1280px" : {
+              w: 1600,
+              h: 520,
+              crop: 'center'
+            },
+            "1024px" : {
+              w: 1280,
+              h: 400,
+              crop: 'center'
+            },
+            "768px" : {
+              w: 1024,
+              h: 310,
+              crop: 'center'
+            },
+            "640px" : {
+              w: 768,
+              h: 315,
+              crop: 'center'
+            },
+            "375px" : {
+              w: 640,
+              h: 320,
+              crop: 'center'
+            },
+          },
+          img: {
+            classes: 'absolute top-0 left-0 z-0 object-cover object-center w-full h-full opacity-20 lg:opacity-100',
+            alt: site.title,
+            w: null,
+            h: 600,
+            crop: 'center',
           }
-        %}
-    {% endfor %}   
-    
+        }
+      %}
+    {% endfor %}
   </div>
 
 
-</div>
+  <div class="container relative lg:min-h-96 xl:min-h-128 2xl:min-h-160 z-1 lg:flex">
+
+    <div class="flex flex-wrap items-center justify-between w-full min-h-full">
+
+      <div class="flex flex-col w-full max-w-sm p-8 mx-auto text-center lg:py-16 lg:mx-0 lg:text-left lg:w-6/12">
+
+        <p class="text-2xl leading-snug text-primary-dark lg:text-3xl 2xl:text-4xl">{{top_line}}</p>
+
+        <p class="mt-4 mb-8 leading-snug lg:text-xl 2xl:text-lg text-primary-dark">{{middle_line}}</p>
+
+        <div>
+        
+          {% include "_components/btn-free-valuation.twig" with {
+            classes : "block mt-4 text-sm text-center modal-trigger lg:mr-4 btn btn-tertiary lg:inline-flex xl:mt-12 lg:text-base",
+          } %}
+          
+          <div class="lg:block">
+          <a href="{{site.url}}/buy-a-home" class="inline-flex mt-4 text-sm text-center lg:mr-4 lg:text-base btn btn-white opacity-90 hover:opacity-100">
+            Search homes for sale
+          </a>
+          </div>
+          
+        </div>
+
+      </div>
+
+
+      {# <div class="hidden w-3/12 p-4 leading-snug text-center bg-white rounded xl:w-2/12 xl:mr-12 lg:p-6 xl:p-8 lg:block">
+
+        <p class="text-xl font-bold">Sign up to our <span class="block text-tertiary">FREE Mailing List!</span></p>
+        
+        <p class="my-4 text-sm">Provide your email address and we'll keep you up to date with all the latest property news from St. Albans and the surrounding area!</p>        
+
+        <a class="inline-block mt-4 btn btn-tertiary" href="{{site.url}}">Get started</a>
+
+      </div> #}
+
+    </div>
+    
+  </div>
+  
+</div> 
 
 {% else %}
 
-  <div class="relative w-full text-white bg-primary lg:mt-36">
+  <div class="relative w-full text-white bg-primary lg:mt-36 xl:mt-32">
     <div class="container">
-      <p class="px-6 text-2xl font-bold text-center {{has_search_bar ? "py-8 lg:p-12 lg:py-16" : "py-8 lg:p-12 lg:py-16 lg:pt-20" }} xl:text-4xl 2xl:text-5xl">{{hero_heading}}</p>
+      <p class="px-6 py-8 text-2xl font-bold text-center lg:p-12 lg:py-16 xl:text-4xl 2xl:text-5xl">{{hero_heading}}</p>
     </div>
     {% include "_components/pattern-house.twig" %}
   </div>

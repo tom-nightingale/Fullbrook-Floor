@@ -31,10 +31,9 @@
 
         <p class="mb-8">Provide a few details about your home to get your valuation started&hellip;</p>
 
-        {# {{ function('do_shortcode', '[contact-form-7 id="675"]') }} #}
-
-        <a href="{{site.url}}/instant-valuation" class="mt-4 text-sm btn btn-secondary xl:mt-12 lg:text-base">Get an INSTANT
-          online valuation</a>
+        {% include "_components/btn-free-valuation.twig" with {
+          classes : "mt-4 text-sm modal-trigger btn btn-secondary xl:mt-12 lg:text-base",
+        } %}
 
     </div>
   
