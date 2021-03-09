@@ -35,7 +35,7 @@ if ( !empty($notes) )
 					if ( null !== $email_log )
 					{
 						$next_cron_run = '';
-						$emailStatus = '';
+						$email_status = '';
 						$note_suffix = '';
 						switch ($email_log->status) {
 							case '':
@@ -75,6 +75,16 @@ if ( !empty($notes) )
 					case "viewing_booked":
 					{
 						$note_body = '<a href="' . get_edit_post_link($comment_content['viewing_id']) . '">Viewing</a> booked';
+						if ( isset($comment_content['property_id']) )
+						{
+							$property = new PH_Property((int)$comment_content['property_id']);
+							$note_body .= ' on <a href="' . get_edit_post_link($comment_content['property_id']) . '">' . $property->get_formatted_full_address() . '</a>';
+						}
+						break;
+					}
+					case "added_to_viewing":
+					{
+						$note_body = 'Added to <a href="' . get_edit_post_link($comment_content['viewing_id']) . '">viewing</a>';
 						if ( isset($comment_content['property_id']) )
 						{
 							$property = new PH_Property((int)$comment_content['property_id']);
@@ -202,9 +212,9 @@ if ($section != 'enquiry')
 					</abbr>
 					<?php if ( $note['author'] !== __( 'Property Hive', 'propertyhive' ) && $note['author'] != '' ) printf( ' ' . __( 'by %s', 'propertyhive' ), $note['author'] );?>
 
-					<a href="#" class="toggle_note_pinned"><?php _e( ( $note['pinned'] == '0' ) ? 'Pin To Top' : 'Unpin', 'propertyhive' ); ?></a>
+					<a href="#" data-section="<?php echo $section; ?>" class="toggle_note_pinned"><?php _e( ( $note['pinned'] == '0' ) ? 'Pin To Top' : 'Unpin', 'propertyhive' ); ?></a>
 
-					<?php if ( $note['type'] == 'note' ) { ?><a href="#" class="delete_note"><?php _e( 'Delete', 'propertyhive' ); ?></a><?php } ?>
+					<?php if ( $note['type'] == 'note' ) { ?><a href="#" data-section="<?php echo $section; ?>" class="delete_note"><?php _e( 'Delete', 'propertyhive' ); ?></a><?php } ?>
 					<?php
 						if ( $post->ID != $note['post_id'] )
 						{
@@ -222,7 +232,6 @@ if ($section != 'enquiry')
 	?>
 	<li id="no_notes" style="text-align:center;<?php echo (!empty($note_output)) ? 'display:none;' : '';  ?>"><?php echo __( 'There are no notes to display', 'propertyhive' ); ?></li>
 </ul>
-<input id="notes_grid_section" type="hidden" value="<?php echo $section; ?>" >
 
 
 <div class="add_note">
@@ -233,6 +242,6 @@ if ($section != 'enquiry')
 		<input type="checkbox" name="pinned" id="pinned" value="1"> <?php _e( 'Pin Note', 'propertyhive' ); ?>
 	</p>
 	<p>
-		<a href="#" class="add_note button"><?php _e( 'Add', 'propertyhive' ); ?></a>
+		<a href="#" class="add_note button" data-section="<?php echo $section; ?>"><?php _e( 'Add', 'propertyhive' ); ?></a>
 	</p>
 </div>

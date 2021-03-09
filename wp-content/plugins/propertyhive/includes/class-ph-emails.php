@@ -198,7 +198,7 @@ class PH_Emails {
 		    	lock_id = ''
 		    AND
 		    	send_at <= '" . date("Y-m-d H:i:s") . "'
-		    LIMIT 25
+		    LIMIT " . apply_filters( 'propertyhive_email_process_limit', 25 ) . "
 		");
 
 		// We now have up to 25 emails locked. Get this 25 and attempt to send
@@ -429,7 +429,9 @@ class PH_Emails {
 							{
 								$subject = str_replace("[property_count]", count($new_matching_properties) . ' propert' . ( ( count($new_matching_properties) != 1 ) ? 'ies' : 'y' ), $default_subject);
 
-						        $body = str_replace("[contact_name]", get_the_title($contact_id), $default_body);
+						        $contact = new PH_Contact($contact_id);
+						        $body = str_replace("[contact_name]", $contact->post_title, $default_body);
+						        $body = str_replace("[contact_dear]", $contact->dear(), $body);
 						        $body = str_replace("[property_count]", count($new_matching_properties) . ' propert' . ( ( count($new_matching_properties) != 1 ) ? 'ies' : 'y' ), $body);
 
 						        if ( strpos($body, '[properties]') !== FALSE )
