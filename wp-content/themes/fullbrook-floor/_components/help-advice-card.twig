@@ -29,7 +29,7 @@
     %}
 
     <div class="p-4 {% if featured %}lg:w-2/3 lg:px-6{% endif %} xl:p-8">
-      <small>{{item.post_date|date('M j, Y')}}</small>
+      <small>{{post.post_date|date('M j, Y')}}</small>
       <p class="text-xl font-bold">{{post.title}}</p>
       <p class="my-2 text-sm">{{post.preview.length(15).read_more(false)}}</p>
       <span class="inline-block mt-2 text-sm btn btn-primary">Read more</span>
