@@ -134,7 +134,7 @@ class PH_Meta_Box_Tenancy_Details {
             echo '<input type="hidden" name="_rent_currency" value="' . $selected_currency . '">';
         }
 
-        echo '<input type="text" class="" name="_rent" id="_rent" value="' . get_post_meta( $post->ID, '_rent', true ) . '" placeholder="" style="width:70px">
+        echo '<input type="text" class="" name="_rent" id="_rent" value="' . ph_display_price_field( get_post_meta( $post->ID, '_rent', true ) ) . '" placeholder="" style="width:70px">
             
             <select id="_rent_frequency" name="_rent_frequency" class="select" style="width:auto">
                 <option value="pw"' . ( ($rent_frequency == 'pw') ? ' selected' : '') . '>' . __('Per Week', 'propertyhive') . '</option>
@@ -148,7 +148,7 @@ class PH_Meta_Box_Tenancy_Details {
 		echo '<p class="form-field deposit_field ">
         
             <label for="_summary_deposit">' . __('Deposit', 'propertyhive') . ( ( empty($currencies) || count($currencies) <= 1 )  ? ' (<span class="currency-symbol">' . $currencies[$selected_currency] . '</span>)' : '' ) . '</label>
-			<input type="text" class="" name="_deposit" id="_summary_deposit" value="' . get_post_meta( $post->ID, '_deposit', true ) . '" placeholder="" style="width:70px">           
+			<input type="text" class="" name="_deposit" id="_summary_deposit" value="' . ph_display_price_field( get_post_meta( $post->ID, '_deposit', true ) ) . '" placeholder="" style="width:70px">           
         </p>';
 
         $args = array(
@@ -181,23 +181,16 @@ class PH_Meta_Box_Tenancy_Details {
 
                     if ( jQuery(\'#_length_units\').val() == \'week\' )
                     {
-                        var end_date = new Date( start_date.getTime() + ( jQuery(\'#_length\').val() * 7 * ms_in_day ) );
-
+                        var end_date = start_date.getTime() + ( jQuery(\'#_length\').val() * 7 * ms_in_day );
+                        end_date = new Date( end_date );
+                        end_date.setDate( end_date.getDate() - 1 );
                         jQuery(\'#_end_date\').val( end_date.toISOString().substring(0, 10) );
                     }
                     if ( jQuery(\'#_length_units\').val() == \'month\' )
                     {
                         var end_date = add_months(start_date, jQuery(\'#_length\').val());
+                        end_date.setDate( end_date.getDate() - 1 );
                         jQuery(\'#_end_date\').val( end_date.toISOString().substring(0, 10) );
-                    }
-
-                    if ( jQuery(\'#_review_date\').val() == \'\' )
-                    {
-                        var end_date = new Date(jQuery(\'#_end_date\').val());
-
-                        var review_date = new Date( end_date.getTime() - ( 90 * ms_in_day ) );
-
-                        jQuery(\'#_review_date\').val( review_date.toISOString().substring(0, 10) );
                     }
                 }
             });

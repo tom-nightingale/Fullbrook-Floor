@@ -31,6 +31,7 @@ class wfWAF {
 	 * @var wfWAFStorageInterface
 	 */
 	private static $sharedStorageEngine;
+	private static $fallbackStorageEngine;
 	
 	/**
 	 * @return wfWAFStorageInterface
@@ -42,8 +43,13 @@ class wfWAF {
 	/**
 	 * @param wfWAFStorageInterface $instance
 	 */
-	public static function setSharedStorageEngine($sharedStorageEngine) {
+	public static function setSharedStorageEngine($sharedStorageEngine, $fallback = false) {
 		self::$sharedStorageEngine = $sharedStorageEngine;
+		self::$fallbackStorageEngine = $fallback;
+	}
+
+	public static function hasFallbackStorageEngine() {
+		return self::$fallbackStorageEngine;
 	}
 
 	protected $rulesFile;
@@ -245,14 +251,14 @@ auEa+7b+FGTKs7dUo2BNGR7OVifK4GZ8w/ajS0TelhrSRi3BBQCGXLzUO/UURUAh
 					if ($path && $paramKey && $ruleID) {
 						$this->whitelistRuleForParam($path, $paramKey, $ruleID, array(
 							'timestamp'   => time(),
-							'description' => 'Allowlisted by via false positive dialog',
+							'description' => wfWAFI18n::__('Allowlisted via false positive dialog'),
 							'source'	  => 'false-positive',
 							'ip'          => $request->getIP(),
 						));
 						$whitelistCount++;
 					}
 				}
-				exit("Successfully allowlisted $whitelistCount params.");
+				exit(sprintf(wfWAFI18n::__('Successfully allowlisted %d params.'), $whitelistCount));
 			}
 		}
 
@@ -298,7 +304,6 @@ auEa+7b+FGTKs7dUo2BNGR7OVifK4GZ8w/ajS0TelhrSRi3BBQCGXLzUO/UURUAh
 
 		$ping = $this->getRequest()->getBody('ping');
 		$pingResponse = $this->getRequest()->getBody('ping_response');
-		$wfIP = $this->isWordfenceIP($this->getRequest()->getIP());
 		$pingIsApiKey = wfWAFUtils::hash_equals($ping, sha1($this->getStorageEngine()->getConfig('apiKey', null, 'synced')));
 
 		if ($ping && $pingResponse && $pingIsApiKey &&
@@ -602,17 +607,6 @@ auEa+7b+FGTKs7dUo2BNGR7OVifK4GZ8w/ajS0TelhrSRi3BBQCGXLzUO/UURUAh
 			wfWAFUtils::hash_hmac('sha1', $data, $this->getStorageEngine()->getConfig('apiKey', null, 'synced')));
 	}
 
-	/**
-	 * @param string $ip
-	 * @return bool
-	 */
-	public function isWordfenceIP($ip) {
-		if (preg_match('/69.46.36.(\d+)/', $ip, $matches)) {
-			return $matches[1] >= 1 && $matches[1] <= 32;
-		}
-		return false;
-	}
-	
 	/**
 	 * @return array
 	 */
@@ -1313,8 +1307,8 @@ HTML
 			return false;
 		}
 
-		if (is_array($this->whitelistedParams) && array_key_exists($paramKey, $this->whitelistedParams)
-			&& is_array($this->whitelistedParams[$paramKey])
+		if ($paramKey==='none' || (is_array($this->whitelistedParams) && array_key_exists($paramKey, $this->whitelistedParams)
+			&& is_array($this->whitelistedParams[$paramKey]))
 		) {
 			foreach ($this->whitelistedParams[$paramKey] as $urlRegex) {
 				if (is_array($urlRegex)) {
@@ -1387,6 +1381,7 @@ HTML
 							'h'      => $this->getStorageEngine()->getConfig('homeURL', null, 'synced') ? $this->getStorageEngine()->getConfig('homeURL', null, 'synced') :
 								sprintf('%s://%s/', $this->getRequest()->getProtocol(), rawurlencode($this->getRequest()->getHost())),
 							't'		 => microtime(true),
+							'lang'   => $this->getStorageEngine()->getConfig('WPLANG', null, 'synced'),
 						), null, '&'), $this->getStorageEngine()->getAttackData(), $request);
 
 					if ($response instanceof wfWAFHTTPResponse && $response->getBody()) {
@@ -1489,6 +1484,17 @@ HTML
 	}
 
 	/**
+	 * @param string $capability
+	 * @return bool
+	 */
+	public function checkCapability($capability) {
+		if ($authCookie = $this->parseAuthCookie()) {
+			return $authCookie['capabilities']!==null && in_array($capability, $authCookie['capabilities']);
+		}
+		return false;
+	}
+
+	/**
 	 * @param string|null $cookieVal
 	 * @return bool
 	 */
@@ -1498,14 +1504,23 @@ HTML
 			$cookieVal = !empty($_COOKIE[$cookieName]) && is_string($_COOKIE[$cookieName]) ? $_COOKIE[$cookieName] : '';
 		}
 		$pieces = explode('|', $cookieVal);
-		if (count($pieces) !== 3) {
+		$pieceCount = count($pieces);
+		if ($pieceCount === 4) {
+			list($userID, $role, $capabilityList, $signature) = $pieces;
+			$capabilities = empty($capabilityList) ? array() : explode(',', $capabilityList);
+		}
+		else if ($pieceCount === 3) {
+			list($userID, $role, $signature) = $pieces;
+			$capabilities = null;
+		}
+		else {
 			return false;
 		}
-		list($userID, $role, $signature) = $pieces;
-		if (wfWAFUtils::hash_equals($signature, $this->getAuthCookieValue($userID, $role))) {
+		if (wfWAFUtils::hash_equals($signature, $this->getAuthCookieValue($userID, $role, $capabilities))) {
 			return array(
 				'userID' => $userID,
 				'role'   => $role,
+				'capabilities' => $capabilities
 			);
 		}
 		return false;
@@ -1514,11 +1529,14 @@ HTML
 	/**
 	 * @param int|string $userID
 	 * @param string $role
+	 * @param array $capabilities
 	 * @return bool|string
 	 */
-	public function getAuthCookieValue($userID, $role) {
+	public function getAuthCookieValue($userID, $role, $capabilities = array()) {
+		if (!is_array($capabilities))
+			$capabilities = array();
 		$algo = function_exists('hash') ? 'sha256' : 'sha1';
-		return wfWAFUtils::hash_hmac($algo, $userID . $role . floor(time() / 43200), $this->getStorageEngine()->getConfig('authKey'));
+		return wfWAFUtils::hash_hmac($algo, $userID . $role . '|'. implode(',', $capabilities) . floor(time() / 43200), $this->getStorageEngine()->getConfig('authKey'));
 	}
 	
 	/**
@@ -1799,6 +1817,12 @@ class wfWAFCronFetchRulesEvent extends wfWAFCronEvent {
 	 * @var wfWAFHTTPResponse
 	 */
 	private $response;
+	private $forceUpdate;
+
+	public function __construct($fireTime, $forceUpdate = false) {
+		parent::__construct($fireTime);
+		$this->forceUpdate = $forceUpdate;
+	}
 
 	public function fire() {
 		$waf = $this->getWaf();
@@ -1816,109 +1840,133 @@ class wfWAFCronFetchRulesEvent extends wfWAFCronEvent {
 				'h'        => $waf->getStorageEngine()->getConfig('homeURL', null, 'synced') ? $waf->getStorageEngine()->getConfig('homeURL', null, 'synced') : $guessSiteURL,
 				'openssl'  => $waf->hasOpenSSL() ? 1 : 0,
 				'betaFeed' => (int) $waf->getStorageEngine()->getConfig('betaThreatDefenseFeed', null, 'synced'),
+				'lang'     => $waf->getStorageEngine()->getConfig('WPLANG', null, 'synced'),
 			);
+			$lastRuleHash=$this->forceUpdate ? null : $waf->getStorageEngine()->getConfig('lastRuleHash', null, 'transient');
+			if($lastRuleHash!==null)
+				$payload['hash']=$lastRuleHash;
 			if ($waf->getStorageEngine()->getConfig('other_WFNet', true, 'synced')) {
 				$payload['disabled'] = implode('|', $waf->getDisabledRuleIDs());
 			}
 			
 			$this->response = wfWAFHTTP::get(WFWAF_API_URL_SEC . "?" . http_build_query($payload, null, '&'), null, 10, 5);
 			if ($this->response) {
-				$jsonData = wfWAFUtils::json_decode($this->response->getBody(), true);
-				if (is_array($jsonData)) {
+				if($this->response->getStatusCode() !== 304){
+					$jsonData = wfWAFUtils::json_decode($this->response->getBody(), true);
+					if (is_array($jsonData)) {
 
-					if ($waf->hasOpenSSL() &&
-						isset($jsonData['data']['signature']) &&
-						isset($jsonData['data']['rules']) &&
-						$waf->verifySignedRequest(base64_decode($jsonData['data']['signature']), $jsonData['data']['rules'])
-					) {
-						$waf->updateRuleSet(base64_decode($jsonData['data']['rules']),
-							isset($jsonData['data']['timestamp']) ? $jsonData['data']['timestamp'] : true);
-						if (array_key_exists('premiumCount', $jsonData['data'])) {
-							$waf->getStorageEngine()->setConfig('premiumCount', $jsonData['data']['premiumCount'], 'transient');
+						if ($waf->hasOpenSSL() &&
+							isset($jsonData['data']['signature']) &&
+							isset($jsonData['data']['rules']) &&
+							$waf->verifySignedRequest(base64_decode($jsonData['data']['signature']), $jsonData['data']['rules'])
+						) {
+							$waf->updateRuleSet(base64_decode($jsonData['data']['rules']),
+								isset($jsonData['data']['timestamp']) ? $jsonData['data']['timestamp'] : true);
+							$waf->getStorageEngine()->setConfig('lastRuleHash', $jsonData['data']['signature'], 'transient');
+							if (array_key_exists('premiumCount', $jsonData['data'])) {
+								$waf->getStorageEngine()->setConfig('premiumCount', $jsonData['data']['premiumCount'], 'transient');
+							}
+
+						} else if (!$waf->hasOpenSSL() &&
+							isset($jsonData['data']['hash']) &&
+							isset($jsonData['data']['rules']) &&
+							$waf->verifyHashedRequest($jsonData['data']['hash'], $jsonData['data']['rules'])
+						) {
+							$waf->updateRuleSet(base64_decode($jsonData['data']['rules']),
+								isset($jsonData['data']['timestamp']) ? $jsonData['data']['timestamp'] : true);
+							$waf->getStorageEngine()->setConfig('lastRuleHash', $jsonData['data']['hash'], 'transient');
+							if (array_key_exists('premiumCount', $jsonData['data'])) {
+								$waf->getStorageEngine()->setConfig('premiumCount', $jsonData['data']['premiumCount'], 'transient');
+							}
 						}
-
-					} else if (!$waf->hasOpenSSL() &&
-						isset($jsonData['data']['hash']) &&
-						isset($jsonData['data']['rules']) &&
-						$waf->verifyHashedRequest($jsonData['data']['hash'], $jsonData['data']['rules'])
-					) {
-						$waf->updateRuleSet(base64_decode($jsonData['data']['rules']),
-							isset($jsonData['data']['timestamp']) ? $jsonData['data']['timestamp'] : true);
-						if (array_key_exists('premiumCount', $jsonData['data'])) {
-							$waf->getStorageEngine()->setConfig('premiumCount', $jsonData['data']['premiumCount'], 'transient');
+						else {
+							$success = false;
 						}
 					}
 					else {
 						$success = false;
 					}
 				}
-				else {
-					$success = false;
-				}
 			}
 			else {
 				$success = false;
 			}
-			
-			$this->response = wfWAFHTTP::get(WFWAF_API_URL_SEC . "?" . http_build_query(array(
-					'action'   => 'get_malware_signatures',
-					'k'        => $waf->getStorageEngine()->getConfig('apiKey', null, 'synced'),
-					's'        => $waf->getStorageEngine()->getConfig('siteURL', null, 'synced') ? $waf->getStorageEngine()->getConfig('siteURL', null, 'synced') : $guessSiteURL,
-					'h'        => $waf->getStorageEngine()->getConfig('homeURL', null, 'synced') ? $waf->getStorageEngine()->getConfig('homeURL', null, 'synced') : $guessSiteURL,
-					'openssl'  => $waf->hasOpenSSL() ? 1 : 0,
-					'betaFeed' => (int) $waf->getStorageEngine()->getConfig('betaThreatDefenseFeed', null, 'synced'),
-				), null, '&'), null, 15, 5);
-			if ($this->response) {
-				$jsonData = wfWAFUtils::json_decode($this->response->getBody(), true);
-				if (is_array($jsonData)) {
-					if ($waf->hasOpenSSL() &&
-						isset($jsonData['data']['signature']) &&
-						isset($jsonData['data']['signatures']) &&
-						$waf->verifySignedRequest(base64_decode($jsonData['data']['signature']), $jsonData['data']['signatures'])
-					) {
-						$waf->setMalwareSignatures(wfWAFUtils::json_decode(base64_decode($jsonData['data']['signatures'])),
-							isset($jsonData['data']['timestamp']) ? $jsonData['data']['timestamp'] : true);
-						if (array_key_exists('premiumCount', $jsonData['data'])) {
-							$waf->getStorageEngine()->setConfig('signaturePremiumCount', $jsonData['data']['premiumCount'], 'transient');
+
+			$lastMalwareSignatureUpdate=$waf->getStorageEngine()->getConfig('signaturesLastUpdated', 0, 'transient');
+			$isPaid=$waf->getStorageEngine()->getConfig('isPaid', false, 'synced');
+			//Only update malware signatures for free sites if they are older than 3 days plus an hour
+			if ($isPaid || $this->forceUpdate || $lastMalwareSignatureUpdate < (time() - (259200 + 3600))) {
+				$this->response = wfWAFHTTP::get(WFWAF_API_URL_SEC . "?" . http_build_query(array(
+						'action'   => 'get_malware_signatures',
+						'k'        => $waf->getStorageEngine()->getConfig('apiKey', null, 'synced'),
+						's'        => $waf->getStorageEngine()->getConfig('siteURL', null, 'synced') ? $waf->getStorageEngine()->getConfig('siteURL', null, 'synced') : $guessSiteURL,
+						'h'        => $waf->getStorageEngine()->getConfig('homeURL', null, 'synced') ? $waf->getStorageEngine()->getConfig('homeURL', null, 'synced') : $guessSiteURL,
+						'openssl'  => $waf->hasOpenSSL() ? 1 : 0,
+						'betaFeed' => (int) $waf->getStorageEngine()->getConfig('betaThreatDefenseFeed', null, 'synced'),
+						'hash'	   => $this->forceUpdate ? null : $waf->getStorageEngine()->getConfig('lastMalwareHash', null, 'transient'),
+						'cs-hash'  => $this->forceUpdate ? null : $waf->getStorageEngine()->getConfig('lastMalwareHashCommonStrings', null, 'transient'),
+						'lang'   => $waf->getStorageEngine()->getConfig('WPLANG', null, 'synced')
+					), null, '&'), null, 15, 5);
+				if ($this->response) {
+					if($this->response->getStatusCode() !== 304){
+						$jsonData = wfWAFUtils::json_decode($this->response->getBody(), true);
+						if (is_array($jsonData)) {
+							if ($waf->hasOpenSSL() &&
+								isset($jsonData['data']['signature']) &&
+								isset($jsonData['data']['signatures']) &&
+								$waf->verifySignedRequest(base64_decode($jsonData['data']['signature']), $jsonData['data']['signatures'])
+							) {
+								$waf->setMalwareSignatures(wfWAFUtils::json_decode(base64_decode($jsonData['data']['signatures'])),
+									isset($jsonData['data']['timestamp']) ? $jsonData['data']['timestamp'] : true);
+								$waf->getStorageEngine()->setConfig('lastMalwareHash', $jsonData['data']['signature'], 'transient');
+								if (array_key_exists('premiumCount', $jsonData['data'])) {
+									$waf->getStorageEngine()->setConfig('signaturePremiumCount', $jsonData['data']['premiumCount'], 'transient');
+								}
+
+								if (array_key_exists('commonStringsSignature', $jsonData['data']) && 
+									array_key_exists('commonStrings', $jsonData['data']) && 
+									array_key_exists('signatureIndexes', $jsonData['data']) &&
+									$waf->verifySignedRequest(base64_decode($jsonData['data']['commonStringsSignature']), $jsonData['data']['commonStrings'] . $jsonData['data']['signatureIndexes'])
+								) {
+									$waf->setMalwareSignatureCommonStrings(wfWAFUtils::json_decode(base64_decode($jsonData['data']['commonStrings'])), wfWAFUtils::json_decode(base64_decode($jsonData['data']['signatureIndexes'])));
+
+									$waf->getStorageEngine()->setConfig('lastMalwareHashCommonStrings', $jsonData['data']['commonStringsSignature'], 'transient');
+								}
+
+							} else if (!$waf->hasOpenSSL() &&
+								isset($jsonData['data']['hash']) &&
+								isset($jsonData['data']['signatures']) &&
+								$waf->verifyHashedRequest($jsonData['data']['hash'], $jsonData['data']['signatures'])
+							) {
+								$waf->setMalwareSignatures(wfWAFUtils::json_decode(base64_decode($jsonData['data']['signatures'])),
+
+									isset($jsonData['data']['timestamp']) ? $jsonData['data']['timestamp'] : true);
+								$waf->getStorageEngine()->setConfig('lastMalwareHash', $jsonData['data']['hash'], 'transient');
+								if (array_key_exists('premiumCount', $jsonData['data'])) {
+									$waf->getStorageEngine()->setConfig('signaturePremiumCount', $jsonData['data']['premiumCount'], 'transient');
+								}
+
+								if (array_key_exists('commonStringsHash', $jsonData['data']) &&
+									array_key_exists('commonStrings', $jsonData['data']) &&
+									array_key_exists('signatureIndexes', $jsonData['data']) &&
+									$waf->verifyHashedRequest($jsonData['data']['commonStringsHash'], $jsonData['data']['commonStrings'] . $jsonData['data']['signatureIndexes'])
+								) {
+									$waf->setMalwareSignatureCommonStrings(wfWAFUtils::json_decode(base64_decode($jsonData['data']['commonStrings'])), wfWAFUtils::json_decode(base64_decode($jsonData['data']['signatureIndexes'])));
+									$waf->getStorageEngine()->setConfig('lastMalwareHashCommonStrings', $jsonData['data']['commonStringsHash'], 'transient');
+								}
+							}
+							else {
+								$success = false;
+							}
 						}
-						
-						if (array_key_exists('commonStringsSignature', $jsonData['data']) && 
-							array_key_exists('commonStrings', $jsonData['data']) && 
-							array_key_exists('signatureIndexes', $jsonData['data']) &&
-							$waf->verifySignedRequest(base64_decode($jsonData['data']['commonStringsSignature']), $jsonData['data']['commonStrings'] . $jsonData['data']['signatureIndexes'])
-						) {
-							$waf->setMalwareSignatureCommonStrings(wfWAFUtils::json_decode(base64_decode($jsonData['data']['commonStrings'])), wfWAFUtils::json_decode(base64_decode($jsonData['data']['signatureIndexes'])));
+						else {
+							$success = false;
 						}
-						
-					} else if (!$waf->hasOpenSSL() &&
-						isset($jsonData['data']['hash']) &&
-						isset($jsonData['data']['signatures']) &&
-						$waf->verifyHashedRequest($jsonData['data']['hash'], $jsonData['data']['signatures'])
-					) {
-						$waf->setMalwareSignatures(wfWAFUtils::json_decode(base64_decode($jsonData['data']['signatures'])),
-							isset($jsonData['data']['timestamp']) ? $jsonData['data']['timestamp'] : true);
-						if (array_key_exists('premiumCount', $jsonData['data'])) {
-							$waf->getStorageEngine()->setConfig('signaturePremiumCount', $jsonData['data']['premiumCount'], 'transient');
-						}
-						
-						if (array_key_exists('commonStringsHash', $jsonData['data']) &&
-							array_key_exists('commonStrings', $jsonData['data']) &&
-							array_key_exists('signatureIndexes', $jsonData['data']) &&
-							$waf->verifyHashedRequest($jsonData['data']['commonStringsHash'], $jsonData['data']['commonStrings'] . $jsonData['data']['signatureIndexes'])
-						) {
-							$waf->setMalwareSignatureCommonStrings(wfWAFUtils::json_decode(base64_decode($jsonData['data']['commonStrings'])), wfWAFUtils::json_decode(base64_decode($jsonData['data']['signatureIndexes'])));
-						}
-					}
-					else {
-						$success = false;
 					}
 				}
 				else {
 					$success = false;
 				}
-			}
-			else {
-				$success = false;
 			}
 		} catch (wfWAFHTTPTransportException $e) {
 			error_log($e->getMessage());
@@ -1982,6 +2030,7 @@ class wfWAFCronFetchIPListEvent extends wfWAFCronEvent {
 					's'      => $waf->getStorageEngine()->getConfig('siteURL', null, 'synced') ? $waf->getStorageEngine()->getConfig('siteURL', null, 'synced') : $guessSiteURL,
 					'h'      => $waf->getStorageEngine()->getConfig('homeURL', null, 'synced') ? $waf->getStorageEngine()->getConfig('homeURL', null, 'synced') : $guessSiteURL,
 					't'		 => microtime(true),
+					'lang'   => $waf->getStorageEngine()->getConfig('WPLANG', null, 'synced'),
 				), null, '&'), '[]', $request);
 			
 			if ($response instanceof wfWAFHTTPResponse && $response->getBody()) {
@@ -2024,6 +2073,7 @@ class wfWAFCronFetchBlacklistPrefixesEvent extends wfWAFCronEvent {
 						's'      => $waf->getStorageEngine()->getConfig('siteURL', null, 'synced') ? $waf->getStorageEngine()->getConfig('siteURL', null, 'synced') : $guessSiteURL,
 						'h'      => $waf->getStorageEngine()->getConfig('homeURL', null, 'synced') ? $waf->getStorageEngine()->getConfig('homeURL', null, 'synced') : $guessSiteURL,
 						't'		 => microtime(true),
+						'lang'   => $waf->getStorageEngine()->getConfig('WPLANG', null, 'synced'),
 					), null, '&'), $request);
 				
 				if ($response instanceof wfWAFHTTPResponse && $response->getBody()) {

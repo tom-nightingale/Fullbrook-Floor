@@ -33,6 +33,7 @@ class PH_AJAX {
             'load_existing_features' => false,
 			'make_property_enquiry' => true,
             'create_contact_from_enquiry' => false,
+            'merge_contact_records' => false,
 
             // Dashboard components
             'get_news' => false,
@@ -46,6 +47,7 @@ class PH_AJAX {
 
             // Contact actions
             'create_contact_login' => false,
+            'get_contact_tenancies_grid' => false,
 
             // Appraisal actions
             'get_appraisal_details_meta_box' => false,
@@ -100,11 +102,17 @@ class PH_AJAX {
             'get_property_sales_meta_box' => false,
             'get_contact_sales_meta_box' => false,
 
+            // Enquiry actions
+            'get_property_enquiries_meta_box' => false,
+            'get_contact_enquiries_meta_box' => false,
+
             // Tenancy actions
             'add_key_date' => false,
             'get_management_dates_grid' => false,
             'get_key_dates_quick_edit_row' => false,
+            'check_key_date_recurrence' => false,
             'save_key_date' => false,
+            'delete_key_date' => false,
 
             'validate_save_contact' => false,
             'applicant_registration' => true,
@@ -113,6 +121,7 @@ class PH_AJAX {
             'save_account_requirements' => true,
 
             'dismiss_notice_leave_review' => false,
+            'dismiss_notice_demo_data' => false,
             'dismiss_notice_missing_search_results' => false,
             'dismiss_notice_missing_google_maps_api_key' => false,
             'dismiss_notice_invalid_expired_license_key' => false,
@@ -131,6 +140,14 @@ class PH_AJAX {
     public function dismiss_notice_leave_review()
     {
         update_option( 'propertyhive_review_prompt_due_timestamp', 0 );
+        
+        // Quit out
+        die();
+    }
+
+    public function dismiss_notice_demo_data()
+    {
+        update_option( 'propertyhive_hide_demo_data_tab', 'yes' );
         
         // Quit out
         die();
@@ -171,41 +188,6 @@ class PH_AJAX {
 	private function json_headers() {
 		header( 'Content-Type: application/json; charset=utf-8' );
 	}
-
-    /**
-     * Format contact data for display in a meta box list
-     */
-    private function formatted_contact_meta_box_data( $contact_post_id, $add_edit_link = true )
-    {
-        if ( $add_edit_link )
-        {
-            $contact_text = '<a href="' . get_edit_post_link( $contact_post_id, '' ) . '" target="' . apply_filters('propertyhive_subgrid_link_target', '') . '">' . get_the_title($contact_post_id) . '</a>';
-        }
-        else
-        {
-            $contact_text = get_the_title($contact_post_id);
-        }
-
-        $telephone_number = get_post_meta( $contact_post_id, '_telephone_number', true );
-        if( !empty($telephone_number) )
-        {
-            $contact_details = 'T: ' . $telephone_number;
-        }
-
-        $email_address = get_post_meta( $contact_post_id, '_email_address', true );
-        if( !empty($email_address) )
-        {
-            $contact_details .= ( $contact_details != '' ) ? '<br>' : '';
-            $contact_details .= 'E: ' . $email_address;
-        }
-
-        if ( $contact_details != '' )
-        {
-            $contact_text .= '<div class="row-actions visible">' . $contact_details . '</div>';
-        }
-
-        return $contact_text;
-    }
 
     /**
      * Return a list string, comma delimited with an ampersand(&) before the final item
@@ -576,7 +558,13 @@ class PH_AJAX {
             $applicant_profile = array();
             $applicant_profile['department'] = $_POST['department'];
 
-            if ( $_POST['department'] == 'residential-sales' )
+            $base_department = $_POST['department'];
+            if ( !in_array( $base_department, array('residential-sales', 'residential-lettings', 'commercial') ) )
+            {
+                $base_department = ph_get_custom_department_based_on($base_department);
+            }
+
+            if ( $base_department == 'residential-sales' )
             {
                 $price = preg_replace("/[^0-9]/", '', ph_clean($_POST['maximum_price']));
 
@@ -598,7 +586,7 @@ class PH_AJAX {
                     $applicant_profile['match_price_range_higher_actual'] = $price + ( $price * ( $percentage_higher / 100 ) );
                 }
             }
-            elseif ( $_POST['department'] == 'residential-lettings' )
+            elseif ( $base_department == 'residential-lettings' )
             {
                 $price = preg_replace("/[^0-9]/", '', ph_clean($_POST['maximum_rent']));
 
@@ -608,7 +596,7 @@ class PH_AJAX {
                 $applicant_profile['max_price_actual'] = $price_actual;
             }
 
-            if ( $_POST['department'] == 'residential-sales' || $_POST['department'] == 'residential-lettings' )
+            if ( $base_department == 'residential-sales' || $base_department == 'residential-lettings' )
             {
                 $beds = preg_replace("/[^0-9]/", '', ph_clean($_POST['minimum_bedrooms']));
                 $applicant_profile['min_beds'] = $beds;
@@ -619,7 +607,7 @@ class PH_AJAX {
                 }
             }
 
-            if ( $_POST['department'] == 'commercial' )
+            if ( $base_department == 'commercial' )
             {
                 $available_as = array();
                 if ( isset($_POST['available_as_sale']) && $_POST['available_as_sale'] == 'yes' )
@@ -939,7 +927,13 @@ class PH_AJAX {
             $applicant_profile = array();
             $applicant_profile['department'] = ph_clean($_POST['department']);
 
-            if ( $_POST['department'] == 'residential-sales' )
+            $base_department = $_POST['department'];
+            if ( !in_array( $base_department, array('residential-sales', 'residential-lettings', 'commercial') ) )
+            {
+                $base_department = ph_get_custom_department_based_on($base_department);
+            }
+
+            if ( $base_department == 'residential-sales' )
             {
                 $price = preg_replace("/[^0-9]/", '', ph_clean($_POST['maximum_price']));
 
@@ -948,7 +942,7 @@ class PH_AJAX {
                 // Not used yet but could be if introducing currencies in the future.
                 $applicant_profile['max_price_actual'] = $price;
             }
-            elseif ( $_POST['department'] == 'residential-lettings' )
+            elseif ( $base_department == 'residential-lettings' )
             {
                 $price = preg_replace("/[^0-9]/", '', ph_clean($_POST['maximum_rent']));
 
@@ -958,7 +952,7 @@ class PH_AJAX {
                 $applicant_profile['max_price_actual'] = $price_actual;
             }
 
-            if ( $_POST['department'] == 'residential-sales' || $_POST['department'] == 'residential-lettings' )
+            if ( $base_department == 'residential-sales' || $base_department == 'residential-lettings' )
             {
                 $beds = preg_replace("/[^0-9]/", '', ph_clean($_POST['minimum_bedrooms']));
                 $applicant_profile['min_beds'] = $beds;
@@ -969,7 +963,7 @@ class PH_AJAX {
                 }
             }
 
-            if ( $_POST['department'] == 'commercial' )
+            if ( $base_department == 'commercial' )
             {
                 $available_as = array();
                 if ( isset($_POST['available_as_sale']) && $_POST['available_as_sale'] == 'yes' )
@@ -1038,8 +1032,9 @@ class PH_AJAX {
 
         $property_query = new WP_Query(array(
             'post_type' => 'property',
-            'post_status' => 'any',
-            'nopaging' => true
+            'post_status' => 'publish',
+            'nopaging' => true,
+            'fields' => 'ids',
         ));
 
         if ($property_query->have_posts())
@@ -1048,12 +1043,12 @@ class PH_AJAX {
             {
                 $property_query->the_post();
 
-                $num_property_features = get_post_meta($post->ID, '_features', TRUE);
+                $num_property_features = get_post_meta(get_the_ID(), '_features', TRUE);
                 if ($num_property_features == '') { $num_property_features = 0; }
                 
                 for ($i = 0; $i < $num_property_features; ++$i)
                 {
-                    $feature = get_post_meta($post->ID, '_feature_' . $i, TRUE);
+                    $feature = get_post_meta(get_the_ID(), '_feature_' . $i, TRUE);
                     if (!in_array($feature, $return) && trim($feature) != '')
                     {
                         $return[] = $feature;
@@ -1630,6 +1625,14 @@ class PH_AJAX {
                             $fields_to_check[] = '_office_email_address_sales';
                             break;
                         }
+                        default:
+                        {
+                            $fields_to_check[] = '_office_email_address_' . str_replace("residential-", "", $property_department);
+                            $fields_to_check[] = '_office_email_address_sales';
+                            $fields_to_check[] = '_office_email_address_lettings';
+                            $fields_to_check[] = '_office_email_address_commercial';
+                            break;
+                        }
                     }
                     
                     foreach ( $fields_to_check as $field_to_check )
@@ -1646,7 +1649,7 @@ class PH_AJAX {
             {
                 $to = get_option( 'admin_email' );
             }
-            
+
             if ( count($property_ids) == 1 )
             {
                 $subject = __( 'New Property Enquiry', 'propertyhive' ) . ': ' . get_the_title( (int)$property_ids[0] );
@@ -1683,6 +1686,19 @@ class PH_AJAX {
                 $message .= strip_tags($label) . ": " . strip_tags($value) . "\n";
             }
 
+            if ( 
+                apply_filters('propertyhive_enquiry_email_show_manage_link', true) &&
+                count($property_ids) == 1 &&
+                get_option( 'propertyhive_module_disabled_enquiries', '' ) != 'yes' &&
+                get_option( 'propertyhive_store_property_enquiries', 'yes' ) == 'yes'
+            )
+            {
+                $post_type_object = get_post_type_object( 'property' );
+                $property_enquiries_url = admin_url( sprintf( $post_type_object->_edit_link . '&action=edit', (int)$property_ids[0] ) ) . '#propertyhive-property-enquiries';
+                $message .= "\n" . __( "To manage this enquiry please visit the following URL", 'propertyhive' ) . ':' . "\n\n";
+                $message .= $property_enquiries_url;
+            }
+
             $message = apply_filters( 'propertyhive_property_enquiry_post_body', $message, $property_ids );
             
             $from_email_address = get_option('propertyhive_email_from_address', '');
@@ -1715,7 +1731,11 @@ class PH_AJAX {
             $message = apply_filters( 'propertyhive_property_enquiry_body', $message, $property_ids );
             $headers = apply_filters( 'propertyhive_property_enquiry_headers', $headers, $property_ids );
 
+            do_action( 'propertyhive_before_property_enquiry_sent' );
+
             $sent = wp_mail( $to, $subject, $message, $headers );
+
+            do_action( 'propertyhive_after_property_enquiry_sent' );
             
             if ( ! $sent )
             {
@@ -1776,14 +1796,14 @@ class PH_AJAX {
                     }
                 }
 
+                do_action('propertyhive_property_enquiry_sent', $_POST, $to);
+
                 // Send auto-responder
                 if ( get_option( 'propertyhive_enquiry_auto_responder', '' ) == 'yes' )
                 {
                     // Auto-responder enabled
                     PH()->email->send_enquiry_auto_responder( $_POST );
                 }
-
-                do_action('propertyhive_property_enquiry_sent', $_POST, $to);
             }
         }
         
@@ -1815,30 +1835,54 @@ class PH_AJAX {
         $name = false;
         $email = false;
         $telephone = false;
+        $property_id = false;
 
         foreach ($enquiry_meta as $key => $value)
         {
-            if ( strpos($key, 'name') !== false )
+            if ( strpos(strtolower($key), 'name') !== false && $value[0] != '' )
             {
-                $name = $value[0];
+                if ( $name === false )
+                {
+                    $name = $value[0];
+                }
+                else
+                {
+                    $name .= ' ' . $value[0];
+                }
             }
-            elseif ( strpos($key, 'email') !== false )
+            elseif ( strpos(strtolower($key), 'email') !== false && $value[0] != '' )
             {
-                $email = $value[0];
+                if ( $email === false )
+                {
+                    $email = $value[0];
+                }
+                else
+                {
+                    $email .= ',' . $value[0];
+                }
             }
-            elseif ( strpos($key, 'telephone') !== false )
+            elseif ( strpos(strtolower($key), 'phone') !== false && $value[0] != '' )
             {
-                $telephone = $value[0];
+                if ( $telephone === false )
+                {
+                    $telephone = $value[0];
+                }
+                else
+                {
+                    $telephone .= ',' . $value[0];
+                }
+            }
+            elseif ( !$property_id && strpos(strtolower($key), 'property_id') !== false && $value[0] != '' )
+            {
+                $property_id = (int)$value[0];
             }
         }
 
         if ( $name === false || $email === false )
         {
-            // This nonce is not valid.
             die( json_encode( array('error' => 'Name or email address not found') ) );
         }
 
-        // We've not imported this property before
         $postdata = array(
             'post_excerpt'   => '',
             'post_content'   => '',
@@ -1860,12 +1904,103 @@ class PH_AJAX {
             die( json_encode( array('error' => 'Error creating contact') ) );
         }
 
+        update_post_meta( $enquiry_post_id, '_contact_id', $contact_post_id );
+
         if ( $telephone !== FALSE ) { 
-            update_post_meta( $contact_post_id, '_telephone_number', ph_clean( $telephone ) );
             update_post_meta( $contact_post_id, '_telephone_number', ph_clean( ph_clean_telephone_number( $telephone ) ) );
         }
 
         if ( $email !== FALSE ) { update_post_meta( $contact_post_id, '_email_address', ph_clean( $email ) ); }
+
+        // Enquiry is related to a property, so create an applicant record for the contact
+        if ( $property_id !== false && get_post_type( $property_id ) == 'property' )
+        {
+            update_post_meta( $contact_post_id, '_applicant_profiles', '1' );
+
+            $applicant_profile = array();
+            $applicant_profile['department'] = get_post_meta( $property_id, '_department', TRUE );
+
+            $base_department = $applicant_profile['department'];
+            if ( !in_array( $base_department, array('residential-sales', 'residential-lettings', 'commercial') ) )
+            {
+                $base_department = ph_get_custom_department_based_on($base_department);
+            }
+
+            if ( $base_department == 'residential-sales' )
+            {
+                $property_price = preg_replace("/[^0-9]/", '', ph_clean(get_post_meta( $property_id, '_price', TRUE )));
+
+                if ( !empty($property_price) )
+                {
+                    $applicant_profile['max_price'] = $property_price;
+
+                    // Not used yet but could be if introducing currencies in the future.
+                    $applicant_profile['max_price_actual'] = $property_price;
+
+                    $percentage_lower = get_option( 'propertyhive_applicant_match_price_range_percentage_lower', '' );
+                    $percentage_higher = get_option( 'propertyhive_applicant_match_price_range_percentage_higher', '' );
+
+                    if ( $percentage_lower != '' && $percentage_higher != '' )
+                    {
+                        $applicant_profile['match_price_range_lower'] = $property_price - ( $property_price * ( $percentage_lower / 100 ) );
+                        $applicant_profile['match_price_range_lower_actual'] = $property_price - ( $property_price * ( $percentage_lower / 100 ) );
+
+                        $applicant_profile['match_price_range_higher'] = $property_price + ( $property_price * ( $percentage_higher / 100 ) );
+                        $applicant_profile['match_price_range_higher_actual'] = $property_price + ( $property_price * ( $percentage_higher / 100 ) );
+                    }
+                }
+            }
+            elseif ( $base_department == 'residential-lettings' )
+            {
+                $property_rent = preg_replace("/[^0-9]/", '', ph_clean(get_post_meta( $property_id, '_rent', TRUE )));
+                $property_rent_freq = get_post_meta( $property_id, '_rent_frequency', TRUE );
+
+                $applicant_profile['max_rent'] = $property_rent;
+                $applicant_profile['rent_frequency'] = $property_rent_freq;
+
+                $price_actual = $property_rent; // Used for ordering properties. Stored in pcm
+                switch ( $property_rent_freq )
+                {
+                    case "pw": { $price_actual = ($property_rent * 52) / 12; break; }
+                    case "pcm": { $price_actual = $property_rent; break; }
+                    case "pq": { $price_actual = ($property_rent * 4) / 52; break; }
+                    case "pa": { $price_actual = ($property_rent / 52); break; }
+                }
+                $applicant_profile['max_price_actual'] = $price_actual;
+            }
+
+            if ( $base_department == 'residential-sales' || $base_department == 'residential-lettings' )
+            {
+                $beds = preg_replace("/[^0-9]/", '', ph_clean(get_post_meta( $property_id, '_bedrooms', TRUE )));
+                $applicant_profile['min_beds'] = $beds;
+            }
+
+            if ( $base_department == 'commercial' )
+            {
+                $property_for_sale = get_post_meta( $property_id, '_for_sale', TRUE );
+                $property_to_rent = get_post_meta( $property_id, '_to_rent', TRUE );
+
+                $available_as = array();
+                if ( $property_for_sale == 'yes' )
+                {
+                    $available_as[] = 'sale';
+                }
+                if ( $property_to_rent == 'yes' )
+                {
+                    $available_as[] = 'rent';
+                }
+                $applicant_profile['available_as'] = $available_as;
+            }
+
+            $applicant_profile['send_matching_properties'] = apply_filters( 'propertyhive_default_applicant_send_matching_properties', false ) === true ? 'yes' : '';
+            $applicant_profile['auto_match_disabled'] = 'yes';
+
+            $applicant_profile['added_from_enquiry'] = 'yes';
+
+            update_post_meta( $contact_post_id, '_applicant_profile_0', $applicant_profile );
+
+            update_post_meta( $contact_post_id, '_contact_types', array( 'applicant' ) );
+        }
 
         do_action('propertyhive_create_contact_from_enquiry', $enquiry_post_id, $contact_post_id);
 
@@ -1944,6 +2079,49 @@ class PH_AJAX {
 
         echo json_encode($return);
 
+        die();
+    }
+
+    public function merge_contact_records()
+    {
+        $this->json_headers();
+
+        if ( !isset( $_POST['contact_ids'] ) || !isset( $_POST['primary_contact_id'] ) )
+        {
+            $return = array('error' => 'Invalid parameters received');
+            echo json_encode( $return );
+            die();
+        }
+
+        $contacts_to_merge = explode('|', $_POST['contact_ids']);
+        $primary_contact_id = $_POST['primary_contact_id'];
+
+        if ( !is_array($contacts_to_merge) || !in_array( $primary_contact_id, $contacts_to_merge )  )
+        {
+            $return = array('error' => 'Invalid Contact IDs received');
+            echo json_encode( $return );
+            die();
+        }
+
+        // Check each post ID passed through is in fact of post type 'contact'
+        foreach ( $contacts_to_merge as $child_contact_id )
+        {
+            if ( get_post_type((int)$child_contact_id) != 'contact' )
+            {
+                $return = array('error' => 'Contact ID ' . $child_contact_id . ' received which is not a contact');
+                echo json_encode( $return );
+                die();
+            }
+        }
+
+        // Remove primary from list
+        unset($contacts_to_merge[array_search($primary_contact_id, $contacts_to_merge)]);
+
+        include_once( 'includes/class-ph-admin-merge-contacts.php' );
+        $ph_admin_merge_contacts = new PH_Admin_Merge_Contacts();
+        $ph_admin_merge_contacts->do_merge( $primary_contact_id, $contacts_to_merge );
+
+        echo json_encode( array('success' => true) );
         die();
     }
 
@@ -2336,7 +2514,7 @@ class PH_AJAX {
                     'label' => __( 'Valued Price', 'propertyhive' ) . ' (&pound;)', 
                     'desc_tip' => false, 
                     'class' => 'short',
-                    'value' => $appraisal->valued_price,
+                    'value' => ph_display_price_field( $appraisal->valued_price ),
                 );
                 propertyhive_wp_text_input( $args );
             }
@@ -2348,9 +2526,10 @@ class PH_AJAX {
         
                     <label for="">' . __('Valued Rent', 'propertyhive') . ' (&pound;)</label>
 
-                    <input type="text" class="" name="_valued_rent" id="_valued_rent" value="' . $appraisal->valued_rent . '" placeholder="" style="width:10%; min-width:100px;">
+                    <input type="text" class="" name="_valued_rent" id="_valued_rent" value="' . ph_display_price_field( $appraisal->valued_rent ) . '" placeholder="" style="width:10%; min-width:100px;">
                 
                     <select id="_valued_rent_frequency" name="_valued_rent_frequency" class="select" style="width:auto">
+                        <option value="pd"' . ( ($rent_frequency == 'pd') ? ' selected' : '') . '>' . __('Per Day', 'propertyhive') . '</option>
                         <option value="pppw"' . ( ($rent_frequency == 'pppw') ? ' selected' : '') . '>' . __('Per Person Per Week', 'propertyhive') . '</option>
                         <option value="pw"' . ( ($rent_frequency == 'pw') ? ' selected' : '') . '>' . __('Per Week', 'propertyhive') . '</option>
                         <option value="pcm"' . ( ($rent_frequency == 'pcm' || $rent_frequency == '') ? ' selected' : '') . '>' . __('Per Calendar Month', 'propertyhive') . '</option>
@@ -2562,6 +2741,7 @@ class PH_AJAX {
                         <input type="text" id="_price" name="_price" style="width:100%;" value="' . get_post_meta( $post_id, '_valued_rent', TRUE ) . '">
 
                         <select id="_rent_frequency" name="_rent_frequency" class="select" style="width:100%">
+                            <option value="pd"' . ( ($rent_frequency == 'pd') ? ' selected' : '') . '>' . __('Per Day', 'propertyhive') . '</option>
                             <option value="pppw"' . ( ($rent_frequency == 'pppw') ? ' selected' : '') . '>' . __('Per Person Per Week', 'propertyhive') . '</option>
                             <option value="pw"' . ( ($rent_frequency == 'pw') ? ' selected' : '') . '>' . __('Per Week', 'propertyhive') . '</option>
                             <option value="pcm"' . ( ($rent_frequency == 'pcm' || $rent_frequency == '') ? ' selected' : '') . '>' . __('Per Calendar Month', 'propertyhive') . '</option>
@@ -2648,6 +2828,7 @@ class PH_AJAX {
 
                 switch (ph_clean($_POST['rent_frequency']))
                 {
+                    case "pd": { $price = ($rent * 365) / 12; break; }
                     case "pppw":
                     {
                         $bedrooms = get_post_meta( $postID, '_bedrooms', true );
@@ -3685,6 +3866,7 @@ class PH_AJAX {
         {
             update_post_meta( $post_id, '_feedback_status', '' );
             update_post_meta( $post_id, '_feedback_passed_on', '' );
+            delete_post_meta( $post_id, '_feedback_received_date' );
 
             // Add note/comment to viewing
             $comment = array(
@@ -3712,6 +3894,7 @@ class PH_AJAX {
         {
             update_post_meta( $post_id, '_status', 'pending' );
             update_post_meta( $post_id, '_feedback_status', '' );
+            delete_post_meta( $post_id, '_feedback_received_date' );
 
             // Add note/comment to viewing
             $comment = array(
@@ -3755,353 +3938,37 @@ class PH_AJAX {
 
     public function get_property_viewings_meta_box()
     {
-        check_ajax_referer( 'get_property_viewings_meta_box', 'security' );
+        $post_id = $_POST['post_id'];
 
-        global $post;
+        $selected_status = '';
+        if ( isset($_POST['selected_status']) )
+        {
+            $selected_status = ph_clean($_POST['selected_status']);
+        }
 
-        echo '<div class="propertyhive_meta_box">';
-        
-        echo '<div class="options_group">';
-
-            $args = array(
-                'post_type'   => 'viewing', 
-                'nopaging'    => true,
-                'orderby'   => 'meta_value',
-                'order'       => 'DESC',
-                'meta_key'  => '_start_date_time',
-                'post_status'   => 'publish',
-                'meta_query'  => array(
-                    array(
-                        'key' => '_property_id',
-                        'value' => (int)$_POST['post_id']
-                    )
-                )
-            );
-            $viewings_query = new WP_Query( $args );
-
-            if ( $viewings_query->have_posts() )
-            {
-                $columns = array(
-                    'date_time' => __( 'Date', 'propertyhive' ) . ' / ' . __( 'Time', 'propertyhive' ),
-                    'applicants' =>  __( 'Applicant(s)', 'propertyhive' ),
-                    'negotiators' => __( 'Attending Negotiator(s)', 'propertyhive' ),
-                    'status' => __( 'Status', 'propertyhive' ),
-                );
-
-                $columns = apply_filters( 'propertyhive_property_viewings_columns', $columns );
-
-                echo '<table style="width:100%">
-                    <thead>
-                        <tr>';
-                foreach ( $columns as $column_key => $column )
-                {
-                    echo '<th style="text-align:left;">' . $column . '</th>';
-                }
-                echo '</tr>
-                    </thead>
-                    <tbody>';
-
-                while ( $viewings_query->have_posts() )
-                {
-                    $viewings_query->the_post();
-
-                    $viewing_start_date_time = get_post_meta(get_the_ID(), '_start_date_time', TRUE);
-                    
-                    $applicant_contact_ids = get_post_meta(get_the_ID(), '_applicant_contact_id');
-                    $applicant_contacts = array();
-                    if (!empty($applicant_contact_ids))
-                    {
-                        foreach ($applicant_contact_ids as $applicant_contact_id)
-                        {
-                            $applicant_contacts[] = $this->formatted_contact_meta_box_data($applicant_contact_id);
-                        }
-
-                        $applicant_contacts = implode('<br>', $applicant_contacts);
-                    }
-                    else
-                    {
-                        $applicant_contacts = '-';
-                    }
-
-                    $negotiator_ids = get_post_meta(get_the_ID(), '_negotiator_id');
-                    $negotiators = array();
-                    if (!empty($negotiator_ids))
-                    {
-                        foreach ($negotiator_ids as $negotiator_id)
-                        {
-                            $userdata = get_userdata( $negotiator_id );
-                            if ( $userdata !== FALSE )
-                            {
-                                $negotiators[] = $userdata->display_name;
-                            }
-                            else
-                            {
-                                $negotiators[] = '<em>' . __( 'Unknown user', 'propertyhive' ) . '</em>';
-                            }
-                        }
-
-                        $negotiators = implode(', ', $negotiators);
-                    }
-                    else
-                    {
-                        $negotiators = 'Unattended';
-                    }
-
-                    $status = get_post_meta(get_the_ID(), '_status', TRUE);
-                    $status_output = __( ucwords(str_replace("_", " ", $status)), 'propertyhive' );
-                    if ( $status == 'pending' )
-                    {
-                        $status_output .= '<br>';
-                        // confirmation status
-                        if ( get_post_meta(get_the_ID(), '_all_confirmed', TRUE) == 'yes' )
-                        {
-                            $status_output .= __( 'All Parties Confirmed', 'propertyhive' );
-                        }
-                        else
-                        {
-                            $status_output .= __( 'Awaiting Confirmation', 'propertyhive' );
-                        }
-                    }
-                    if ( $status == 'carried_out' )
-                    {
-                        $status_output .= '<br>';
-                        $feedback_status = get_post_meta(get_the_ID(), '_feedback_status', TRUE);
-                        switch ( $feedback_status )
-                        {
-                            case "interested": { $status_output .= __( 'Applicant Interested', 'propertyhive' ); break; }
-                            case "not_interested": { $status_output .= __( 'Applicant Not Interested', 'propertyhive' ); break; }
-                            case "not_required": { $status_output .= __( 'Feedback Not Required', 'propertyhive' ); break; }
-                            default: { $status_output .= __( 'Awaiting Feedback', 'propertyhive' ); }
-                        }
-
-                        if ( $feedback_status == 'interested' || $feedback_status == 'not_interested' )
-                        {
-                            $feedback_passed_on = get_post_meta(get_the_ID(), '_feedback_passed_on', TRUE);
-                            $status_output .= '<br>' . ( ($feedback_passed_on == 'yes') ? __( 'Feedback Passed On', 'propertyhive' ) : __( 'Feedback Not Passed On', 'propertyhive' ) );
-                        }
-                    }
-
-                    // Add text if this a second, third etc viewing
-                    $related_viewings = get_post_meta( get_the_ID(), '_related_viewings', TRUE );
-                    if ( isset($related_viewings['previous']) && count($related_viewings['previous']) > 0 )
-                    {
-                        $status_output .= '<br>' . ph_ordinal_suffix(count($related_viewings['previous'])+1) . ' ' . __( 'Viewing', 'propertyhive' );
-                    }
-
-                    $column_data = array(
-                        'date_time' => '<a href="' . get_edit_post_link( get_the_ID(), '' ) . '" target="' . apply_filters('propertyhive_subgrid_link_target', '') . '" class="viewing-lightbox" data-viewing-id="' . get_the_ID() . '">' . date("H:i jS F Y", strtotime($viewing_start_date_time)) . '</a>',
-                        'applicants' =>  $applicant_contacts,
-                        'negotiators' => $negotiators,
-                        'status' => $status_output,
-                    );
-
-                    echo '<tr>';
-                    foreach ( $columns as $column_key => $column )
-                    {
-                        echo '<td style="text-align:left;">';
-
-                            if ( isset( $column_data[$column_key] ) )
-                            {
-                                echo $column_data[$column_key];
-                            }
-
-                            do_action( 'propertyhive_property_viewings_custom_column', $column_key );
-
-                        echo '</td>';
-                    }
-                    echo '</tr>';
-                }
-
-                echo '
-                    </tbody>
-                </table>
-                <br>';
-            }
-            else
-            {
-                echo '<p>' . __( 'No viewings exist for this property', 'propertyhive') . '</p>';
-            }
-            wp_reset_postdata();
+        include( PH()->plugin_path() . '/includes/admin/views/html-property-viewings-meta-box.php' );
 
         do_action('propertyhive_property_viewings_fields');
-        
-        echo '</div>';
-        
-        echo '</div>';
 
+        // Quit out
         die();
     }
 
     public function get_contact_viewings_meta_box()
     {
-        check_ajax_referer( 'get_contact_viewings_meta_box', 'security' );
+        $post_id = $_POST['post_id'];
 
-        global $post;
+        $selected_status = '';
+        if ( isset($_POST['selected_status']) )
+        {
+            $selected_status = ph_clean($_POST['selected_status']);
+        }
 
-        echo '<div class="propertyhive_meta_box">';
-        
-        echo '<div class="options_group">';
-
-            $args = array(
-                'post_type'   => 'viewing', 
-                'nopaging'    => true,
-                'orderby'   => 'meta_value',
-                'order'       => 'DESC',
-                'post_status'   => 'publish',
-                'meta_key'  => '_start_date_time',
-                'meta_query'  => array(
-                    array(
-                        'key' => '_applicant_contact_id',
-                        'value' => (int)$_POST['post_id']
-                    )
-                )
-            );
-            $viewings_query = new WP_Query( $args );
-
-            if ( $viewings_query->have_posts() )
-            {
-                $columns = array(
-                    'date_time' => __( 'Date', 'propertyhive' ) . ' / ' . __( 'Time', 'propertyhive' ),
-                    'property' =>  __( 'Property', 'propertyhive' ),
-                    'negotiators' => __( 'Attending Negotiator(s)', 'propertyhive' ),
-                    'status' => __( 'Status', 'propertyhive' ),
-                );
-
-                $columns = apply_filters( 'propertyhive_contact_viewings_columns', $columns );
-
-                echo '<table style="width:100%">
-                    <thead>
-                        <tr>';
-                foreach ( $columns as $column_key => $column )
-                {
-                    echo '<th style="text-align:left;">' . $column . '</th>';
-                }
-                echo '</tr>
-                    </thead>
-                    <tbody>';
-
-                while ( $viewings_query->have_posts() )
-                {
-                    $viewings_query->the_post();
-                    
-                    $viewing_start_date_time = get_post_meta(get_the_ID(), '_start_date_time', TRUE);
-                    
-                    $property = new PH_Property((int)get_post_meta(get_the_ID(), '_property_id', TRUE));
-                    if ( get_post_meta(get_the_ID(), '_property_id', TRUE) != '' )
-                    {
-                        $property_output = '<a href="' . get_edit_post_link( get_post_meta(get_the_ID(), '_property_id', TRUE), '' ) . '" target="' . apply_filters('propertyhive_subgrid_link_target', '') . '">' . $property->get_formatted_full_address() . '</a>';
-                    }
-                    else
-                    {
-                        $property_output = '-';
-                    }
-
-                    $negotiator_ids = get_post_meta(get_the_ID(), '_negotiator_id');
-                    $negotiators = array();
-                    if (!empty($negotiator_ids))
-                    {
-                        foreach ($negotiator_ids as $negotiator_id)
-                        {
-                            $userdata = get_userdata( $negotiator_id );
-                            if ( $userdata !== FALSE )
-                            {
-                                $negotiators[] = $userdata->display_name;
-                            }
-                            else
-                            {
-                                $negotiators[] = '<em>' . __( 'Unknown user', 'propertyhive' ) . '</em>';
-                            }
-                        }
-
-                        $negotiators = implode(', ', $negotiators);
-                    }
-                    else
-                    {
-                        $negotiators = 'Unattended';
-                    }
-
-                    $status = get_post_meta(get_the_ID(), '_status', TRUE);
-                    $status_output = __( ucwords(str_replace("_", " ", $status)), 'propertyhive' );
-                    if ( $status == 'pending' )
-                    {
-                        $status_output .= '<br>';
-                        // confirmation status
-                        if ( get_post_meta(get_the_ID(), '_all_confirmed', TRUE) == 'yes' )
-                        {
-                            $status_output .= __( 'All Parties Confirmed', 'propertyhive' );
-                        }
-                        else
-                        {
-                            $status_output .= __( 'Awaiting Confirmation', 'propertyhive' );
-                        }
-                    }
-                    if ( $status == 'carried_out' )
-                    {
-                        $status_output .= '<br>';
-                        $feedback_status = get_post_meta(get_the_ID(), '_feedback_status', TRUE);
-                        switch ( get_post_meta(get_the_ID(), '_feedback_status', TRUE) )
-                        {
-                            case "interested": { $status_output .= __( 'Applicant Interested', 'propertyhive' ); break; }
-                            case "not_interested": { $status_output .= __( 'Applicant Not Interested', 'propertyhive' ); break; }
-                            case "not_required": { $status_output .= __( 'Feedback Not Required', 'propertyhive' ); break; }
-                            default: { $status_output .= __( 'Awaiting Feedback', 'propertyhive' ); }
-                        }
-
-                        if ( $feedback_status == 'interested' || $feedback_status == 'not_interested' )
-                        {
-                            $feedback_passed_on = get_post_meta(get_the_ID(), '_feedback_passed_on', TRUE);
-                            $status_output .= '<br>' . ( ($feedback_passed_on == 'yes') ? __( 'Feedback Passed On', 'propertyhive' ) : __( 'Feedback Not Passed On', 'propertyhive' ) );
-                        }
-                    }
-
-                    // Add text if this a second, third etc viewing
-                    $related_viewings = get_post_meta( get_the_ID(), '_related_viewings', TRUE );
-                    if ( isset($related_viewings['previous']) && count($related_viewings['previous']) > 0 )
-                    {
-                        $status_output .= '<br>' . ph_ordinal_suffix(count($related_viewings['previous'])+1) . ' ' . __( 'Viewing', 'propertyhive' );
-                    }
-
-                    $column_data = array(
-                        'date_time' => '<a href="' . get_edit_post_link( get_the_ID(), '' ) . '" target="' . apply_filters('propertyhive_subgrid_link_target', '') . '" class="viewing-lightbox" data-viewing-id="' . get_the_ID() . '">' . date("H:i jS F Y", strtotime($viewing_start_date_time)) . '</a>',
-                        'property' =>  $property_output,
-                        'negotiators' => $negotiators,
-                        'status' => $status_output,
-                    );
-
-                    echo '<tr>';
-                    foreach ( $columns as $column_key => $column )
-                    {
-                        echo '<td style="text-align:left;">';
-
-                            if ( isset( $column_data[$column_key] ) )
-                            {
-                                echo $column_data[$column_key];
-                            }
-
-                            do_action( 'propertyhive_contact_viewings_custom_column', $column_key );
-
-                        echo '</td>';
-                    }
-                    echo '</tr>';
-                }
-
-                echo '
-                    </tbody>
-                </table>
-                <br>';
-            }
-            else
-            {
-                echo '<p>' . __( 'No viewings exist for this contact', 'propertyhive') . '</p>';
-            }
-            wp_reset_postdata();
+        include( PH()->plugin_path() . '/includes/admin/views/html-contact-viewings-meta-box.php' );
 
         do_action('propertyhive_contact_viewings_fields');
-        
-        echo '</div>';
-        
-        echo '</div>';
 
+        // Quit out
         die();
     }
 
@@ -4394,7 +4261,7 @@ class PH_AJAX {
             'label' => __( 'Offer Amount', 'propertyhive' ) . ' (&pound;)', 
             'desc_tip' => false, 
             'class' => 'short',
-            'value' => ( is_numeric($offer->amount) ? number_format($offer->amount) : '' ),
+            'value' => ( is_numeric($offer->amount) ? ph_display_price_field( $offer->amount ) : '' ),
             'custom_attributes' => array(
                 //'style' => 'width:95%; max-width:500px;'
             )
@@ -4572,235 +4439,37 @@ class PH_AJAX {
 
     public function get_property_offers_meta_box()
     {
-        check_ajax_referer( 'get_property_offers_meta_box', 'security' );
+        $post_id = $_POST['post_id'];
 
-        global $post;
+        $selected_status = '';
+        if ( isset($_POST['selected_status']) )
+        {
+            $selected_status = ph_clean($_POST['selected_status']);
+        }
 
-        echo '<div class="propertyhive_meta_box">';
-        
-        echo '<div class="options_group">';
-
-            $args = array(
-                'post_type'   => 'offer', 
-                'nopaging'    => true,
-                'orderby'   => 'meta_value',
-                'order'       => 'DESC',
-                'meta_key'  => '_offer_date_time',
-                'post_status'   => 'publish',
-                'meta_query'  => array(
-                    array(
-                        'key' => '_property_id',
-                        'value' => (int)$_POST['post_id']
-                    )
-                )
-            );
-            $offers_query = new WP_Query( $args );
-
-            if ( $offers_query->have_posts() )
-            {
-                $columns = array(
-                    'date' => __( 'Offer Date', 'propertyhive' ),
-                    'applicant' => __( 'Applicant(s)', 'propertyhive' ),
-                    'amount' => __( 'Offer Amount', 'propertyhive' ),
-                    'status' => __( 'Status', 'propertyhive' ),
-                );
-
-                $columns = apply_filters( 'propertyhive_property_offers_columns', $columns );
-
-                echo '<table style="width:100%">
-                    <thead>
-                        <tr>';
-                foreach ( $columns as $column_key => $column )
-                {
-                    echo '<th style="text-align:left;">' . $column . '</th>';
-                }
-                echo '</tr>
-                    </thead>
-                    <tbody>';
-
-                while ( $offers_query->have_posts() )
-                {
-                    $offers_query->the_post();
-
-                    $offer = new PH_Offer(get_the_ID());
-
-                    $applicant_contact_ids = get_post_meta(get_the_ID(), '_applicant_contact_id');
-                    $applicant_contacts = array();
-                    if (!empty($applicant_contact_ids))
-                    {
-                        foreach ($applicant_contact_ids as $applicant_contact_id)
-                        {
-                            $applicant_contacts[] = $this->formatted_contact_meta_box_data($applicant_contact_id);
-                        }
-
-                        $applicant_contacts = implode('<br>', $applicant_contacts);
-                    }
-                    else
-                    {
-                        $applicant_contacts = '-';
-                    }
-
-                    $column_data = array(
-                        'date' => '<a href="' . get_edit_post_link( get_the_ID(), '' ) . '" target="' . apply_filters('propertyhive_subgrid_link_target', '') . '">' . date("jS F Y", strtotime(get_post_meta(get_the_ID(), '_offer_date_time', TRUE))) . '</a>',
-                        'applicant' => $applicant_contacts,
-                        'amount' => $offer->get_formatted_amount(),
-                        'status' => __( ucwords(str_replace("_", " ", get_post_meta(get_the_ID(), '_status', TRUE))), 'propertyhive' ),
-                    );
-
-                    echo '<tr>';
-                    foreach ( $columns as $column_key => $column )
-                    {
-                        echo '<td style="text-align:left;">';
-
-                            if ( isset( $column_data[$column_key] ) )
-                            {
-                                echo $column_data[$column_key];
-                            }
-
-                            do_action( 'propertyhive_property_offers_custom_column', $column_key );
-
-                        echo '</td>';
-                    }
-                    echo '</tr>';
-                }
-
-                echo '
-                    </tbody>
-                </table>
-                <br>';
-            }
-            else
-            {
-                echo '<p>' . __( 'No offers exist for this property', 'propertyhive') . '</p>';
-            }
-            wp_reset_postdata();
+        include( PH()->plugin_path() . '/includes/admin/views/html-property-offers-meta-box.php' );
 
         do_action('propertyhive_property_offers_fields');
-        
-        echo '</div>';
-        
-        echo '</div>';
 
+        // Quit out
         die();
     }
 
     public function get_contact_offers_meta_box()
     {
-        check_ajax_referer( 'get_contact_offers_meta_box', 'security' );
+        $post_id = $_POST['post_id'];
 
-        global $post;
+        $selected_status = '';
+        if ( isset($_POST['selected_status']) )
+        {
+            $selected_status = ph_clean($_POST['selected_status']);
+        }
 
-        echo '<div class="propertyhive_meta_box">';
-        
-        echo '<div class="options_group">';
-
-            $args = array(
-                'post_type'   => 'offer', 
-                'nopaging'    => true,
-                'orderby'   => 'meta_value',
-                'order'       => 'DESC',
-                'post_status'   => 'publish',
-                'meta_key'  => '_offer_date_time',
-                'meta_query'  => array(
-                    array(
-                        'key' => '_applicant_contact_id',
-                        'value' => (int)$_POST['post_id']
-                    )
-                )
-            );
-            $offers_query = new WP_Query( $args );
-
-            if ( $offers_query->have_posts() )
-            {
-                $columns = array(
-                    'date' => __( 'Offer Date', 'propertyhive' ),
-                    'property' => __( 'Property', 'propertyhive' ),
-                    'property_owner' => __( 'Property Owner', 'propertyhive' ),
-                    'amount' => __( 'Offer Amount', 'propertyhive' ),
-                    'status' => __( 'Status', 'propertyhive' ),
-                );
-
-                $columns = apply_filters( 'propertyhive_contact_offers_columns', $columns );
-
-                echo '<table style="width:100%">
-                    <thead>
-                        <tr>';
-                foreach ( $columns as $column_key => $column )
-                {
-                    echo '<th style="text-align:left;">' . $column . '</th>';
-                }
-                echo '</tr>
-                    </thead>
-                    <tbody>';
-
-                while ( $offers_query->have_posts() )
-                {
-                    $offers_query->the_post();
-
-                    $offer = new PH_Offer(get_the_ID());
-
-                    $property = new PH_Property((int)get_post_meta(get_the_ID(), '_property_id', TRUE));
-                    $property_owners = '';
-                    $owner_contact_ids = $property->_owner_contact_id;
-                    if ( 
-                        ( !is_array($owner_contact_ids) && $owner_contact_ids != '' && $owner_contact_ids != 0 ) 
-                        ||
-                        ( is_array($owner_contact_ids) && !empty($owner_contact_ids) )
-                    )
-                    {
-                        if ( !is_array($owner_contact_ids) )
-                        {
-                            $owner_contact_ids = array($owner_contact_ids);
-                        }
-
-                        foreach ( $owner_contact_ids as $owner_contact_id )
-                        {
-                            $property_owners .= $this->formatted_contact_meta_box_data($owner_contact_id, false);
-                        }
-                    }
-
-                    $column_data = array(
-                        'date' => '<a href="' . get_edit_post_link( get_the_ID(), '' ) . '" target="' . apply_filters('propertyhive_subgrid_link_target', '') . '">' . date("jS F Y", strtotime(get_post_meta(get_the_ID(), '_offer_date_time', TRUE))) . '</a>',
-                        'property' => '<a href="' . get_edit_post_link( get_post_meta(get_the_ID(), '_property_id', TRUE), '' ) . '" target="' . apply_filters('propertyhive_subgrid_link_target', '') . '">' . $property->get_formatted_full_address() . '</a>',
-                        'property_owner' => $property_owners,
-                        'amount' => $offer->get_formatted_amount(),
-                        'status' => __( ucwords(str_replace("_", " ", get_post_meta(get_the_ID(), '_status', TRUE))), 'propertyhive' ),
-                    );
-
-                    echo '<tr>';
-                    foreach ( $columns as $column_key => $column )
-                    {
-                        echo '<td style="text-align:left;">';
-
-                            if ( isset( $column_data[$column_key] ) )
-                            {
-                                echo $column_data[$column_key];
-                            }
-
-                            do_action( 'propertyhive_contact_offers_custom_column', $column_key );
-
-                        echo '</td>';
-                    }
-                    echo '</tr>';
-                }
-
-                echo '
-                    </tbody>
-                </table>
-                <br>';
-            }
-            else
-            {
-                echo '<p>' . __( 'No offers exist for this contact', 'propertyhive') . '</p>';
-            }
-            wp_reset_postdata();
+        include( PH()->plugin_path() . '/includes/admin/views/html-contact-offers-meta-box.php' );
 
         do_action('propertyhive_contact_offers_fields');
-        
-        echo '</div>';
-        
-        echo '</div>';
 
+        // Quit out
         die();
     }
 
@@ -4849,7 +4518,7 @@ class PH_AJAX {
             'label' => __( 'Sale Amount', 'propertyhive' ) . ' (&pound;)', 
             'desc_tip' => false, 
             'class' => 'short',
-            'value' => ( is_numeric($sale->amount) ? number_format($sale->amount) : '' ),
+            'value' => ( is_numeric($sale->amount) ? ph_display_price_field( $sale->amount ) : '' ),
             'custom_attributes' => array(
                 //'style' => 'width:95%; max-width:500px;'
             )
@@ -5010,235 +4679,73 @@ class PH_AJAX {
 
     public function get_property_sales_meta_box()
     {
-        check_ajax_referer( 'get_property_sales_meta_box', 'security' );
+        $post_id = $_POST['post_id'];
 
-        global $post;
+        $selected_status = '';
+        if ( isset($_POST['selected_status']) )
+        {
+            $selected_status = ph_clean($_POST['selected_status']);
+        }
 
-        echo '<div class="propertyhive_meta_box">';
-        
-        echo '<div class="options_group">';
-
-            $args = array(
-                'post_type'   => 'sale', 
-                'nopaging'    => true,
-                'orderby'   => 'meta_value',
-                'order'       => 'DESC',
-                'meta_key'  => '_sale_date_time',
-                'post_status'   => 'publish',
-                'meta_query'  => array(
-                    array(
-                        'key' => '_property_id',
-                        'value' => (int)$_POST['post_id']
-                    )
-                )
-            );
-            $sales_query = new WP_Query( $args );
-
-            if ( $sales_query->have_posts() )
-            {
-                $columns = array(
-                    'date' => __( 'Sale Date', 'propertyhive' ),
-                    'applicant' => __( 'Applicant(s)', 'propertyhive' ),
-                    'amount' => __( 'Sale Amount', 'propertyhive' ),
-                    'status' => __( 'Status', 'propertyhive' ),
-                );
-
-                $columns = apply_filters( 'propertyhive_property_sales_columns', $columns );
-
-                echo '<table style="width:100%">
-                    <thead>
-                        <tr>';
-                foreach ( $columns as $column_key => $column )
-                {
-                    echo '<th style="text-align:left;">' . $column . '</th>';
-                }
-                echo '</tr>
-                    </thead>
-                    <tbody>';
-
-                while ( $sales_query->have_posts() )
-                {
-                    $sales_query->the_post();
-
-                    $sale = new PH_Sale(get_the_ID());
-
-                    $applicant_contact_ids = get_post_meta(get_the_ID(), '_applicant_contact_id');
-                    $applicant_contacts = array();
-                    if (!empty($applicant_contact_ids))
-                    {
-                        foreach ($applicant_contact_ids as $applicant_contact_id)
-                        {
-                            $applicant_contacts[] = $this->formatted_contact_meta_box_data($applicant_contact_id);
-                        }
-
-                        $applicant_contacts = implode('<br>', $applicant_contacts);
-                    }
-                    else
-                    {
-                        $applicant_contacts = '-';
-                    }
-
-                    $column_data = array(
-                        'date' => '<a href="' . get_edit_post_link( get_the_ID(), '' ) . '" target="' . apply_filters('propertyhive_subgrid_link_target', '') . '">' . date("jS F Y", strtotime(get_post_meta(get_the_ID(), '_sale_date_time', TRUE))) . '</a>',
-                        'applicant' => $applicant_contacts,
-                        'amount' => $sale->get_formatted_amount(),
-                        'status' => __( ucwords(str_replace("_", " ", get_post_meta(get_the_ID(), '_status', TRUE))), 'propertyhive' ),
-                    );
-
-                    echo '<tr>';
-                    foreach ( $columns as $column_key => $column )
-                    {
-                        echo '<td style="text-align:left;">';
-
-                            if ( isset( $column_data[$column_key] ) )
-                            {
-                                echo $column_data[$column_key];
-                            }
-
-                            do_action( 'propertyhive_property_sales_custom_column', $column_key );
-
-                        echo '</td>';
-                    }
-                    echo '</tr>';
-                }
-
-                echo '
-                    </tbody>
-                </table>
-                <br>';
-            }
-            else
-            {
-                echo '<p>' . __( 'No sales exist for this property', 'propertyhive') . '</p>';
-            }
-            wp_reset_postdata();
+        include( PH()->plugin_path() . '/includes/admin/views/html-property-sales-meta-box.php' );
 
         do_action('propertyhive_property_sales_fields');
-        
-        echo '</div>';
-        
-        echo '</div>';
 
+        // Quit out
         die();
     }
 
     public function get_contact_sales_meta_box()
     {
-        check_ajax_referer( 'get_contact_sales_meta_box', 'security' );
+        $post_id = $_POST['post_id'];
 
-        global $post;
+        $selected_status = '';
+        if ( isset($_POST['selected_status']) )
+        {
+            $selected_status = ph_clean($_POST['selected_status']);
+        }
 
-        echo '<div class="propertyhive_meta_box">';
-        
-        echo '<div class="options_group">';
-
-            $args = array(
-                'post_type'   => 'sale', 
-                'nopaging'    => true,
-                'orderby'   => 'meta_value',
-                'order'       => 'DESC',
-                'post_status'   => 'publish',
-                'meta_key'  => '_sale_date_time',
-                'meta_query'  => array(
-                    array(
-                        'key' => '_applicant_contact_id',
-                        'value' => (int)$_POST['post_id']
-                    )
-                )
-            );
-            $sales_query = new WP_Query( $args );
-
-            if ( $sales_query->have_posts() )
-            {
-                $columns = array(
-                    'date' => __( 'Sale Date', 'propertyhive' ),
-                    'property' => __( 'Property', 'propertyhive' ),
-                    'property_owner' => __( 'Property Owner', 'propertyhive' ),
-                    'amount' => __( 'Sale Amount', 'propertyhive' ),
-                    'status' => __( 'Status', 'propertyhive' ),
-                );
-
-                $columns = apply_filters( 'propertyhive_contact_sales_columns', $columns );
-
-                echo '<table style="width:100%">
-                    <thead>
-                        <tr>';
-                foreach ( $columns as $column_key => $column )
-                {
-                    echo '<th style="text-align:left;">' . $column . '</th>';
-                }
-                echo '</tr>
-                    </thead>
-                    <tbody>';
-
-                while ( $sales_query->have_posts() )
-                {
-                    $sales_query->the_post();
-
-                    $sale = new PH_Sale(get_the_ID());
-
-                    $property = new PH_Property((int)get_post_meta(get_the_ID(), '_property_id', TRUE));
-                    $property_owners = '';
-                    $owner_contact_ids = $property->_owner_contact_id;
-                    if ( 
-                        ( !is_array($owner_contact_ids) && $owner_contact_ids != '' && $owner_contact_ids != 0 ) 
-                        ||
-                        ( is_array($owner_contact_ids) && !empty($owner_contact_ids) )
-                    )
-                    {
-                        if ( !is_array($owner_contact_ids) )
-                        {
-                            $owner_contact_ids = array($owner_contact_ids);
-                        }
-
-                        foreach ( $owner_contact_ids as $owner_contact_id )
-                        {
-                            $property_owners .= $this->formatted_contact_meta_box_data($owner_contact_id, false);
-                        }
-                    }
-
-                    $column_data = array(
-                        'date' => '<a href="' . get_edit_post_link( get_the_ID(), '' ) . '" target="' . apply_filters('propertyhive_subgrid_link_target', '') . '">' . date("jS F Y", strtotime(get_post_meta(get_the_ID(), '_sale_date_time', TRUE))) . '</a>',
-                        'property' => '<a href="' . get_edit_post_link( get_post_meta(get_the_ID(), '_property_id', TRUE), '' ) . '" target="' . apply_filters('propertyhive_subgrid_link_target', '') . '">' . $property->get_formatted_full_address() . '</a>',
-                        'property_owner' => $property_owners,
-                        'amount' => $sale->get_formatted_amount(),
-                        'status' => __( ucwords(str_replace("_", " ", get_post_meta(get_the_ID(), '_status', TRUE))), 'propertyhive' ),
-                    );
-
-                    echo '<tr>';
-                    foreach ( $columns as $column_key => $column )
-                    {
-                        echo '<td style="text-align:left;">';
-
-                            if ( isset( $column_data[$column_key] ) )
-                            {
-                                echo $column_data[$column_key];
-                            }
-
-                            do_action( 'propertyhive_contact_sales_custom_column', $column_key );
-
-                        echo '</td>';
-                    }
-                    echo '</tr>';
-                }
-
-                echo '
-                    </tbody>
-                </table>
-                <br>';
-            }
-            else
-            {
-                echo '<p>' . __( 'No sales exist for this contact', 'propertyhive') . '</p>';
-            }
-            wp_reset_postdata();
+        include( PH()->plugin_path() . '/includes/admin/views/html-contact-sales-meta-box.php' );
 
         do_action('propertyhive_contact_sales_fields');
-        
-        echo '</div>';
-        
-        echo '</div>';
 
+        // Quit out
+        die();
+    }
+
+    public function get_property_enquiries_meta_box()
+    {
+        $post_id = $_POST['post_id'];
+
+        $selected_status = '';
+        if ( isset($_POST['selected_status']) )
+        {
+            $selected_status = ph_clean($_POST['selected_status']);
+        }
+
+        include( PH()->plugin_path() . '/includes/admin/views/html-property-enquiries-meta-box.php' );
+
+        do_action('propertyhive_property_enquiries_fields');
+
+        // Quit out
+        die();
+    }
+
+    public function get_contact_enquiries_meta_box()
+    {
+        $post_id = $_POST['post_id'];
+
+        $selected_status = '';
+        if ( isset($_POST['selected_status']) )
+        {
+            $selected_status = ph_clean($_POST['selected_status']);
+        }
+
+        include( PH()->plugin_path() . '/includes/admin/views/html-contact-enquiries-meta-box.php' );
+
+        do_action('propertyhive_contact_enquiries_fields');
+
+        // Quit out
         die();
     }
 
@@ -5330,6 +4837,60 @@ class PH_AJAX {
         die();
     }
 
+    public function check_key_date_recurrence()
+    {
+        $post_id = $_POST['post_id'];
+
+        $next_key_date = '';
+
+        $key_date = new PH_Key_Date(get_post($post_id));
+        $key_date_due = $key_date->date_due();
+
+        $key_date_type = $key_date->key_date_type_id();
+
+        $recurrence_rules = get_option( 'propertyhive_key_date_type', array() );
+        $recurrence_rules = is_array( $recurrence_rules ) ? $recurrence_rules : array();
+
+        if ( isset($recurrence_rules[$key_date_type]) && isset( $recurrence_rules[$key_date_type]['recurrence_rule'] ) )
+        {
+            foreach (explode(';', $recurrence_rules[$key_date_type]['recurrence_rule']) as $key_value_pair){
+                list($key, $value) = explode('=', $key_value_pair);
+                $recurrence[strtolower($key)] = $value;
+            }
+
+            if ( isset($recurrence['freq']) && $recurrence['freq'] != 'ONCE' )
+            {
+                $interval = isset($recurrence['interval']) ? $recurrence['interval'] : '1';
+                switch( $recurrence['freq'] )
+                {
+                    case 'DAILY':
+                        $frequency = 'day';
+                        break;
+                    case 'WEEKLY':
+                        $frequency = 'week';
+                        break;
+                    case 'MONTHLY':
+                        $frequency = 'month';
+                        break;
+                    case 'YEARLY':
+                        $frequency = 'year';
+                        break;
+                }
+
+                if ( isset($frequency) )
+                {
+                    $next_key_date = date_add($key_date_due, date_interval_create_from_date_string($interval . ' ' . $frequency));
+                    $next_key_date = date_format($next_key_date, 'Y-m-d');
+                }
+            }
+        }
+
+        echo $next_key_date;
+
+        // Quit out
+        die();
+    }
+
     public function save_key_date()
     {
         $key_date_post_id = (int)$_POST['post_id'];
@@ -5344,6 +4905,55 @@ class PH_AJAX {
         update_post_meta( $key_date_post_id, '_key_date_status', $_POST['status'] );
         update_post_meta( $key_date_post_id, '_key_date_type_id', $_POST['type'] );
 
+        if ( isset($_POST['next_key_date']) )
+        {
+            // Insert next key date record
+            $next_key_date_post = array(
+                'post_title' => $_POST['description'],
+                'post_content' => '',
+                'post_type' => 'key_date',
+                'post_status' => 'publish',
+                'comment_status' => 'closed',
+                'ping_status' => 'closed',
+            );
+
+            // Insert the post into the database
+            $next_key_date_post_id = wp_insert_post( $next_key_date_post );
+
+            if ( is_wp_error($next_key_date_post_id) || $next_key_date_post_id == 0 )
+            {
+                $return = array('error' => 'Failed to create next key date post. Please try again');
+                echo json_encode( $return );
+                die();
+            }
+
+            add_post_meta( $next_key_date_post_id, '_date_due', $_POST['next_key_date'] );
+            add_post_meta( $next_key_date_post_id, '_key_date_status', 'pending' );
+            add_post_meta( $next_key_date_post_id, '_key_date_type_id', $_POST['type'] );
+
+            if( metadata_exists('post', $key_date_post_id, '_property_id') ) {
+                add_post_meta( $next_key_date_post_id, '_property_id', get_post_meta($key_date_post_id, '_property_id', true) );
+            }
+
+            if( metadata_exists('post', $key_date_post_id, '_tenancy_id') ) {
+                add_post_meta( $next_key_date_post_id, '_tenancy_id', get_post_meta($key_date_post_id, '_tenancy_id', true) );
+            }
+        }
+
+        die();
+    }
+
+    public function delete_key_date()
+    {
+        $this->json_headers();
+
+        $date_post_id = (int)$_POST['date_post_id'];
+
+        wp_delete_post($date_post_id, TRUE);
+
+        $return = array('success' => true);
+        echo json_encode( $return );
+
         die();
     }
 
@@ -5353,10 +4963,25 @@ class PH_AJAX {
 
         if ( isset($_POST['selected_status']) )
         {
-            $selected_status = $_POST['selected_status'];
+            $selected_status = ph_clean($_POST['selected_status']);
         }
 
         include( PH()->plugin_path() . '/includes/admin/views/html-property-tenancies-meta-box.php' );
+
+        // Quit out
+        die();
+    }
+
+    public function get_contact_tenancies_grid()
+    {
+        $post_id = $_POST['post_id'];
+
+        if ( isset($_POST['selected_status']) )
+        {
+            $selected_status = ph_clean($_POST['selected_status']);
+        }
+
+        include( PH()->plugin_path() . '/includes/admin/views/html-contact-tenancies-meta-box.php' );
 
         // Quit out
         die();

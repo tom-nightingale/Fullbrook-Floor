@@ -142,6 +142,22 @@ class PH_Property {
         {
             return $this->get_office_email_address();
         }
+        if ( 'negotiator_name' == $key ) 
+        {
+            return $this->get_negotiator_name();
+        }
+        if ( 'negotiator_telephone_number' == $key ) 
+        {
+            return $this->get_negotiator_telephone_number();
+        }
+        if ( 'negotiator_email_address' == $key ) 
+        {
+            return $this->get_negotiator_email_address();
+        }
+        if ( 'negotiator_photo' == $key ) 
+        {
+            return $this->get_negotiator_photo();
+        }
 
         // Get values or default if not set
         $value = get_post_meta( $this->id, $key, true );
@@ -346,7 +362,7 @@ class PH_Property {
         $prefix = '';
         $suffix = '';
 
-        if ( $this->_department == 'commercial' )
+        if ( $this->_department == 'commercial' || ph_get_custom_department_based_on( $this->_department ) == 'commercial' )
         {
             if ( 
                 ( !is_admin() || ( is_admin() && defined('DOING_AJAX') && DOING_AJAX ) ) &&
@@ -458,7 +474,13 @@ class PH_Property {
                 }
                 $prefix = ( ($currency['currency_prefix']) ? $currency['currency_symbol'] : '' );
                 $suffix = ( (!$currency['currency_prefix']) ? $currency['currency_symbol'] : '' );
-                switch ($this->_department)
+
+                $department = $this->_department;
+                if ( ph_get_custom_department_based_on( $department ) !== false )
+                {
+                    $department = ph_get_custom_department_based_on( $department );
+                }
+                switch ($department)
                 {
                     case "residential-sales":
                     {
@@ -478,6 +500,7 @@ class PH_Property {
                             $price = $this->_price_actual * $currency['exchange_rate'];
                             switch ( $this->_rent_frequency )
                             {
+                                case "pd": { $price = ($price * 365) / 52; break; }
                                 case "pw": { $price = ($price * 12) / 52; break; }
                                 case "pq": { $price = ($price * 12) / 4; break; }
                                 case "pa": { $price = ($price * 12); break; }
@@ -670,7 +693,7 @@ class PH_Property {
             $area .= ( isset($area_units[$this->_floor_area_units]) ) ? ' ' . $area_units[$this->_floor_area_units] : '';
         }
 
-        return $area;
+        return apply_filters( 'propertyhive_floor_area_output', $area, $this );
 
     }
 
@@ -713,7 +736,7 @@ class PH_Property {
             $area .= ( isset($area_units[$this->_site_area_units]) ) ? ' ' . $area_units[$this->_site_area_units] : '';
         }
 
-        return $area;
+        return apply_filters( 'propertyhive_site_area_output', $area, $this );
 
     }
 
@@ -770,7 +793,12 @@ class PH_Property {
      */
     public function get_formatted_description( ) {
 
-        if ( $this->_department == 'commercial' )
+        $department = $this->_department;
+        if ( ph_get_custom_department_based_on( $department ) !== false )
+        {
+            $department = ph_get_custom_department_based_on( $department );
+        }
+        if ( $department == 'commercial' )
         {
             $description = $this->get_formatted_descriptions(); // Haven't called this commercial_descriptions as we might use generic descriptions for other area going forward
         }
@@ -854,7 +882,7 @@ class PH_Property {
      */
     public function get_property_type()
     {
-        $term_list = wp_get_post_terms($this->id, ( ( $this->_department == 'commercial' ) ? 'commercial_' : '' ) . 'property_type', array("fields" => "names"));
+        $term_list = wp_get_post_terms($this->id, ( ( $this->_department == 'commercial' || ph_get_custom_department_based_on( $this->_department ) == 'commercial' ) ? 'commercial_' : '' ) . 'property_type', array("fields" => "names"));
         
         if ( !is_wp_error($term_list) && is_array($term_list) && !empty($term_list) )
         {
@@ -926,7 +954,7 @@ class PH_Property {
      */
     public function get_tenure()
     {
-        $term_list = wp_get_post_terms($this->id, ( ( $this->_department == 'commercial' ) ? 'commercial_' : '' ) . 'tenure', array("fields" => "names"));
+        $term_list = wp_get_post_terms($this->id, ( ( $this->_department == 'commercial' || ph_get_custom_department_based_on( $this->_department ) == 'commercial' ) ? 'commercial_' : '' ) . 'tenure', array("fields" => "names"));
         
         if ( !is_wp_error($term_list) && is_array($term_list) && !empty($term_list) )
         {
@@ -1243,6 +1271,94 @@ class PH_Property {
         return get_post_meta( $this->_office_id, '_office_email_address_' . ( str_replace("residential-", "", $this->_department) ), TRUE );
     }
 
+    public function get_negotiator_name()
+    {   
+        if ( empty($this->_negotiator_id) )
+        {
+            return '';
+        }
+
+        $user = get_userdata( $this->_negotiator_id );
+
+        if ( $user === false )
+        {
+            return '';
+        }
+
+        return $user->display_name;
+    }
+
+    public function get_negotiator_telephone_number( $fallback_to_office = true )
+    {   
+        if ( empty($this->_negotiator_id) )
+        {
+            return '';
+        }
+
+        $user = get_userdata( $this->_negotiator_id );
+
+        if ( $user === false )
+        {
+            return '';
+        }
+
+        $telephone_number = get_user_meta( $this->_negotiator_id, 'telephone_number', true );
+
+        if ( empty($telephone_number) && $fallback_to_office )
+        {
+            // need to fallback
+            $telephone_number = $this->get_office_telephone_number();
+        }
+
+        return $telephone_number;
+    }
+
+    public function get_negotiator_email_address( $fallback_to_office = true )
+    {   
+        if ( empty($this->_negotiator_id) )
+        {
+            return '';
+        }
+
+        $user = get_userdata( $this->_negotiator_id );
+
+        if ( $user === false )
+        {
+            return '';
+        }
+
+        $email_address = $user->user_email;
+
+        if ( empty($email_address) && $fallback_to_office )
+        {
+            // need to fallback
+            $email_address = $this->get_office_email_address();
+        }
+
+        return $email_address;
+    }
+
+    public function get_negotiator_photo()
+    {   
+        if ( empty($this->_negotiator_id) )
+        {
+            return '';
+        }
+
+        $user = get_userdata( $this->_negotiator_id );
+
+        if ( $user === false )
+        {
+            return '';
+        }
+
+        $photo_attachment_id = get_user_meta( $this->_negotiator_id, 'photo_attachment_id', true );
+
+        $photo = wp_get_attachment_image( $photo_attachment_id, 'large' );
+
+        return $photo;
+    }
+
     /**
      * Returns boolean whether the property is featured or not
      *
@@ -1251,7 +1367,7 @@ class PH_Property {
      */
     public function is_featured() {
 
-        if (isset($the_property->_featured) && $the_property->_featured == 'yes')
+        if ( $this->_featured == 'yes' )
         {
             return true;
         }

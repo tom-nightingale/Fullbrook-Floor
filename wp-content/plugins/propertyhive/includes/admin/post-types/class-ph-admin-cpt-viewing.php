@@ -29,6 +29,9 @@ class PH_Admin_CPT_Viewing extends PH_Admin_CPT {
 	public function __construct() {
 		$this->type = 'viewing';
 
+		// Admin notices
+		add_action( 'admin_notices', array( $this, 'viewing_admin_notices') );
+
 		// Before data updates
 		add_action( 'pre_post_update', array( $this, 'pre_post_update' ) );
 		add_filter( 'wp_insert_post_data', array( $this, 'wp_insert_post_data' ) );
@@ -45,8 +48,62 @@ class PH_Admin_CPT_Viewing extends PH_Admin_CPT {
 		add_action( 'quick_edit_custom_box',  array( $this, 'quick_edit' ), 10, 2 );
 		add_action( 'save_post', array( $this, 'bulk_and_quick_edit_save_post' ), 10, 2 );*/
 
+		add_action( 'add_post_meta', array( $this, 'check_viewing_feedback_add' ), 10, 3 );
+		add_action( 'update_post_meta', array( $this, 'check_viewing_feedback_update' ), 10, 4 );
+
 		// Call PH_Admin_CPT constructor
 		parent::__construct();
+	}
+
+	/**
+	 * Output admin notices relating to viewing
+	 */
+	public function viewing_admin_notices()
+	{
+		global $post;
+
+		$screen = get_current_screen();
+
+		if ( $screen->id == 'viewing' && isset($_GET['post']) && get_post_type($_GET['post']) == 'viewing' )
+		{
+			$viewing = new PH_Viewing((int)$_GET['post']);
+			$related_viewings = $viewing->_related_viewings;
+
+			// There is either a previous or next viewing for this applicant/property combination
+			if (
+				$viewing->_status != 'cancelled'
+				&&
+				is_array($related_viewings)
+				&&
+				isset($related_viewings['previous']) && isset($related_viewings['next'])
+				&&
+				( count($related_viewings['previous']) > 0 || count($related_viewings['next']) > 0 )
+			)
+			{
+				$message = __( "This is the " . strtolower(ph_ordinal_suffix(count($related_viewings['previous'])+1)) . ' viewing for this applicant at this property.<br>', 'propertyhive' );
+
+				if ( count($related_viewings['previous']) > 0 )
+				{
+					$previous_viewing_id = end($related_viewings['previous']);
+					$message .= '<a href="' . get_edit_post_link( $previous_viewing_id, '' ) . '"><< Go to previous</a>';
+				}
+
+				if ( count($related_viewings['next']) > 0 )
+				{
+					$next_viewing_id = $related_viewings['next'][0];
+
+					// If there are links to next and previous, show a divider
+					if ( isset($previous_viewing_id) )
+					{
+						$message .= ' | ';
+					}
+
+					$message .= '<a href="' . get_edit_post_link( $next_viewing_id, '' ) . '">Go to next >></a>';
+				}
+
+				echo "<div class=\"notice notice-info\"> <p>$message</p></div>";
+			}
+		}
 	}
 
 	/**
@@ -326,6 +383,26 @@ class PH_Admin_CPT_Viewing extends PH_Admin_CPT {
 
 		if ( 'viewing' == $typenow ) {
 
+		}
+	}
+
+	public static function check_viewing_feedback_add( $object_id, $meta_key, $meta_value )
+	{
+		if ( get_post_type($object_id) == 'viewing' && $meta_key == '_feedback_status' && in_array($meta_value, array( 'interested', 'not_interested' )) )
+		{
+			update_post_meta( (int)$object_id, '_feedback_received_date', date("Y-m-d H:i:s") );
+		}
+	}
+
+	public static function check_viewing_feedback_update( $meta_id, $object_id, $meta_key, $meta_value )
+	{
+		if ( get_post_type($object_id) == 'viewing' && $meta_key == '_feedback_status' && in_array($meta_value, array( 'interested', 'not_interested' )) )
+		{
+			$original_value = get_post_meta( $object_id, '_feedback_status', TRUE );
+			if ( in_array($original_value, array( '', 'not_required' )) )
+			{
+				update_post_meta( (int)$object_id, '_feedback_received_date', date("Y-m-d H:i:s") );
+			}
 		}
 	}
 }

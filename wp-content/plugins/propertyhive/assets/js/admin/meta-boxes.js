@@ -88,16 +88,7 @@ jQuery( function($){
         }
 
         $.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response) {
-            var data = {
-                action:         'propertyhive_get_notes_grid',
-                post_id:        ( ph_lightbox_open ? ph_lightbox_post_id : propertyhive_admin_meta_boxes.post_id ),
-                section:        section,
-            };
-
-            jQuery.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response)
-            {
-                jQuery('#propertyhive_' +  section + '_notes_container').html(response);
-            }, 'html');
+            ph_redraw_notes_grid(section);
         });
 
         return false;
@@ -126,16 +117,7 @@ jQuery( function($){
         };
 
         $.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response) {
-            var data = {
-                action:         'propertyhive_get_notes_grid',
-                post_id:        ( ph_lightbox_open ? ph_lightbox_post_id : propertyhive_admin_meta_boxes.post_id ),
-                section:        section,
-            };
-
-            jQuery.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response)
-            {
-                jQuery('#propertyhive_' +  section + '_notes_container').html(response);
-            }, 'html');
+            ph_redraw_notes_grid(section);
         }, 'json');
 
         return false;
@@ -166,18 +148,7 @@ jQuery( function($){
         };
 
         $.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response) {
-
-            var data = {
-                action:         'propertyhive_get_notes_grid',
-                post_id:        ( ph_lightbox_open ? ph_lightbox_post_id : propertyhive_admin_meta_boxes.post_id ),
-                section:        section,
-            };
-
-            jQuery.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response)
-            {
-                jQuery('#propertyhive_' +  section + '_notes_container').html(response);
-            }, 'html');
-
+            ph_redraw_notes_grid(section);
         }, 'json');
 
         return false;
@@ -213,9 +184,36 @@ jQuery( function($){
     });
 
     // Key Dates
+    var previous_key_date_type;
+    $('[id=\'propertyhive-management-dates\']').on( 'focus', '#_add_key_date_type', function() {
+        previous_key_date_type = $(this).find("option:selected").text();
+    });
+
+    $('[id=\'propertyhive-management-dates\']').on( 'change', '#_add_key_date_type', function() {
+        var selected_key_date_type = $('#_add_key_date_type option:selected').text();
+        if( $('#_add_key_date_type').val() == '' )
+        {
+            $('#_add_key_date_description').val('');
+        }
+        else
+        {
+            var current_description = $('#_add_key_date_description').val();
+
+            if ( current_description == '' || current_description == previous_key_date_type )
+            {
+                $('#_add_key_date_description').val(selected_key_date_type);
+            }
+        }
+
+        previous_key_date_type = selected_key_date_type;
+    });
+
     $('[id=\'propertyhive-management-dates\']').on( 'click', 'a.add_key_date', function() {
 
-        if ( !$('#_add_key_date_description').val() || !$('#_add_key_date_due').val() ) return;
+        if ( !$('#_add_key_date_type').val() || !$('#_add_key_date_description').val() || !$('#_add_key_date_due').val() )
+        {
+            return false;
+        }
 
         if ( $(this).text() == 'Adding...' ) { return false; }
 
@@ -309,6 +307,96 @@ jQuery( function($){
 
     });
 
+    $('[id=\'propertyhive-management-dates\']').on( 'click', '.meta-box-delete', function() {
+
+        var confirm_box = confirm('Are you sure you wish to delete this key date?');
+        if (!confirm_box)
+        {
+            return confirm_box;
+        }
+
+        var post_id = $(this).attr('id');
+
+        if ( $('#quick-edit-' + post_id).length > 0 )
+        {
+            $('#quick-edit-' + post_id).show();
+        }
+        else
+        {
+            var data = {
+                action: 'propertyhive_delete_key_date',
+                date_post_id: post_id,
+            };
+
+            jQuery.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response)
+            {
+                var data = {
+                    action:  'propertyhive_get_management_dates_grid',
+                    post_id: propertyhive_admin_meta_boxes.post_id,
+                };
+
+                jQuery.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response)
+                {
+                    jQuery('#propertyhive_management_dates_container').html(response);
+                    initialise_datepicker();
+                }, 'html');
+            }, 'json');
+        }
+
+        return false;
+
+    });
+
+    $('[id=\'propertyhive-management-dates\']').on( 'change', '#key_date_status', function() {
+
+        var quick_edit_row = $(this).closest('tr');
+        var next_key_date_checkbox = quick_edit_row.find('#next_key_date_checkbox');
+
+        if (next_key_date_checkbox.length !== 0)
+        {
+            if ( this.value == 'complete' )
+            {
+                // Show Book Next checkbox
+                next_key_date_checkbox.removeClass('hidden');
+            }
+            else
+            {
+                if( !next_key_date_checkbox.hasClass('hidden') )
+                {
+                    // Hide Book Next checkbox
+                    next_key_date_checkbox.addClass('hidden');
+
+                    // Hide Next Key Date field, if visible
+                    var next_key_date_field = quick_edit_row.find('#next_key_date_field');
+                    if( !next_key_date_field.hasClass('hidden') )
+                    {
+                        next_key_date_field.addClass('hidden');
+                    }
+
+                    // Uncheck Book Next checkbox
+                    quick_edit_row.find('#book_next_key_date').prop( 'checked', false );
+                }
+            }
+        }
+    });
+
+    $('[id=\'propertyhive-management-dates\']').on( 'click', '#book_next_key_date', function() {
+
+        // Show/Hide Next Key Date field when checkbox is checked and unchecked
+        var next_key_date_field = $(this).closest('tr').find('#next_key_date_field');
+        if( this.checked )
+        {
+            next_key_date_field.removeClass('hidden');
+        }
+        else
+        {
+            if( !next_key_date_field.hasClass('hidden') )
+            {
+                next_key_date_field.addClass('hidden');
+            }
+        }
+    });
+
     $('[id=\'propertyhive-management-dates\']').on( 'click', '.save-quick-edit', function() {
 
         var date_post_id = $(this).attr('id');
@@ -328,6 +416,14 @@ jQuery( function($){
             due_date_time: quick_edit_row.find('#date_due_quick_edit').val() + ' ' + quick_edit_row.find('#date_due_hours_quick_edit').val() + ':' + quick_edit_row.find('#date_due_minutes_quick_edit').val(),
             type: quick_edit_row.find('#date_type').val(),
         };
+
+        if (quick_edit_row.find('#book_next_key_date').length !== 0)
+        {
+            if ( quick_edit_row.find('#book_next_key_date').is(":checked") )
+            {
+                data.next_key_date = quick_edit_row.find('#next_key_date').val() + ' ' + quick_edit_row.find('#next_key_date_hours').val() + ':' + quick_edit_row.find('#next_key_date_minutes').val();
+            }
+        }
 
         jQuery.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response)
         {
@@ -368,6 +464,195 @@ jQuery( function($){
         jQuery.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response)
         {
             jQuery('#propertyhive_property_tenancies_grid').html(response);
+        }, 'html');
+
+        return false;
+    });
+
+    $('[id=\'propertyhive-property-viewings\']').on( 'click', '#filter-property-viewings-grid', function() {
+
+        if ( $(this).val() == 'Updating...' ) { return false; }
+
+        $(this).val('Updating...');
+        $(this).attr('disabled', 'disabled');
+
+        var data = {
+            action:           'propertyhive_get_property_viewings_meta_box',
+            post_id:          propertyhive_admin_meta_boxes.post_id,
+            selected_status:  $('#_viewing_status_filter').val(),
+        };
+
+        jQuery.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response)
+        {
+            jQuery('#propertyhive_property_viewings_meta_box').html(response);
+        }, 'html');
+
+        return false;
+    });
+
+    $('[id=\'propertyhive-contact-tenancies\']').on( 'click', '#filter-contact-tenancies-grid', function() {
+
+        if ( $(this).val() == 'Updating...' ) { return false; }
+
+        $(this).val('Updating...');
+        $(this).attr('disabled', 'disabled');
+
+        var data = {
+            action:           'propertyhive_get_contact_tenancies_grid',
+            post_id:          propertyhive_admin_meta_boxes.post_id,
+            selected_status:  $('#_tenancy_status_filter').val(),
+        };
+
+        jQuery.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response)
+        {
+            jQuery('#propertyhive_contact_tenancies_grid').html(response);
+        }, 'html');
+
+        return false;
+    });
+
+    $('[id=\'propertyhive-contact-viewings\']').on( 'click', '#filter-contact-viewings-grid', function() {
+
+        if ( $(this).val() == 'Updating...' ) { return false; }
+
+        $(this).val('Updating...');
+        $(this).attr('disabled', 'disabled');
+
+        var data = {
+            action:           'propertyhive_get_contact_viewings_meta_box',
+            post_id:          propertyhive_admin_meta_boxes.post_id,
+            selected_status:  $('#_viewing_status_filter').val(),
+        };
+
+        jQuery.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response)
+        {
+            jQuery('#propertyhive_contact_viewings_meta_box').html(response);
+        }, 'html');
+
+        return false;
+    });
+
+    $('[id=\'propertyhive-property-offers\']').on( 'click', '#filter-property-offers-grid', function() {
+
+        if ( $(this).val() == 'Updating...' ) { return false; }
+
+        $(this).val('Updating...');
+        $(this).attr('disabled', 'disabled');
+
+        var data = {
+            action:           'propertyhive_get_property_offers_meta_box',
+            post_id:          propertyhive_admin_meta_boxes.post_id,
+            selected_status:  $('#_offer_status_filter').val(),
+        };
+
+        jQuery.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response)
+        {
+            jQuery('#propertyhive_property_offers_meta_box').html(response);
+        }, 'html');
+
+        return false;
+    });
+
+    $('[id=\'propertyhive-contact-offers\']').on( 'click', '#filter-contact-offers-grid', function() {
+
+        if ( $(this).val() == 'Updating...' ) { return false; }
+
+        $(this).val('Updating...');
+        $(this).attr('disabled', 'disabled');
+
+        var data = {
+            action:           'propertyhive_get_contact_offers_meta_box',
+            post_id:          propertyhive_admin_meta_boxes.post_id,
+            selected_status:  $('#_offer_status_filter').val(),
+        };
+
+        jQuery.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response)
+        {
+            jQuery('#propertyhive_contact_offers_meta_box').html(response);
+        }, 'html');
+
+        return false;
+    });
+
+    $('[id=\'propertyhive-property-sales\']').on( 'click', '#filter-property-sales-grid', function() {
+
+        if ( $(this).val() == 'Updating...' ) { return false; }
+
+        $(this).val('Updating...');
+        $(this).attr('disabled', 'disabled');
+
+        var data = {
+            action:           'propertyhive_get_property_sales_meta_box',
+            post_id:          propertyhive_admin_meta_boxes.post_id,
+            selected_status:  $('#_sale_status_filter').val(),
+        };
+
+        jQuery.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response)
+        {
+            jQuery('#propertyhive_property_sales_meta_box').html(response);
+        }, 'html');
+
+        return false;
+    });
+
+    $('[id=\'propertyhive-contact-sales\']').on( 'click', '#filter-contact-sales-grid', function() {
+
+        if ( $(this).val() == 'Updating...' ) { return false; }
+
+        $(this).val('Updating...');
+        $(this).attr('disabled', 'disabled');
+
+        var data = {
+            action:           'propertyhive_get_contact_sales_meta_box',
+            post_id:          propertyhive_admin_meta_boxes.post_id,
+            selected_status:  $('#_sale_status_filter').val(),
+        };
+
+        jQuery.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response)
+        {
+            jQuery('#propertyhive_contact_sales_meta_box').html(response);
+        }, 'html');
+
+        return false;
+    });
+
+    $('[id=\'propertyhive-property-enquiries\']').on( 'click', '#filter-property-enquiries-grid', function() {
+
+        if ( $(this).val() == 'Updating...' ) { return false; }
+
+        $(this).val('Updating...');
+        $(this).attr('disabled', 'disabled');
+
+        var data = {
+            action:           'propertyhive_get_property_enquiries_meta_box',
+            post_id:          propertyhive_admin_meta_boxes.post_id,
+            selected_status:  $('#_enquiry_status_filter').val(),
+        };
+
+        jQuery.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response)
+        {
+            jQuery('#propertyhive_property_enquiries_meta_box').html(response);
+        }, 'html');
+
+        return false;
+    });
+
+    $('[id=\'propertyhive-contact-enquiries\']').on( 'click', '#filter-contact-enquiries-grid', function() {
+
+        if ( $(this).val() == 'Updating...' ) { return false; }
+
+        $(this).val('Updating...');
+        $(this).attr('disabled', 'disabled');
+
+        var data = {
+            action:           'propertyhive_get_contact_enquiries_meta_box',
+            post_id:          propertyhive_admin_meta_boxes.post_id,
+            selected_status:  $('#_enquiry_status_filter').val(),
+        };
+
+        jQuery.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response)
+        {
+            jQuery('#propertyhive_contact_enquiries_meta_box').html(response);
         }, 'html');
 
         return false;
@@ -724,6 +1009,20 @@ jQuery(document).ready(function($)
         }, 'json');
     })
 });
+
+function ph_redraw_notes_grid(section)
+{
+    var data = {
+        action:         'propertyhive_get_notes_grid',
+        post_id:        ( ph_lightbox_open ? ph_lightbox_post_id : propertyhive_admin_meta_boxes.post_id ),
+        section:        section,
+    };
+
+    jQuery.post( propertyhive_admin_meta_boxes.ajax_url, data, function(response)
+    {
+        jQuery('#propertyhive_' +  section + '_notes_container').html(response);
+    }, 'html');
+}
 
 function initialise_datepicker() {
     jQuery( ".date-picker" ).datepicker({

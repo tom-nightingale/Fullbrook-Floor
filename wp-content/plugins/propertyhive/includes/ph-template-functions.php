@@ -75,11 +75,53 @@ function ph_generator_tag( $gen, $type ) {
  * @return array
  */
 function ph_body_class( $classes ) {
+    global $wp_query;
+
     $classes = (array) $classes;
 
     if ( is_propertyhive() ) {
         $classes[] = 'propertyhive';
         $classes[] = 'propertyhive-page';
+    }
+
+    // If we're on a single property, add body classes for taxonomy fields and department
+    if ( is_single() )
+    {
+        $post = $wp_query->get_queried_object();
+        if ( $post->post_type === 'property' )
+        {
+            // Duplication of the code in post-template-php that is done for search results posts in get_post_class()
+            // All public taxonomies.
+            $taxonomies = get_taxonomies( array( 'public' => true ) );
+            foreach ( (array) $taxonomies as $taxonomy ) {
+                if ( is_object_in_taxonomy( $post->post_type, $taxonomy ) ) {
+                    foreach ( (array) get_the_terms( $post->ID, $taxonomy ) as $term ) {
+                        if ( empty( $term->slug ) ) {
+                            continue;
+                        }
+
+                        $term_class = sanitize_html_class( $term->slug, $term->term_id );
+                        if ( is_numeric( $term_class ) || ! trim( $term_class, '-' ) ) {
+                            $term_class = $term->term_id;
+                        }
+
+                        // 'post_tag' uses the 'tag' prefix for backward compatibility.
+                        if ( 'post_tag' == $taxonomy ) {
+                            $classes[] = 'tag-' . $term_class;
+                        } else {
+                            $classes[] = sanitize_html_class( $taxonomy . '-' . $term_class, $taxonomy . '-' . $term->term_id );
+                        }
+                    }
+                }
+            }
+            //
+
+            $property = get_property( $post->ID );
+            $classes[] = 'department-' . $property->department;
+            $classes[] = 'on-market-' . ( $property->on_market == 'yes' ? 'yes' : 'no' );
+            $classes[] = 'featured-' . ( $property->featured == 'yes' ? 'yes' : 'no' );
+            $classes[] = 'office-' . $property->office_id;
+        }
     }
 
     return array_unique( $classes );
@@ -117,6 +159,7 @@ function ph_property_post_class( $classes, $class = '', $post_id = '' ) {
     }
     $classes[] = 'property';
     $classes[] = 'department-' . $property->department;
+    $classes[] = 'office-' . $property->office_id;
 
     return $classes;
 }
@@ -236,7 +279,7 @@ if ( ! function_exists( 'propertyhive_template_loop_property_thumbnail' ) ) {
      * @return void
      */
     function propertyhive_template_loop_property_thumbnail() {
-        echo propertyhive_get_property_thumbnail();
+        echo propertyhive_get_property_thumbnail( apply_filters( 'property_search_results_thumbnail_size', 'medium' ) );
     }
 }
 
@@ -275,7 +318,12 @@ if ( ! function_exists( 'propertyhive_template_loop_floor_area' ) ) {
      * @return void
      */
     function propertyhive_template_loop_floor_area() {
-        ph_get_template( 'search/floor-area.php' );
+        global $property;
+
+        if ( $property->department == 'commercial' || ph_get_custom_department_based_on( $property->department ) == 'commercial' )
+        {
+            ph_get_template( 'search/floor-area.php' );
+        }
     }
 }
 
@@ -312,8 +360,21 @@ if ( ! function_exists( 'propertyhive_template_loop_price' ) ) {
             }
         }
 
+        $price_qualifier = '';
+        if (
+            ( 
+                $property->department == 'residential-sales' || 
+                ph_get_custom_department_based_on($property->department) == 'residential-sales' ||
+                $property->department == 'commercial' || 
+                ph_get_custom_department_based_on($property->department) == 'commercial'
+            ) &&
+            $property->price_qualifier != ''
+        )
+        {
+            $price_qualifier = $property->price_qualifier;
+        }
 
-        ph_get_template( 'search/price.php', array( 'fees' => $fees ) );
+        ph_get_template( 'search/price.php', array( 'price_qualifier' => $price_qualifier, 'fees' => $fees ) );
     }
 }
 
@@ -368,8 +429,24 @@ if ( ! function_exists( 'propertyhive_result_count' ) ) {
      * @subpackage  Loop
      * @return void
      */
-    function propertyhive_result_count() {
-        ph_get_template( 'search/result-count.php' );
+    function propertyhive_result_count( $paged = '', $per_page = null, $total = null, $first = null, $last = null ) {
+        global $wp_query;
+
+        $paged = $paged !== '' ? $paged : max( 1, $wp_query->get( 'paged' ) );
+        $per_page = $per_page !== null ? $per_page : $wp_query->get( 'posts_per_page' );
+        $total = $total !== null ? $total : $wp_query->found_posts;
+        $first = $first !== null ? $first : ( $per_page * $paged ) - $per_page + 1;
+        $last = $last !== null ? $last : min( $total, $wp_query->get( 'posts_per_page' ) * $paged );
+
+        $args = array(
+            'paged'    => $paged,
+            'per_page' => $per_page,
+            'total'    => $total,
+            'first'    => $first,
+            'last'     => $last,
+        );
+
+        ph_get_template( 'search/result-count.php', $args );
     }
 }
 
@@ -382,10 +459,19 @@ if ( ! function_exists( 'propertyhive_catalog_ordering' ) ) {
      * @subpackage  Loop
      * @return void
      */
-    function propertyhive_catalog_ordering() {
-        $orderby = isset( $_GET['orderby'] ) ? ph_clean( sanitize_text_field($_GET['orderby']) ) : apply_filters( 'propertyhive_default_search_results_orderby', get_option( 'propertyhive_default_search_results_orderby' ) );
+    function propertyhive_catalog_ordering( $department = '', $orderby = '' ) {
 
-        ph_get_template( 'search/orderby.php', array( 'orderby' => $orderby ) );
+        if ( $orderby === '' )
+        {
+            $orderby = isset( $_GET['orderby'] ) ? ph_clean( sanitize_text_field($_GET['orderby']) ) : apply_filters( 'propertyhive_default_search_results_orderby', get_option( 'propertyhive_default_search_results_orderby' ) );
+        }
+
+        $args = array(
+            'department' => $department !== '' ? $department : ( isset($_REQUEST['department']) ? $_REQUEST['department'] : '' ),
+            'orderby' =>  $orderby,
+        );
+
+        ph_get_template( 'search/orderby.php', $args );
     }
 }
 
@@ -398,8 +484,15 @@ if ( ! function_exists( 'propertyhive_pagination' ) ) {
      * @subpackage  Loop
      * @return void
      */
-    function propertyhive_pagination() {
-        ph_get_template( 'search/pagination.php' );
+    function propertyhive_pagination( $max_num_pages = '' ) {
+
+        global $wp_query;
+
+        $args = array(
+            'max_num_pages' => $max_num_pages !== '' ? $max_num_pages : $wp_query->max_num_pages,
+        );
+
+        ph_get_template( 'search/pagination.php', $args );
     }
 }
 
@@ -543,7 +636,12 @@ if ( ! function_exists( 'propertyhive_template_single_floor_area' ) ) {
      * @return void
      */
     function propertyhive_template_single_floor_area() {
-        ph_get_template( 'single-property/floor-area.php' );
+        global $property;
+
+        if ( $property->department == 'commercial' || ph_get_custom_department_based_on( $property->department ) == 'commercial' )
+        {
+            ph_get_template( 'single-property/floor-area.php' );
+        }
     }
 }
 
@@ -580,7 +678,21 @@ if ( ! function_exists( 'propertyhive_template_single_price' ) ) {
             }
         }
 
-        ph_get_template( 'single-property/price.php', array( 'fees' => $fees ) );
+        $price_qualifier = '';
+        if (
+            ( 
+                $property->department == 'residential-sales' || 
+                ph_get_custom_department_based_on($property->department) == 'residential-sales' ||
+                $property->department == 'commercial' || 
+                ph_get_custom_department_based_on($property->department) == 'commercial'
+            ) &&
+            $property->price_qualifier != ''
+        )
+        {
+            $price_qualifier = $property->price_qualifier;
+        }
+
+        ph_get_template( 'single-property/price.php', array( 'price_qualifier' => $price_qualifier, 'fees' => $fees ) );
     }
 }
 
@@ -623,7 +735,7 @@ if ( ! function_exists( 'propertyhive_template_single_meta' ) ) {
             );
         }
 
-        if ( $property->department != 'commercial' ) 
+        if ( $property->department != 'commercial' && ph_get_custom_department_based_on( $property->department ) != 'commercial' ) 
         {
             if ( $property->bedrooms > 0 )
             {
@@ -666,7 +778,7 @@ if ( ! function_exists( 'propertyhive_template_single_meta' ) ) {
             }
         }
 
-        if ( $property->department == 'residential-sales' ) 
+        if ( $property->department == 'residential-sales' || ph_get_custom_department_based_on( $property->department ) == 'residential-sales' ) 
         {
             if ( $property->tenure != '' )
             {
@@ -677,7 +789,7 @@ if ( ! function_exists( 'propertyhive_template_single_meta' ) ) {
             }
         }
 
-        if ( $property->department == 'residential-lettings' ) 
+        if ( $property->department == 'residential-lettings' || ph_get_custom_department_based_on( $property->department ) == 'residential-lettings' ) 
         {
             if ( $property->furnished != '' )
             {

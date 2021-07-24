@@ -60,6 +60,7 @@ class PH_Elementor {
 	public function register_widgets()
 	{
 		$widgets = array(
+			'Property Tabbed Details',
 			'Property Price',
 			'Property Images',
 			'Property Image',
@@ -77,10 +78,23 @@ class PH_Elementor {
 			'Property Map',
 			'Property Street View',
 			'Property Floorplans',
+			'Property Floorplans Link',
 			'Property EPCs',
+			'Property EPCs Link',
 			'Property Enquiry Form',
+			'Property Enquiry Form Link',
+			'Property Brochures Link',
 			'Property Embedded Virtual Tours',
-			'Property Tabbed Details',
+			'Property Virtual Tours Link',
+			'Property Office Name',
+			'Property Office Telephone Number',
+			'Property Office Email Address',
+			'Property Office Address',
+			'Property Negotiator Name',
+			'Property Negotiator Telephone Number',
+			'Property Negotiator Email Address',
+			'Property Negotiator Photo',
+			'Back To Search',
 		);
 
 		$widgets = apply_filters( 'propertyhive_elementor_widgets', $widgets );

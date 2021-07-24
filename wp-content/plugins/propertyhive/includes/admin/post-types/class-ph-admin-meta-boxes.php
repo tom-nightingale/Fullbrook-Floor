@@ -104,6 +104,7 @@ class PH_Admin_Meta_Boxes {
         add_action( 'propertyhive_process_tenancy_meta', 'PH_Meta_Box_Tenancy_Applicant::save', 15, 2 );
         add_action( 'propertyhive_process_tenancy_meta', 'PH_Meta_Box_Tenancy_Property::save', 20, 2 );
         add_action( 'propertyhive_process_tenancy_meta', 'PH_Meta_Box_Tenancy_Deposit_Scheme::save', 25, 2 );
+        add_action( 'propertyhive_process_tenancy_meta', 'PH_Meta_Box_Tenancy_Meter_Readings::save', 25, 2 );
         add_action( 'propertyhive_process_tenancy_meta', 'PH_Meta_Box_Tenancy_Management::save', 30, 2 );
 
 		// Error handling (for showing errors from meta boxes on next page load)
@@ -625,7 +626,14 @@ class PH_Admin_Meta_Boxes {
             'post_type' => 'property'
         );
 
-        if ( get_post_meta( $post->ID, '_department', TRUE ) == 'commercial' && isset($post->post_parent) && $post->post_parent == 0 )
+        if ( 
+            ( 
+                get_post_meta( $post->ID, '_department', TRUE ) == 'commercial' || 
+                ph_get_custom_department_based_on(get_post_meta( $post->ID, '_department', TRUE )) == 'commercial' 
+            ) && 
+            isset($post->post_parent) && 
+            $post->post_parent == 0 
+        )
         {
             $meta_boxes = array();
             $meta_boxes[5] = array(
@@ -693,7 +701,7 @@ class PH_Admin_Meta_Boxes {
         );
         if ( $pagenow != 'post-new.php' && get_post_type($post->ID) == 'property' )
         {
-            $tabs['tab_marketing']['ajax_actions'] = array( 'get_property_marketing_statistics_meta_box^' . wp_create_nonce( 'get_property_marketing_statistics_meta_box' ) . '^reload_marketing_statistics' );
+            $tabs['tab_marketing']['ajax_actions'] = array( 'get_property_marketing_statistics_meta_box^' . wp_create_nonce( 'get_property_marketing_statistics_meta_box' ) . '^reload_marketing_statistics()' );
         }
 
         /* PROPERTY DESCRIPTIONS META BOXES */
@@ -830,18 +838,43 @@ class PH_Admin_Meta_Boxes {
                     add_meta_box( $meta_box['id'], $meta_box['title'], $meta_box['callback'], $meta_box['screen'], $meta_box['context'], $meta_box['priority'] );
                     $ids[] = $meta_box['id'];
                 }
-                
+
+                $tab_name_suffix = '';
+                if ( apply_filters( 'propertyhive_show_tab_counts', true ) === true )
+                {
+                    $args = array(
+                        'post_type'   => 'viewing',
+                        'nopaging'    => true,
+                        'fields'      => 'ids',
+                        'post_status' => 'publish',
+                        'meta_query'  => array(
+                            array(
+                                'key'   => '_property_id',
+                                'value' => $post->ID
+                            ),
+                        ),
+                    );
+                    $viewings_query = new WP_Query( $args );
+                    $viewings_count = $viewings_query->found_posts;
+                    wp_reset_postdata();
+
+                    $tab_name_suffix = ' (' . $viewings_count . ')';
+                }
+
                 $tabs['tab_viewings'] = array(
-                    'name' => __( 'Viewings', 'propertyhive' ),
+                    'name' => __( 'Viewings', 'propertyhive' ) . $tab_name_suffix,
                     'metabox_ids' => $ids,
                     'post_type' => 'property',
-                    'ajax_actions' => array( 'get_property_viewings_meta_box^' . wp_create_nonce( 'get_property_viewings_meta_box' ) ),
+                    'ajax_actions' => array( 'get_property_viewings_meta_box' ),
                 );
             }
 
             if ( get_option('propertyhive_module_disabled_offers_sales', '') != 'yes' )
             {
-                if ( get_post_meta( $post->ID, '_department', TRUE ) == 'residential-sales' )
+                if ( 
+                    get_post_meta( $post->ID, '_department', TRUE ) == 'residential-sales' ||
+                    ph_get_custom_department_based_on(get_post_meta( $post->ID, '_department', TRUE )) == 'residential-sales' 
+                )
                 {
                     /* PROPERTY OFFERS META BOXES */
                     $meta_boxes = array();
@@ -863,12 +896,34 @@ class PH_Admin_Meta_Boxes {
                         add_meta_box( $meta_box['id'], $meta_box['title'], $meta_box['callback'], $meta_box['screen'], $meta_box['context'], $meta_box['priority'] );
                         $ids[] = $meta_box['id'];
                     }
-                    
+
+                    $tab_name_suffix = '';
+                    if ( apply_filters( 'propertyhive_show_tab_counts', true ) === true )
+                    {
+                        $args = array(
+                            'post_type'   => 'offer',
+                            'nopaging'    => true,
+                            'fields'      => 'ids',
+                            'post_status' => 'publish',
+                            'meta_query'  => array(
+                                array(
+                                    'key'   => '_property_id',
+                                    'value' => $post->ID
+                                ),
+                            ),
+                        );
+                        $offers_query = new WP_Query( $args );
+                        $offers_count = $offers_query->found_posts;
+                        wp_reset_postdata();
+
+                        $tab_name_suffix = ' (' . $offers_count . ')';
+                    }
+
                     $tabs['tab_offers'] = array(
-                        'name' => __( 'Offers', 'propertyhive' ),
+                        'name' => __( 'Offers', 'propertyhive' ) . $tab_name_suffix,
                         'metabox_ids' => $ids,
                         'post_type' => 'property',
-                        'ajax_actions' => array( 'get_property_offers_meta_box^' . wp_create_nonce( 'get_property_offers_meta_box' ) ),
+                        'ajax_actions' => array( 'get_property_offers_meta_box' ),
                     );
 
                     /* PROPERTY SALES META BOXES */
@@ -891,12 +946,34 @@ class PH_Admin_Meta_Boxes {
                         add_meta_box( $meta_box['id'], $meta_box['title'], $meta_box['callback'], $meta_box['screen'], $meta_box['context'], $meta_box['priority'] );
                         $ids[] = $meta_box['id'];
                     }
+
+                    $tab_name_suffix = '';
+                    if ( apply_filters( 'propertyhive_show_tab_counts', true ) === true )
+                    {
+                        $args = array(
+                            'post_type'   => 'sale',
+                            'nopaging'    => true,
+                            'fields'      => 'ids',
+                            'post_status' => 'publish',
+                            'meta_query'  => array(
+                                array(
+                                    'key'   => '_property_id',
+                                    'value' => $post->ID
+                                ),
+                            ),
+                        );
+                        $sales_query = new WP_Query( $args );
+                        $sales_count = $sales_query->found_posts;
+                        wp_reset_postdata();
+
+                        $tab_name_suffix = ' (' . $sales_count . ')';
+                    }
                     
                     $tabs['tab_sales'] = array(
-                        'name' => __( 'Sales', 'propertyhive' ),
+                        'name' => __( 'Sales', 'propertyhive' ) . $tab_name_suffix,
                         'metabox_ids' => $ids,
                         'post_type' => 'property',
-                        'ajax_actions' => array( 'get_property_sales_meta_box^' . wp_create_nonce( 'get_property_sales_meta_box' ) ),
+                        'ajax_actions' => array( 'get_property_sales_meta_box' ),
                     );
                 }
             }
@@ -927,17 +1004,47 @@ class PH_Admin_Meta_Boxes {
                     $ids[] = $meta_box['id'];
                 }
                 
+                $tab_name_suffix = '';
+                if ( apply_filters( 'propertyhive_show_tab_counts', true ) === true )
+                {
+                    $args = array(
+                        'post_type' => 'enquiry',
+                        'nopaging'    => true,
+                        'fields' => 'ids',
+                        'meta_query' => array(
+                            'relation' => 'OR',
+                            array(
+                                'key' => 'property_id',
+                                'value' => $post->ID
+                            ),
+                            array(
+                                'key' => '_property_id',
+                                'value' => $post->ID
+                            )
+                        ),
+                    );
+                    $enquiry_query = new WP_Query( $args );
+                    $enquiry_count = $enquiry_query->found_posts;
+                    wp_reset_postdata();
+
+                    $tab_name_suffix = ' (' . $enquiry_count . ')';
+                }
+
                 $tabs['tab_enquiries'] = array(
-                    'name' => __( 'Enquiries', 'propertyhive' ),
+                    'name' => __( 'Enquiries', 'propertyhive' ) . $tab_name_suffix,
                     'metabox_ids' => $ids,
-                    'post_type' => 'property'
+                    'post_type' => 'property',
+                    'ajax_actions' => array( 'get_property_enquiries_meta_box' ),
                 );
             }
         }
 
 		if ( $pagenow != 'post-new.php' && get_post_type($post->ID) == 'property' ) {
 
-            if ( get_post_meta( $post->ID, '_department', TRUE ) == 'residential-lettings' )
+            if ( 
+                get_post_meta( $post->ID, '_department', TRUE ) == 'residential-lettings' ||
+                ph_get_custom_department_based_on(get_post_meta( $post->ID, '_department', TRUE )) == 'residential-lettings'
+            )
             {
                 if ( get_option( 'propertyhive_module_disabled_tenancies', '' ) != 'yes' )
                 {
@@ -1007,7 +1114,8 @@ class PH_Admin_Meta_Boxes {
             $tabs['tab_property_notes'] = array(
                 'name' => __( 'History &amp; Notes', 'propertyhive' ),
                 'metabox_ids' => $ids,
-                'post_type' => 'property'
+                'post_type' => 'property',
+                'ajax_actions' => array( '^^ph_redraw_notes_grid(\'property\')' ),
             );
 
             add_meta_box( 'propertyhive-property-actions', __( 'Actions', 'propertyhive' ), 'PH_Meta_Box_Property_Actions::output', 'property', 'side' );
@@ -1073,36 +1181,9 @@ class PH_Admin_Meta_Boxes {
 
         if ( $pagenow != 'post-new.php' && get_post_type($post->ID) == 'contact' )
         {
-            $show_viewings = false;
-            $show_offers = false;
-            $show_sales = false;
-
             $contact_types = get_post_meta( $post->ID, '_contact_types', TRUE );
-            if ( is_array($contact_types) && in_array('applicant', $contact_types) )
-            {
-                $show_viewings = true;
 
-                $num_applicant_profiles = get_post_meta( $post->ID, '_applicant_profiles', TRUE );
-                if ( $num_applicant_profiles == '' )
-                {
-                    $num_applicant_profiles = 0;
-                }
-
-                if ( $num_applicant_profiles > 0 ) 
-                {
-                    for ( $i = 0; $i < $num_applicant_profiles; ++$i )
-                    {
-                        $applicant_profile = get_post_meta( $post->ID, '_applicant_profile_' . $i, TRUE );
-
-                        if ( isset($applicant_profile['department']) && $applicant_profile['department'] == 'residential-sales' )
-                        {
-                            $show_offers = true;
-                            $show_sales = true;
-                        }
-                    }
-                }
-            }
-            else
+            if ( get_option('propertyhive_module_disabled_viewings', '') != 'yes' )
             {
                 $args = array(
                     'post_type' => 'viewing',
@@ -1116,12 +1197,36 @@ class PH_Admin_Meta_Boxes {
                     )
                 );
                 $viewing_query = new WP_Query( $args );
-                if ($viewing_query->have_posts())
-                {
-                    $show_viewings = true;
-                }
+                $viewing_count = $viewing_query->found_posts;
                 wp_reset_postdata();
 
+                // If contact is an applicant, or is attached to a viewing, show the viewings tab and meta box
+                if (
+                    ( is_array($contact_types) && in_array('applicant', $contact_types) )
+                    ||
+                    $viewing_count > 0
+                )
+                {
+                    /* CONTACT VIEWINGS META BOXES */
+                    add_meta_box( 'propertyhive-contact-viewings', __( 'Viewings', 'propertyhive' ), 'PH_Meta_Box_Contact_Viewings::output', 'contact', 'normal', 'high' );
+
+                    $tab_name_suffix = '';
+                    if ( apply_filters( 'propertyhive_show_tab_counts', true ) === true )
+                    {
+                        $tab_name_suffix = ' (' . $viewing_count . ')';
+                    }
+
+                    $tabs['tab_viewings'] = array(
+                        'name' => __( 'Viewings', 'propertyhive' ) . $tab_name_suffix,
+                        'metabox_ids' => array('propertyhive-contact-viewings'),
+                        'post_type' => 'contact',
+                        'ajax_actions' => array( 'get_contact_viewings_meta_box' ),
+                    );
+                }
+            }
+
+            if ( get_option('propertyhive_module_disabled_offers_sales', '') != 'yes' )
+            {
                 $args = array(
                     'post_type' => 'offer',
                     'posts_per_page' => 1,
@@ -1134,10 +1239,7 @@ class PH_Admin_Meta_Boxes {
                     )
                 );
                 $offer_query = new WP_Query( $args );
-                if ($offer_query->have_posts())
-                {
-                    $show_offers = true;
-                }
+                $offer_count = $offer_query->found_posts;
                 wp_reset_postdata();
 
                 $args = array(
@@ -1152,57 +1254,217 @@ class PH_Admin_Meta_Boxes {
                     )
                 );
                 $sale_query = new WP_Query( $args );
-                if ($sale_query->have_posts())
-                {
-                    $show_sales = true;
-                }
+                $sale_count = $sale_query->found_posts;
                 wp_reset_postdata();
-            }
 
-            if ( get_option('propertyhive_module_disabled_viewings', '') != 'yes' )
-            {
-                if ( $show_viewings )
+                $has_sales_applicant_profile = false;
+                if ( $offer_count == 0 || $sale_count == 0 )
                 {
-                    /* CONTACT VIEWINGS META BOXES */
-                    add_meta_box( 'propertyhive-contact-viewings', __( 'Viewings', 'propertyhive' ), 'PH_Meta_Box_Contact_Viewings::output', 'contact', 'normal', 'high' );
-                    
-                    $tabs['tab_viewings'] = array(
-                        'name' => __( 'Viewings', 'propertyhive' ),
-                        'metabox_ids' => array('propertyhive-contact-viewings'),
-                        'post_type' => 'contact',
-                        'ajax_actions' => array( 'get_contact_viewings_meta_box^' . wp_create_nonce( 'get_contact_viewings_meta_box' ) ),
-                    );
-                }
-            }
+                    if ( is_array($contact_types) && in_array('applicant', $contact_types) )
+                    {
+                        $num_applicant_profiles = get_post_meta( $post->ID, '_applicant_profiles', TRUE );
+                        if ( $num_applicant_profiles == '' )
+                        {
+                            $num_applicant_profiles = 0;
+                        }
 
-            if ( get_option('propertyhive_module_disabled_offers_sales', '') != 'yes' )
-            {
-                if ( $show_offers )
+                        if ( $num_applicant_profiles > 0 )
+                        {
+                            for ( $i = 0; $i < $num_applicant_profiles; ++$i )
+                            {
+                                $applicant_profile = get_post_meta( $post->ID, '_applicant_profile_' . $i, TRUE );
+
+                                if (
+                                    isset($applicant_profile['department']) &&
+                                    (
+                                        $applicant_profile['department'] == 'residential-sales' ||
+                                        ph_get_custom_department_based_on($applicant_profile['department']) == 'residential-sales'
+                                    )
+                                )
+                                {
+                                    $has_sales_applicant_profile = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if ( $has_sales_applicant_profile === true || $offer_count > 0 )
                 {
                     /* CONTACT OFFERS META BOXES */
                     add_meta_box( 'propertyhive-contact-offers', __( 'Offers', 'propertyhive' ), 'PH_Meta_Box_Contact_Offers::output', 'contact', 'normal', 'high' );
+
+                    $tab_name_suffix = '';
+                    if ( apply_filters( 'propertyhive_show_tab_counts', true ) === true )
+                    {
+                        $tab_name_suffix = ' (' . $offer_count . ')';
+                    }
                     
                     $tabs['tab_offers'] = array(
-                        'name' => __( 'Offers', 'propertyhive' ),
+                        'name' => __( 'Offers', 'propertyhive' ) . $tab_name_suffix,
                         'metabox_ids' => array('propertyhive-contact-offers'),
                         'post_type' => 'contact',
-                        'ajax_actions' => array( 'get_contact_offers_meta_box^' . wp_create_nonce( 'get_contact_offers_meta_box' ) ),
+                        'ajax_actions' => array( 'get_contact_offers_meta_box' ),
                     );
                 }
 
-                if ( $show_sales )
+                if ( $has_sales_applicant_profile === true || $sale_count > 0 )
                 {
                     /* CONTACT SALES META BOXES */
                     add_meta_box( 'propertyhive-contact-sales', __( 'Sales', 'propertyhive' ), 'PH_Meta_Box_Contact_Sales::output', 'contact', 'normal', 'high' );
+
+                    $tab_name_suffix = '';
+                    if ( apply_filters( 'propertyhive_show_tab_counts', true ) === true )
+                    {
+                        $tab_name_suffix = ' (' . $sale_count . ')';
+                    }
                     
                     $tabs['tab_sales'] = array(
-                        'name' => __( 'Sales', 'propertyhive' ),
+                        'name' => __( 'Sales', 'propertyhive' ) . $tab_name_suffix,
                         'metabox_ids' => array('propertyhive-contact-sales'),
                         'post_type' => 'contact',
-                        'ajax_actions' => array( 'get_contact_sales_meta_box^' . wp_create_nonce( 'get_contact_sales_meta_box' ) ),
+                        'ajax_actions' => array( 'get_contact_sales_meta_box' ),
                     );
                 }
             }
+
+            if ( get_option( 'propertyhive_module_disabled_tenancies', '' ) != 'yes' )
+            {
+                $args = array(
+                    'post_type' => 'tenancy',
+                    'posts_per_page' => 1,
+                    'fields' => 'ids',
+                    'meta_query' => array(
+                        array(
+                            'key' => '_applicant_contact_id',
+                            'value' => $post->ID
+                        )
+                    )
+                );
+                $tenancy_query = new WP_Query( $args );
+                $tenancy_count = $tenancy_query->found_posts;
+                wp_reset_postdata();
+
+                $has_lettings_applicant_profile = false;
+                if ( $tenancy_count == 0 )
+                {
+                    if ( is_array($contact_types) && in_array('applicant', $contact_types) )
+                    {
+                        $num_applicant_profiles = get_post_meta( $post->ID, '_applicant_profiles', TRUE );
+                        if ( $num_applicant_profiles == '' )
+                        {
+                            $num_applicant_profiles = 0;
+                        }
+
+                        if ( $num_applicant_profiles > 0 )
+                        {
+                            for ( $i = 0; $i < $num_applicant_profiles; ++$i )
+                            {
+                                $applicant_profile = get_post_meta( $post->ID, '_applicant_profile_' . $i, TRUE );
+
+                                if (
+                                    isset($applicant_profile['department']) &&
+                                    (
+                                        $applicant_profile['department'] == 'residential-lettings' ||
+                                        ph_get_custom_department_based_on($applicant_profile['department']) == 'residential-lettings'
+                                    )
+                                )
+                                {
+                                    $has_lettings_applicant_profile = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if ( $has_lettings_applicant_profile === true || $tenancy_count > 0 )
+                {
+                    $meta_boxes = array();
+
+                    $meta_boxes[5] = array(
+                        'id' => 'propertyhive-contact-tenancies',
+                        'title' => __( 'Tenancies', 'propertyhive' ),
+                        'callback' => 'PH_Meta_Box_Contact_Tenancies::output',
+                        'screen' => 'contact',
+                        'context' => 'normal',
+                        'priority' => 'high'
+                    );
+
+                    $meta_boxes = apply_filters( 'propertyhive_contact_tenancies_meta_boxes', $meta_boxes );
+                    ksort( $meta_boxes );
+
+                    $ids = array();
+                    foreach ( $meta_boxes as $meta_box ) {
+                        add_meta_box( $meta_box['id'], $meta_box['title'], $meta_box['callback'], $meta_box['screen'], $meta_box['context'], $meta_box['priority'] );
+                        $ids[] = $meta_box['id'];
+                    }
+
+                    $tab_name_suffix = '';
+                    if ( apply_filters( 'propertyhive_show_tab_counts', true ) === true )
+                    {
+                        $tab_name_suffix = ' (' . $tenancy_count . ')';
+                    }
+
+                    $tabs['tab_contact_tenancies'] = array(
+                        'name'        => __( 'Tenancies', 'propertyhive' ) . $tab_name_suffix,
+                        'metabox_ids' => $ids,
+                        'post_type'   => 'contact',
+                        'ajax_actions' => array( 'get_contact_tenancies_grid^' . wp_create_nonce( 'get_contact_tenancies_grid' ) ),
+                    );
+                }
+            }
+
+            if ( get_option('propertyhive_module_disabled_enquiries', '') != 'yes' )
+            {
+                $meta_query = array(
+                    'relation' => 'OR',
+                    array(
+                        'key' => '_contact_id',
+                        'value' => $post->ID,
+                    ),
+                );
+
+                $contact_email_address = get_post_meta( $post->ID, '_email_address', TRUE );
+                if ( !empty($contact_email_address) )
+                {
+                    $meta_query[] = array(
+                        'key' => 'email',
+                        'value' => $contact_email_address,
+                    );
+
+                    $meta_query[] = array(
+                        'key' => 'email_address',
+                        'value' => $contact_email_address,
+                    );
+                }
+
+                $tab_name_suffix = '';
+                if ( apply_filters( 'propertyhive_show_tab_counts', true ) === true )
+                {
+                    $args = array(
+                        'post_type' => 'enquiry',
+                        'nopaging'    => true,
+                        'fields' => 'ids',
+                        'meta_query' => $meta_query,
+                    );
+                    $enquiry_query = new WP_Query( $args );
+                    $enquiry_count = $enquiry_query->found_posts;
+                    
+                    $tab_name_suffix = ' (' . $enquiry_count . ')';
+                }
+
+                wp_reset_postdata();
+
+                /* CONTACT ENQUIRIES META BOXES */
+                add_meta_box( 'propertyhive-contact-enquiries', __( 'Enquiries', 'propertyhive' ), 'PH_Meta_Box_Contact_Enquiries::output', 'contact', 'normal', 'high' );
+                $tabs['tab_contact_enquiries'] = array(
+                    'name' => __( 'Enquiries', 'propertyhive' ) . $tab_name_suffix,
+                    'metabox_ids' => array('propertyhive-contact-enquiries'),
+                    'post_type' => 'contact',
+                    'ajax_actions' => array( 'get_contact_enquiries_meta_box' ),
+                );
+            }
+
             $meta_boxes = array();
             $meta_boxes[5] = array(
                 'id' => 'propertyhive-contact-history-notes',
@@ -1226,7 +1488,8 @@ class PH_Admin_Meta_Boxes {
             $tabs['tab_contact_notes'] = array(
                 'name' => __( 'History &amp; Notes', 'propertyhive' ),
                 'metabox_ids' => $ids,
-                'post_type' => 'contact'
+                'post_type' => 'contact',
+                'ajax_actions' => array( '^^ph_redraw_notes_grid(\'contact\')' ),
             );
 
             add_meta_box( 'propertyhive-contact-actions', __( 'Actions', 'propertyhive' ), 'PH_Meta_Box_Contact_Actions::output', 'contact', 'side' );
@@ -1266,7 +1529,8 @@ class PH_Admin_Meta_Boxes {
             $tabs['tab_enquiry_notes'] = array(
                 'name' => __( 'History &amp; Notes', 'propertyhive' ),
                 'metabox_ids' => $ids,
-                'post_type' => 'enquiry'
+                'post_type' => 'enquiry',
+                'ajax_actions' => array( '^^ph_redraw_notes_grid(\'enquiry\')' ),
             );
         }
 
@@ -1352,7 +1616,8 @@ class PH_Admin_Meta_Boxes {
             $tabs['tab_appraisal_notes'] = array(
                 'name' => __( 'History &amp; Notes', 'propertyhive' ),
                 'metabox_ids' => $ids,
-                'post_type' => 'appraisal'
+                'post_type' => 'appraisal',
+                'ajax_actions' => array( '^^ph_redraw_notes_grid(\'appraisal\')' ),
             );
 
             add_meta_box( 'propertyhive-appraisal-actions', __( 'Actions', 'propertyhive' ), 'PH_Meta_Box_Appraisal_Actions::output', 'appraisal', 'side' );
@@ -1440,7 +1705,8 @@ class PH_Admin_Meta_Boxes {
             $tabs['tab_viewing_notes'] = array(
                 'name' => __( 'History &amp; Notes', 'propertyhive' ),
                 'metabox_ids' => $ids,
-                'post_type' => 'viewing'
+                'post_type' => 'viewing',
+                'ajax_actions' => array( '^^ph_redraw_notes_grid(\'viewing\')' ),
             );
 
             add_meta_box( 'propertyhive-viewing-actions', __( 'Actions', 'propertyhive' ), 'PH_Meta_Box_Viewing_Actions::output', 'viewing', 'side' );
@@ -1534,7 +1800,8 @@ class PH_Admin_Meta_Boxes {
             $tabs['tab_offer_notes'] = array(
                 'name' => __( 'History &amp; Notes', 'propertyhive' ),
                 'metabox_ids' => $ids,
-                'post_type' => 'offer'
+                'post_type' => 'offer',
+                'ajax_actions' => array( '^^ph_redraw_notes_grid(\'offer\')' ),
             );
 
             add_meta_box( 'propertyhive-offer-actions', __( 'Actions', 'propertyhive' ), 'PH_Meta_Box_Offer_Actions::output', 'offer', 'side' );
@@ -1627,7 +1894,8 @@ class PH_Admin_Meta_Boxes {
             $tabs['tab_sale_notes'] = array(
                 'name' => __( 'History &amp; Notes', 'propertyhive' ),
                 'metabox_ids' => $ids,
-                'post_type' => 'sale'
+                'post_type' => 'sale',
+                'ajax_actions' => array( '^^ph_redraw_notes_grid(\'sale\')' ),
             );
 
             add_meta_box( 'propertyhive-sale-actions', __( 'Actions', 'propertyhive' ), 'PH_Meta_Box_Sale_Actions::output', 'sale', 'side' );
@@ -1742,6 +2010,33 @@ class PH_Admin_Meta_Boxes {
             'post_type' => 'tenancy'
         );
 
+        /* TENANCY METER READINGS META BOXES */
+        $meta_boxes = array();
+        $meta_boxes[5] = array(
+            'id' => 'propertyhive-tenancy-meter-readings',
+            'title' => __( 'Meter Readings', 'propertyhive' ),
+            'callback' => 'PH_Meta_Box_Tenancy_Meter_Readings::output',
+            'screen' => 'tenancy',
+            'context' => 'normal',
+            'priority' => 'high'
+        );
+
+        $meta_boxes = apply_filters( 'propertyhive_tenancy_meter_readings_meta_boxes', $meta_boxes );
+        ksort($meta_boxes);
+
+        $ids = array();
+        foreach ($meta_boxes as $meta_box)
+        {
+            add_meta_box( $meta_box['id'], $meta_box['title'], $meta_box['callback'], $meta_box['screen'], $meta_box['context'], $meta_box['priority'] );
+            $ids[] = $meta_box['id'];
+        }
+
+        $tabs['tab_tenancy_meter_readings'] = array(
+            'name' => __( 'Meter Readings', 'propertyhive' ),
+            'metabox_ids' => $ids,
+            'post_type' => 'tenancy'
+        );
+
         if ( $pagenow != 'post-new.php' && get_post_type($post->ID) == 'tenancy' )
         {
             /* HISTORY & NOTES META BOXES */
@@ -1768,7 +2063,8 @@ class PH_Admin_Meta_Boxes {
             $tabs['tab_tenancy_notes'] = array(
                 'name' => __( 'History &amp; Notes', 'propertyhive' ),
                 'metabox_ids' => $ids,
-                'post_type' => 'tenancy'
+                'post_type' => 'tenancy',
+                'ajax_actions' => array( '^^ph_redraw_notes_grid(\'tenancy\')' ),
             );
         }
 
@@ -1906,7 +2202,7 @@ class PH_Admin_Meta_Boxes {
 
                                     if ( ajax_action[2] ) // callback
                                     {
-                                        eval(ajax_action[2] + \'()\');
+                                        eval(ajax_action[2]);
                                     }
                                     else
                                     {

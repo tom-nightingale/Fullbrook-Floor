@@ -9,6 +9,7 @@
 }
 .cf7mls-btns .cf7mls_next.action-button, .cf7mls-btns .cf7mls_back.action-button {
   margin: 25px 0px 26px;
+  padding: 13px 15px;
 }
 .cf7mls_next.action-button {
   background-color: #0073aa;
@@ -222,12 +223,15 @@ button.cf7mls_btn:not(.disabled).sending:after {
   }
 }
 */
+.wpcf7-form .fieldset-cf7mls .cf7mls-btns {
+  min-height: 80px;
+}
 .cf7mls_next.action-button img {
   display: none;
     width: 20px;
-    position: absolute;
-    right: 5px;
-    top: 10px;
+    position: relative;
+    margin-left: 5px;
+    vertical-align: middle;
 }
 .cf7mls_next.action-button.sending img {
   display: inline-block;

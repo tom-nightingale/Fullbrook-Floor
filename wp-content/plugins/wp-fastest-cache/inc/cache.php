@@ -288,6 +288,8 @@
 						//
 					}else if(defined('WPFC_CACHE_QUERYSTRING') && WPFC_CACHE_QUERYSTRING){
 						//
+					}else if(isset($_GET["wc-api"]) && $_GET["wc-api"]){
+						//
 					}else{
 						ob_start(array($this, "cdn_rewrite"));
 						
@@ -333,6 +335,14 @@
 								}
 							}
 						}
+					}
+				}
+
+				if(isset($_SERVER["DOCUMENT_ROOT"]) && preg_match("/bitnami/", $_SERVER["DOCUMENT_ROOT"])){
+					// to disable cache for the IP based urls on the bitnami servers
+					// /opt/bitnami/apps/wordpress/htdocs
+					if(preg_match("/(?:[0-9]{1,3}\.){3}[0-9]{1,3}/", get_option("home"))){
+						return 0;
 					}
 				}
 
@@ -864,13 +874,23 @@
 
 				if(isset($pre_content[0]) && isset($pre_content[0][0])){
 					foreach ($pre_content[0] as $key => $value){
-						/*
-						location ~ / {
-						    set $path /path/$1/index.html;
-						}
-						*/
 						if(isset($pre_buffer[0][$key])){
+							/*
+							location ~ / {
+							    set $path /path/$1/index.html;
+							}
+							*/
 							$pre_buffer[0][$key] = preg_replace('/\$(\d)/', '\\\$$1', $pre_buffer[0][$key]);
+
+							/*
+							\\\
+							*/
+							$pre_buffer[0][$key] = preg_replace('/\\\\\\\\\\\/', '\\\\\\\\\\\\\\', $pre_buffer[0][$key]);
+
+							/*
+							\\
+							*/
+							$pre_buffer[0][$key] = preg_replace('/\\\\\\\\/', '\\\\\\\\\\', $pre_buffer[0][$key]);
 
 							$content = preg_replace("/".preg_quote($value, "/")."/", $pre_buffer[0][$key], $content);
 						}
@@ -1021,7 +1041,7 @@
 			if($create){
 				if (!is_user_logged_in() && !$this->isCommenter()){
 					if(!is_dir($cachFilePath)){
-						if(is_writable($this->getWpContentDir()) || ((is_dir($this->getWpContentDir()."/cache")) && (is_writable($this->getWpContentDir()."/cache")))){
+						if(is_writable($this->getWpContentDir()) || ((is_dir($this->getWpContentDir("/cache"))) && (is_writable($this->getWpContentDir("/cache"))))){
 							if (@mkdir($cachFilePath, 0755, true)){
 
 								$buffer = (string) apply_filters('wpfc_buffer_callback_filter', $buffer, $extension);
@@ -1040,12 +1060,12 @@
 				   				}
 
 				   				if($extension == "html"){
-				   					if(!file_exists(WPFC_WP_CONTENT_DIR."/cache/index.html")){
-				   						@file_put_contents(WPFC_WP_CONTENT_DIR."/cache/index.html", "");
+				   					if(!file_exists($this->getWpContentDir("/cache/index.html"))){
+				   						@file_put_contents($this->getWpContentDir("/cache/index.html"), "");
 				   					}
 				   				}else{
-				   					if(!file_exists(WPFC_WP_CONTENT_DIR."/cache/wpfc-minified/index.html")){
-				   						@file_put_contents(WPFC_WP_CONTENT_DIR."/cache/wpfc-minified/index.html", "");
+				   					if(!file_exists($this->getWpContentDir("/cache/wpfc-minified/index.html"))){
+				   						@file_put_contents($this->getWpContentDir("/cache/wpfc-minified/index.html"), "");
 				   					}
 				   				}
 
@@ -1094,6 +1114,10 @@
 			}
 
 			if(preg_match("/\/amp\//", $request_uri)){
+				$action = true;
+			}
+
+			if(preg_match("/\?amp\=1$/", $request_uri)){
 				$action = true;
 			}
 

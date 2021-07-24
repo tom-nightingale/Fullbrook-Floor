@@ -53,7 +53,7 @@ class PH_Admin_Assets {
             wp_enqueue_style( 'multiselect', PH()->plugin_url() . '/assets/css/jquery.multiselect.css', array(), '2.4.18' );
         }
 
-	    if ( in_array( $screen->id, array( 'edit-viewing', 'edit-appraisal' ) ) )
+	    if ( in_array( $screen->id, array( 'edit-appraisal', 'edit-viewing', 'edit-offer', 'edit-sale' ) ) )
 	    {
 		    wp_enqueue_style( 'daterangepicker.css', '//cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css' );
 	    }
@@ -68,7 +68,7 @@ class PH_Admin_Assets {
             in_array( $screen->id, array( 'property', 'contact' ) ) 
         )
 	    {
-		    wp_enqueue_style( 'propertyhive_fancybox_css', PH()->plugin_url() . '/assets/css/jquery.fancybox.css', array(), '3.3.5' );
+		    wp_enqueue_style( 'propertyhive_fancybox_css', PH()->plugin_url() . '/assets/css/jquery.fancybox.css', array(), '3.5.7' );
 	    }
 
         /*if ( in_array( $screen->id, array( 'dashboard' ) ) ) {
@@ -83,7 +83,7 @@ class PH_Admin_Assets {
      * Enqueue scripts
      */
     public function admin_scripts() {
-        global $wp_query, $post;
+        global $wp_query, $post, $tabs;
 
         $screen       = get_current_screen();
         $ph_screen_id = sanitize_title( __( 'PropertyHive', 'propertyhive' ) );
@@ -116,6 +116,43 @@ class PH_Admin_Assets {
 
         wp_enqueue_script( 'propertyhive_admin' );
 
+        $params = array();
+
+        // Add a bit better support for Gutenberg if enabled somehow (i.e. using Houzez) to load AJAX grids
+        if ( 
+            isset($post->ID) &&
+            function_exists( 'use_block_editor_for_post_type' ) && 
+            use_block_editor_for_post_type( get_post_type($post->ID) ) && 
+            !isset( $_GET['classic-editor'] ) &&
+            is_array($tabs) &&
+            !empty($tabs)
+        )
+        {
+            $ajax_actions = array();
+
+            foreach ( $tabs as $key => $tab )
+            {
+                if ( isset($tab['ajax_actions']) && !empty($tab['ajax_actions']) )
+                {
+                    foreach ( $tab['ajax_actions'] as $ajax_action )
+                    {
+                        $ajax_actions[] = $ajax_action;
+                    }
+                }
+            }
+
+            if ( !empty($ajax_actions) )
+            {
+                $params = array(
+                    'ajax_actions' => $ajax_actions,
+                    'post_id' => $post->ID,
+                );
+                
+            }
+        }
+        
+        wp_localize_script( 'propertyhive_admin', 'propertyhive_admin', $params );
+
         $recently_viewed = get_user_meta( get_current_user_id(), '_propertyhive_recently_viewed', TRUE );
         if ( !is_array($recently_viewed) )
         {
@@ -138,7 +175,7 @@ class PH_Admin_Assets {
             wp_localize_script( 'propertyhive_dashboard', 'propertyhive_dashboard', $params );
         }
 
-	    if ( in_array( $screen->id, array( 'edit-viewing', 'edit-appraisal' ) ) )
+	    if ( in_array( $screen->id, array( 'edit-appraisal', 'edit-viewing', 'edit-offer', 'edit-sale' ) ) )
 	    {
 		    wp_enqueue_script( 'moment.js', '//cdn.jsdelivr.net/momentjs/latest/moment.min.js' );
 		    wp_enqueue_script( 'daterangepicker.js', '//cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js' );
@@ -155,7 +192,7 @@ class PH_Admin_Assets {
             in_array( $screen->id, array( 'property', 'contact' ) ) 
         )
         {
-		    wp_enqueue_script( 'propertyhive_fancybox', PH()->plugin_url() . '/assets/js/fancybox/jquery.fancybox.js', array('jquery'), '3.3.5' );
+		    wp_enqueue_script( 'propertyhive_fancybox', PH()->plugin_url() . '/assets/js/fancybox/jquery.fancybox.js', array('jquery'), '3.5.7' );
 	    }
 
         if ( in_array( $screen->id, ph_get_screen_ids() ) ) 
@@ -207,6 +244,11 @@ class PH_Admin_Assets {
             {
                 wp_enqueue_script( 'chosen-rtl', PH()->plugin_url() . '/assets/js/chosen/chosen-rtl' . /*$suffix .*/ '.js', array( 'jquery' ), PH_VERSION, true );
             }
+        }
+
+        if ( in_array( $screen->id, array('profile', 'user', 'user-edit') ) ) 
+        {
+            wp_enqueue_media();
         }
         
         if ( strpos($screen->id, 'page_ph-settings') !== FALSE )

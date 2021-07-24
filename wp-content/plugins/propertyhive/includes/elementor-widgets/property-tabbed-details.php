@@ -73,7 +73,7 @@ class Elementor_Property_Tabbed_Details_Widget extends \Elementor\Widget_Base {
 					],
 					[
 						'tab_title' => __( 'Virtual Tour', 'propertyhive' ),
-						'tab_display' => array('virtual_tour'),
+						'tab_display' => array('embedded_virtual_tour'),
 					],
 					[
 						'tab_title' => __( 'Map View', 'propertyhive' ),
@@ -217,8 +217,8 @@ class Elementor_Property_Tabbed_Details_Widget extends \Elementor\Widget_Base {
 					'{{WRAPPER}} .elementor-tab-title' => 'color: {{VALUE}};',
 				],
 				'scheme' => [
-					'type' => \Elementor\Scheme_Color::get_type(),
-					'value' => \Elementor\Scheme_Color::COLOR_1,
+					'type' => \Elementor\Core\Schemes\Color::get_type(),
+					'value' => \Elementor\Core\Schemes\Color::COLOR_1,
 				],
 			]
 		);
@@ -232,8 +232,8 @@ class Elementor_Property_Tabbed_Details_Widget extends \Elementor\Widget_Base {
 					'{{WRAPPER}} .elementor-tab-title.elementor-active' => 'color: {{VALUE}};',
 				],
 				'scheme' => [
-					'type' => \Elementor\Scheme_Color::get_type(),
-					'value' => \Elementor\Scheme_Color::COLOR_4,
+					'type' => \Elementor\Core\Schemes\Color::get_type(),
+					'value' => \Elementor\Core\Schemes\Color::COLOR_4,
 				],
 			]
 		);
@@ -243,7 +243,7 @@ class Elementor_Property_Tabbed_Details_Widget extends \Elementor\Widget_Base {
 			[
 				'name' => 'tab_typography',
 				'selector' => '{{WRAPPER}} .elementor-tab-title',
-				'scheme' => \Elementor\Scheme_Typography::TYPOGRAPHY_1,
+				'scheme' => \Elementor\Core\Schemes\Typography::TYPOGRAPHY_1,
 			]
 		);
 
@@ -265,8 +265,8 @@ class Elementor_Property_Tabbed_Details_Widget extends \Elementor\Widget_Base {
 					'{{WRAPPER}} .elementor-tab-content' => 'color: {{VALUE}};',
 				],
 				'scheme' => [
-					'type' => \Elementor\Scheme_Color::get_type(),
-					'value' => \Elementor\Scheme_Color::COLOR_3,
+					'type' => \Elementor\Core\Schemes\Color::get_type(),
+					'value' => \Elementor\Core\Schemes\Color::COLOR_3,
 				],
 			]
 		);
@@ -276,7 +276,7 @@ class Elementor_Property_Tabbed_Details_Widget extends \Elementor\Widget_Base {
 			[
 				'name' => 'content_typography',
 				'selector' => '{{WRAPPER}} .elementor-tab-content',
-				'scheme' => \Elementor\Scheme_Typography::TYPOGRAPHY_3,
+				'scheme' => \Elementor\Core\Schemes\Typography::TYPOGRAPHY_3,
 			]
 		);
 
@@ -287,6 +287,16 @@ class Elementor_Property_Tabbed_Details_Widget extends \Elementor\Widget_Base {
 	private function show_tab($item)
 	{
 		global $property;
+
+		if ( is_null($property) && isset($post->ID) && get_post_type($post->ID) == 'property' )
+		{
+			$property = new PH_Property($post->ID);
+		}
+
+		if ( is_null($property) )
+		{
+			return false;
+		}
 
 		$tab_display = $item['tab_display'];
 
@@ -356,7 +366,7 @@ class Elementor_Property_Tabbed_Details_Widget extends \Elementor\Widget_Base {
 
 		global $property, $post;
 		
-		if ( is_null($property) && isset($post->ID) && get_post_type($post->ID) )
+		if ( is_null($property) && isset($post->ID) && get_post_type($post->ID) == 'property' )
 		{
 			$property = new PH_Property($post->ID);
 		}
@@ -379,11 +389,15 @@ class Elementor_Property_Tabbed_Details_Widget extends \Elementor\Widget_Base {
 								$tab_title_setting_key = $this->get_repeater_setting_key( 'tab_title', 'tabs', $index );
 
 								$onclick = '';
-								if (in_array('map', $item['tab_display']))
+								if ( in_array('map', $item['tab_display']) )
 								{
+									if ( get_option('propertyhive_maps_provider') == 'osm' )
+									{
+										$onclick .= 'if (property_map != undefined) { property_map.remove(); }';
+									}
 									$onclick .= 'setTimeout(function() { initialize_property_map(); }, 10);';
 								}
-								if (in_array('street_view', $item['tab_display']))
+								if ( in_array('street_view', $item['tab_display']) )
 								{
 									$onclick .= 'setTimeout(function() { initialize_property_street_view(); }, 10);';
 								}
@@ -555,6 +569,18 @@ class Elementor_Property_Tabbed_Details_Widget extends \Elementor\Widget_Base {
 
 											foreach ( $virtual_tours as $virtual_tour )
 											{
+												$virtual_tour['url'] = preg_replace(
+													"/\s*[a-zA-Z\/\/:\.]*youtu(be.com\/watch\?v=|.be\/)([a-zA-Z0-9\-_]+)([a-zA-Z0-9\/\*\-\_\?\&\;\%\=\.]*)/i",
+													"//www.youtube.com/embed/$2",
+													$virtual_tour['url']
+												);
+
+												$virtual_tour['url'] = preg_replace(
+										        	'/(https?:\/\/)?(www\.)?(player\.)?vimeo\.com\/?(showcase\/)*([0-9))([a-z]*\/)*([0-9]{6,11})[?]?.*/i',
+										        	"//player.vimeo.com/video/$6",
+										        	$virtual_tour['url']
+										    	);
+												
 												echo '<iframe src="' . $virtual_tour['url'] . '" height="500" width="100%" allowFullScreen frameborder="0"></iframe>';
 											}
 

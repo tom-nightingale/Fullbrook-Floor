@@ -27,6 +27,9 @@ class PH_Post_types {
 
         add_action( 'before_delete_post', array( __CLASS__, 'delete_property_media' ), 5 );
         add_action( 'before_delete_post', array( __CLASS__, 'delete_property_children' ), 5 );
+        add_action( 'before_delete_post', array( __CLASS__, 'delete_contact_user' ), 5 );
+
+        add_action( 'delete_user', array( $this, 'delete_contact_user_link' ) );
 
         add_action( 'save_post', array( __CLASS__, 'create_name_number_street_meta' ), 99, 3 );
         add_action( 'save_post', array( __CLASS__, 'create_concatenated_indexable_meta' ), 99, 3 );
@@ -741,6 +744,56 @@ class PH_Post_types {
                 }
             }
             wp_reset_postdata();
+        }
+    }
+
+    public static function delete_contact_user( $post_id )
+    {
+        if ( get_post_type($post_id) == 'contact' )
+        {
+            // If the contact being deleted has a user_id meta_key, delete the user with that ID if they're a contact or agent
+            $contact_user_id = get_post_meta ($post_id, '_user_id', TRUE );
+            if ( !empty($contact_user_id) )
+            {
+                $user_meta = get_userdata($contact_user_id);
+                $user_roles = $user_meta->roles;
+                $user_role = array_shift($user_roles);
+
+                if ( in_array($user_role, array( 'property_hive_contact' )) )
+                {
+                    // Include user admin functions to get access to wp_delete_user().
+                    require_once ABSPATH . 'wp-admin/includes/user.php';
+                    wp_delete_user( $contact_user_id );
+                }
+            }
+        }
+    }
+
+    public static function delete_contact_user_link( $user_id )
+    {
+        global $post;
+
+        $args = array(
+            'post_type' => 'contact',
+            'nopaging' => true,
+            'meta_query' => array(
+                array(
+                    'key' => '_user_id',
+                    'value' => (int)$user_id,
+                )
+            )
+        );
+        $agent_query = new WP_Query( $args );
+        if ( $agent_query->have_posts() )
+        {
+            while ( $agent_query->have_posts() )
+            {
+                $agent_query->the_post();
+
+                delete_post_meta( $post->ID, '_user_id' );
+
+                wp_reset_postdata();
+            }
         }
     }
 

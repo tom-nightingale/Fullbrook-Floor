@@ -20,7 +20,7 @@ include( 'ph-page-functions.php' );
 include( 'ph-property-functions.php' );
 
 /**
- * Get template part (for templates like the single-product).
+ * Get template part (for templates like the single-property).
  *
  * @access public
  * @param mixed $slug
@@ -170,7 +170,39 @@ function ph_get_image_size( $image_size ) {
     return $size;
 }
 
-function ph_get_departments()
+function ph_get_custom_departments( $active_only = true )
+{
+    $return = array();
+
+    $custom_departments = get_option( 'propertyhive_custom_departments', array() );
+            
+    if ( is_array($custom_departments) && !empty($custom_departments) )
+    {
+        foreach ( $custom_departments as $key => $custom_department )
+        {
+            if ( !$active_only || ( $active_only && get_option('propertyhive_active_departments_' . $key) == 'yes' ) )
+            {
+                $return[$key] = $custom_department;
+            }
+        }
+    }
+
+    return $return;
+}
+
+function ph_get_custom_department_based_on( $department )
+{
+    $custom_departments = get_option( 'propertyhive_custom_departments', array() );
+            
+    if ( isset($custom_departments[$department]['based_on']) )
+    {
+        return $custom_departments[$department]['based_on'];
+    }
+
+    return false;
+}
+
+function ph_get_departments( $raw = false )
 {
     $departments = array(
         'residential-sales' => __( 'Residential Sales', 'propertyhive' ),
@@ -178,7 +210,135 @@ function ph_get_departments()
         'commercial' => __( 'Commercial', 'propertyhive' ),
     );
 
-    return apply_filters( 'propertyhive_departments', $departments );
+    return $raw ? $departments : apply_filters( 'propertyhive_departments', $departments );
+}
+
+function ph_get_viewing_statuses()
+{
+    $viewing_statuses = array(
+        'pending'                => __( 'Pending', 'propertyhive' ),
+        'confirmed'              => '- ' . __( 'Confirmed', 'propertyhive' ),
+        'unconfirmed'            => '- ' . __( 'Awaiting Confirmation', 'propertyhive' ),
+        'carried_out'            => __( 'Carried Out', 'propertyhive' ),
+        'feedback_passed_on'     => '- ' . __( 'Feedback Passed On', 'propertyhive' ),
+        'feedback_not_passed_on' => '- ' . __( 'Feedback Not Passed On', 'propertyhive' ),
+        'cancelled'              => __( 'Cancelled', 'propertyhive' ),
+    );
+
+    return $viewing_statuses;
+}
+
+function add_viewing_status_meta_query( $meta_query, $selected_status )
+{
+    switch ( $selected_status )
+    {
+        case "confirmed":
+        {
+            $meta_query[] = array(
+                'key' => '_status',
+                'value' => 'pending',
+            );
+            $meta_query[] = array(
+                'key' => '_all_confirmed',
+                'value' => 'yes',
+            );
+            break;
+        }
+        case "unconfirmed":
+        {
+            $meta_query[] = array(
+                'key' => '_status',
+                'value' => 'pending',
+            );
+            $meta_query[] = array(
+                'relation' => 'OR',
+                array(
+                    'key' => '_all_confirmed',
+                    'value' => '',
+                ),
+                array(
+                    'key' => '_all_confirmed',
+                    'compare' => 'NOT EXISTS',
+                )
+            );
+            break;
+        }
+        case "feedback_passed_on":
+        {
+            $meta_query[] = array(
+                'key' => '_status',
+                'value' => 'carried_out',
+            );
+            $meta_query[] = array(
+                'key' => '_feedback_status',
+                'value' => array('interested', 'not_interested'),
+                'compare' => 'IN'
+            );
+            $meta_query[] = array(
+                'key' => '_feedback_passed_on',
+                'value' => 'yes',
+            );
+            break;
+        }
+        case "feedback_not_passed_on":
+        {
+            $meta_query[] = array(
+                'key' => '_status',
+                'value' => 'carried_out',
+            );
+            $meta_query[] = array(
+                'key' => '_feedback_status',
+                'value' => array('interested', 'not_interested'),
+                'compare' => 'IN'
+            );
+            $meta_query[] = array(
+                'key' => '_feedback_passed_on',
+                'value' => '',
+            );
+            break;
+        }
+        default:
+        {
+            $meta_query[] = array(
+                'key' => '_status',
+                'value' => sanitize_text_field( $selected_status ),
+            );
+        }
+    }
+    return $meta_query;
+}
+
+function ph_get_offer_statuses()
+{
+    $offer_statuses = array(
+        'pending'  => __( 'Pending', 'propertyhive' ),
+        'accepted' => __( 'Accepted', 'propertyhive' ),
+        'declined' => __( 'Declined', 'propertyhive' ),
+    );
+
+    return $offer_statuses;
+}
+
+function ph_get_sale_statuses()
+{
+    $sale_statuses = array(
+        'current'        => __( 'Current', 'propertyhive' ),
+        'exchanged'      => __( 'Exchanged', 'propertyhive' ),
+        'completed'      => __( 'Completed', 'propertyhive' ),
+        'fallen_through' => __( 'Fallen Through', 'propertyhive' ),
+    );
+
+    return $sale_statuses;
+}
+
+function ph_get_enquiry_statuses()
+{
+    $enquiry_statuses = array(
+        'open'   => __( 'Open', 'propertyhive' ),
+        'closed' => __( 'Closed', 'propertyhive' ),
+    );
+
+    return $enquiry_statuses;
 }
 
 function get_area_units()

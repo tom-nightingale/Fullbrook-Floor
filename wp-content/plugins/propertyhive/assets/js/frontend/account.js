@@ -240,7 +240,7 @@ jQuery(document).ready(function($)
         return false;
     });
 
-	$('.my-account-navigation a[href^=\'#\']').click(function(e)
+	$('.my-account-navigation a[href^=\'#\']').on('click', function(e)
 	{
 		e.preventDefault();
 
@@ -255,6 +255,29 @@ jQuery(document).ready(function($)
 		});
 		$(this).parent().addClass('active');
 	});
+
+});
+
+jQuery(window).on('load', function() {
+
+    if ( window.location.hash != '' )
+    {
+        if ( jQuery('.my-account-navigation a[href=\'' + window.location.hash + '\']').length > 0 )
+        {
+            var this_href = window.location.hash;
+            // Hide/show sections
+            jQuery('.my-account-sections > div').hide();
+            jQuery('.my-account-sections ' + this_href).show();
+
+            // Remove/add active class on nav/tabs
+            jQuery('.my-account-navigation a').each(function()
+            {
+                jQuery(this).parent().removeClass('active');
+            });
+            jQuery('.my-account-navigation a[href=\'' + window.location.hash + '\']').parent().addClass('active');
+        }
+    }
+
 });
 
 jQuery(window).resize(function() {
@@ -315,17 +338,17 @@ function toggleApplicantRegistrationDepartmentFields()
                     }
                 });
 
-                if (selectedDepartment == 'residential-sales')
+                if ( selectedDepartment == 'residential-sales' || ( propertyhive_account_params.custom_departments[selectedDepartment] && propertyhive_account_params.custom_departments[selectedDepartment].based_on == 'residential-sales' ) )
                 {
                     jQuery(this).find('.sales-only').css('display', display);
                     jQuery(this).find('.residential-only').css('display', display);
                 }
-                else if (selectedDepartment == 'residential-lettings')
+                else if ( selectedDepartment == 'residential-lettings' || ( propertyhive_account_params.custom_departments[selectedDepartment] && propertyhive_account_params.custom_departments[selectedDepartment].based_on == 'residential-lettings' ) )
                 {
                     jQuery(this).find('.lettings-only').css('display', display);
                     jQuery(this).find('.residential-only').css('display', display);
                 }
-                else if (selectedDepartment == 'commercial')
+                else if ( selectedDepartment == 'commercial' || ( propertyhive_account_params.custom_departments[selectedDepartment] && propertyhive_account_params.custom_departments[selectedDepartment].based_on == 'commercial' ) )
                 {
                     jQuery(this).find('.commercial-only').css('display', display);
                 }

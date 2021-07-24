@@ -5,7 +5,7 @@
 	<div class="propertyhive-lightbox-left">
 
 		<!-- VIEWING DETAILS -->
-		<div class="propertyhive-lightbox-property-details">
+		<div class="propertyhive-lightbox-viewing-details">
 
 			<h3><?php echo __( 'Viewing Details', 'propertyhive' ); ?></h3>
 
@@ -15,6 +15,11 @@
 			        include( PH()->plugin_path() . '/includes/admin/views/html-viewing-details-meta-box.php' );
 			    ?>
 			</div>
+
+			<?php
+				$readonly = true;
+		        include( PH()->plugin_path() . '/includes/admin/views/html-viewing-event-meta-box.php' );
+		    ?>
 
 		</div>
 
@@ -36,7 +41,7 @@
 			<h3><?php echo __( ( get_post_meta((int)$viewing->property_id, '_department', TRUE) == 'residential-lettings' ? 'Landlord' : 'Owner' ) . ' Details', 'propertyhive' ); ?></h3>
 
 			<?php
-				$contact_ids = get_post_meta($post->ID, '_owner_contact_id');
+				$contact_ids = get_post_meta((int)$viewing->property_id, '_owner_contact_id', TRUE);
 		        include( PH()->plugin_path() . '/includes/admin/views/html-lightbox-contact-details.php' );
 		    ?>
 

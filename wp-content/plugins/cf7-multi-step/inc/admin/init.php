@@ -8,6 +8,24 @@ if ( ! function_exists( 'cf7cmlsIsMoanaActivated' ) ) {
 		return defined( 'CF7_VC_DIR' );
 	}
 }
+// Add Go Pro Action Link
+add_filter( 'plugin_action_links_' . CF7MLS_PLUGIN_BASENAME, 'cf7mls_plugin_action_links' );
+function cf7mls_plugin_action_links( $links ) {
+	$links[] = '<a target="_blank" href="https://1.envato.market/Multi-Step-Form" style="color: #43B854; font-weight: bold">' . __( 'Go Pro', 'cf7mls' ) . '</a>';
+	return $links;
+}
+// Add Document link
+add_filter( 'plugin_row_meta', 'cf7mls_plugin_row_meta', 10, 2 );
+function cf7mls_plugin_row_meta( $links, $file ) {
+	if ( strpos( $file, 'contact-form-7-multi-step.php' ) !== false ) {
+		$new_links = array(
+			'doc' => '<a href="https://ninjateam.org/contact-form-7-multi-step-pro-doc/" target="_blank">' . __( 'Documentation', 'cf7mls' ) . '</a>',
+		);
+
+		$links = array_merge( $links, $new_links );
+	}
+	return $links;
+}
 
 add_filter( 'wpcf7_editor_panels', 'cf7mls_wpcf7_editor_panels' );
 function cf7mls_wpcf7_editor_panels( $panels ) {
@@ -64,6 +82,7 @@ function cf7mls_admin_scripts_callback( $hook_suffix ) {
 				'textInputNext'           => __( 'Next Button', 'contact-form-7' ),
 				'textEditMoana'           => __( 'Edit With Moana', 'cf7mls' ),
 				'cf7cmlsIsMoanaActivated' => cf7cmlsIsMoanaActivated(),
+				'pluginUrl' 			  => CF7MLS_PLUGIN_URL,
 			)
 		);
 

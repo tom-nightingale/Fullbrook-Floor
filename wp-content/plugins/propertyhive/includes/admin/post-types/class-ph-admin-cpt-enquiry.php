@@ -29,6 +29,9 @@ class PH_Admin_CPT_Enquiry extends PH_Admin_CPT {
     public function __construct() {
         $this->type = 'enquiry';
 
+        // Admin notices
+        add_action( 'admin_notices', array( $this, 'enquiry_admin_notices') );
+
         // Post title fields
         add_filter( 'enter_title_here', array( $this, 'enter_title_here' ), 1, 2 );
 
@@ -53,19 +56,131 @@ class PH_Admin_CPT_Enquiry extends PH_Admin_CPT {
         // Call PH_Admin_CPT constructor
         parent::__construct();
     }
+
+    /**
+     * Output admin notices relating to enquiry
+     */
+    public function enquiry_admin_notices()
+    {
+        $screen = get_current_screen();
+
+        if ( $screen->id == 'enquiry' && isset($_GET['post']) && get_post_type($_GET['post']) == 'enquiry' )
+        {
+            $enquiry = new PH_Enquiry((int)$_GET['post']);
+
+            // Get associated property_id(s), from either meta_key
+            $property_ids = get_post_meta( $enquiry->id, '_property_id' );
+            if ( empty($property_ids) )
+            {
+                $property_ids = get_post_meta( $enquiry->id, 'property_id' );
+            }
+
+            // If the enquiry has a property associated
+            if ( !empty($property_ids) )
+            {
+                if ( !is_array($property_ids) )
+                {
+                    $property_ids = array( $property_ids );
+                }
+
+                $contact_ids = array();
+                $contact_id = get_post_meta( $enquiry->id, '_contact_id', true );
+                if ( !empty( $contact_id ) )
+                {
+                    $contact_ids[] = $contact_id;
+                }
+                else
+                {
+                    // The enquiry doesn't have a contact_id meta_key, so check for contacts with the same email address
+
+                    // Get enquiry email address, from either meta_key
+                    $email_address = get_post_meta( $enquiry->id, 'email_address', true );
+                    if ( empty($email_address) )
+                    {
+                        $email_address = get_post_meta( $enquiry->id, 'email', true );
+                    }
+
+                    if ( !empty($email_address) )
+                    {
+                        // Get all contact with this email address
+                        $args = array(
+                            'post_type'   => 'contact',
+                            'post_status' => 'any',
+                            'nopaging'    => true,
+                            'fields'      => 'ids',
+                            'meta_query'  => array(
+                                array(
+                                    'key' => '_email_address',
+                                    'value' => $email_address,
+                                )
+                            )
+                        );
+                        $contacts_query = new WP_Query( $args );
+                        $contact_ids = $contacts_query->posts;
+                        wp_reset_postdata();
+                    }
+                }
+
+                if ( count($contact_ids) > 0 )
+                {
+                    // Get any viewings for the propert(y/ies) and contact(s) on this enquiry
+                    $args = array(
+                        'post_type'   => 'viewing',
+                        'nopaging'    => true,
+                        'fields'      => 'ids',
+                        'post_status' => 'publish',
+                        'meta_query'  => array(
+                            array(
+                                'key'     => '_property_id',
+                                'value'   => $property_ids,
+                                'compare' => 'IN',
+                            ),
+                            array(
+                                'key'     => '_applicant_contact_id',
+                                'value'   => $contact_ids,
+                                'compare' => 'IN',
+                            ),
+                        ),
+                    );
+                    $viewings_query = new WP_Query( $args );
+                    $viewing_ids = $viewings_query->posts;
+                    wp_reset_postdata();
+
+                    if ( count($viewing_ids) > 0 )
+                    {
+                        if ( count($viewing_ids) == 1 )
+                        {
+                            $enquiry_text = 'is an existing viewing';
+                        }
+                        else
+                        {
+                            $enquiry_text = 'are ' . count($viewing_ids) . ' existing viewings';
+                        }
+
+                        $message = '<p>' . __( 'There ' . $enquiry_text . ' for this applicant at this property.', 'propertyhive' ) . '</p>';
+                        foreach( $viewing_ids as $viewing_id )
+                        {
+                            $message .= '<p><a href="' . get_edit_post_link( $viewing_id ) . '" class="button">' . __( 'Edit Viewing', 'propertyhive' ) . '</a></p>';
+                        }
+                        echo "<div class=\"notice notice-info\">$message</div>";
+                    }
+                }
+            }
+        }
+    }
     
     /**
-     * Check if we're editing or adding a is_editing_enquiry
+     * Check if we're editing or adding an enquiry
      * @return boolean
      */
     private function is_editing_enquiry() {
-        if ( ! empty( $_GET['post_type'] ) && 'is_editing_enquiry' == $_GET['post_type'] ) {
+        if ( ! empty( $_GET['post_type'] ) && 'enquiry' == $_GET['post_type'] ) {
             return true;
         }
-        if ( ! empty( $_GET['post'] ) && 'is_editing_enquiry' == get_post_type( (int)$_GET['post'] ) ) {
+        if ( ! empty( $_GET['post'] ) && 'enquiry' == get_post_type( (int)$_GET['post'] ) ) {
             return true;
         }
-        if ( ! empty( $_REQUEST['post_id'] ) && 'is_editing_enquiry' == get_post_type( (int)$_REQUEST['post_id'] ) ) {
+        if ( ! empty( $_REQUEST['post_id'] ) && 'enquiry' == get_post_type( (int)$_REQUEST['post_id'] ) ) {
             return true;
         }
         return false;

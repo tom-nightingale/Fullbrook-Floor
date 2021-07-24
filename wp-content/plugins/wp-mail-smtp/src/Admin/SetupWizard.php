@@ -132,6 +132,9 @@ class SetupWizard {
 	/**
 	 * Register page through WordPress's hooks.
 	 *
+	 * Create a dummy admin page, where the Setup Wizard app can be displayed,
+	 * but it's not visible in the admin dashboard menu.
+	 *
 	 * @since 2.6.0
 	 */
 	public function add_dashboard_page() {
@@ -140,15 +143,7 @@ class SetupWizard {
 			return;
 		}
 
-		add_submenu_page(
-			Area::SLUG,
-			'',
-			esc_html__( 'Setup Wizard', 'wp-mail-smtp' ),
-			'manage_options',
-			Area::SLUG . '-setup-wizard',
-			'wp_mail_smtp_load_setup_wizard',
-			1
-		);
+		add_submenu_page( '', '', '', 'manage_options', Area::SLUG . '-setup-wizard', '' );
 	}
 
 	/**
@@ -158,11 +153,29 @@ class SetupWizard {
 	 */
 	private function load_setup_wizard() {
 
+		/**
+		 * Before setup wizard load.
+		 *
+		 * @since 2.8.0
+		 *
+		 * @param \WPMailSMTP\Admin\SetupWizard  $setup_wizard SetupWizard instance.
+		 */
+		do_action( 'wp_mail_smtp_admin_setup_wizard_load_setup_wizard_before', $this );
+
 		$this->enqueue_scripts();
 
 		$this->setup_wizard_header();
 		$this->setup_wizard_content();
 		$this->setup_wizard_footer();
+
+		/**
+		 * After setup wizard load.
+		 *
+		 * @since 2.8.0
+		 *
+		 * @param \WPMailSMTP\Admin\SetupWizard  $setup_wizard SetupWizard instance.
+		 */
+		do_action( 'wp_mail_smtp_admin_setup_wizard_load_setup_wizard_after', $this );
 
 		exit;
 	}
@@ -191,7 +204,7 @@ class SetupWizard {
 				'is_multisite'       => is_multisite(),
 				'translations'       => WP::get_jed_locale_data( 'wp-mail-smtp' ),
 				'exit_url'           => wp_mail_smtp()->get_admin()->get_admin_page_url(),
-				'email_test_tab_url' => add_query_arg( 'tab', 'test', wp_mail_smtp()->get_admin()->get_admin_page_url() ),
+				'email_test_tab_url' => add_query_arg( 'tab', 'test', wp_mail_smtp()->get_admin()->get_admin_page_url( Area::SLUG . '-tools' ) ),
 				'is_pro'             => wp_mail_smtp()->is_pro(),
 				'license_exists'     => apply_filters( 'wp_mail_smtp_admin_setup_wizard_license_exists', false ),
 				'plugin_version'     => WPMS_PLUGIN_VER,
@@ -204,15 +217,18 @@ class SetupWizard {
 					'upgrade_text'   => esc_html__( 'We\'re sorry, the %mailer% mailer is not available on your plan. Please upgrade to the PRO plan to unlock all these awesome features.', 'wp-mail-smtp' ),
 					'upgrade_button' => esc_html__( 'Upgrade to Pro', 'wp-mail-smtp' ),
 					'upgrade_url'    => add_query_arg( 'discount', 'SMTPLITEUPGRADE', wp_mail_smtp()->get_upgrade_link( '' ) ),
-					'upgrade_bonus'  => wp_kses(
-						__( '<strong>Bonus:</strong> WP Mail SMTP users get <span class="highlight">$50 off</span> regular price,<br>applied at checkout.', 'wp-mail-smtp' ),
-						[
-							'strong' => [],
-							'span'   => [
-								'class' => [],
-							],
-							'br'     => [],
-						]
+					'upgrade_bonus'  => sprintf(
+						wp_kses( /* Translators: %s - discount value $50 */
+							__( '<strong>Bonus:</strong> WP Mail SMTP users get <span class="highlight">%s off</span> regular price,<br>applied at checkout.', 'wp-mail-smtp' ),
+							[
+								'strong' => [],
+								'span'   => [
+									'class' => [],
+								],
+								'br'     => [],
+							]
+						),
+						'$50'
 					),
 					'upgrade_doc'    => '<a href="https://wpmailsmtp.com/docs/how-to-upgrade-wp-mail-smtp-to-pro-version/?utm_source=WordPress&amp;utm_medium=link&amp;utm_campaign=liteplugin" target="_blank" rel="noopener noreferrer" class="already-purchased">
 												' . esc_html__( 'Already purchased?', 'wp-mail-smtp' ) . '

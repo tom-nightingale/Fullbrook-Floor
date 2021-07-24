@@ -3,11 +3,11 @@
  * Plugin Name: Property Hive
  * Plugin URI: https://wordpress.org/plugins/propertyhive/
  * Description: Estate Agency Property Software Plugin for WordPress
- * Version: 1.4.79
+ * Version: 1.5.13
  * Author: PropertyHive
  * Author URI: https://wp-property-hive.com
  * Requires at least: 3.8
- * Tested up to: 5.7
+ * Tested up to: 5.7.2
  * 
  * Text Domain: propertyhive
  * Domain Path: /i18n/languages/
@@ -27,14 +27,14 @@ if ( ! class_exists( 'PropertyHive' ) )
     * Main PropertyHive Class
     *
     * @class PropertyHive
-    * @version 1.4.79
+    * @version 1.5.13
     */
     final class PropertyHive {
          
         /**
          * @var string
          */
-        public $version = '1.4.79';
+        public $version = '1.5.13';
          
         /**
          * @var PropertyHive The single instance of the class
@@ -115,6 +115,7 @@ if ( ! class_exists( 'PropertyHive' ) )
     
             // Hooks
             add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'action_links' ) );
+            add_filter( 'propertyhive_departments', array( $this, 'setup_custom_departments' ) );
             //add_action( 'widgets_init', array( $this, 'include_widgets' ) );
             add_action( 'init', array( $this, 'init' ), 0 );
             add_action( 'init', array( $this, 'include_template_functions' ) );
@@ -126,6 +127,18 @@ if ( ! class_exists( 'PropertyHive' ) )
     
             // Loaded action
             do_action( 'propertyhive_loaded' );
+        }
+
+        public function setup_custom_departments( $departments )
+        {
+            $custom_departments = ph_get_custom_departments();
+
+            foreach ( $custom_departments as $key => $custom_department )
+            {
+                $departments[$key] = __( $custom_department['name'], 'propertyhive' );
+            }
+
+            return $departments;
         }
 
         public function exclude_notes_from_comment_count($post_id) {
@@ -247,6 +260,7 @@ if ( ! class_exists( 'PropertyHive' ) )
 
             include_once( 'includes/class-ph-elementor.php' );              // Elementor
             include_once( 'includes/class-ph-yoast-seo.php' );              // Yoast SEO
+            include_once( 'includes/class-ph-rank-math.php' );              // Rank Math
             
             $this->query = new PH_Query();
             $this->email = new PH_Emails();

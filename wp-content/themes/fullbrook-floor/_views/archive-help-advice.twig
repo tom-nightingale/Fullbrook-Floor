@@ -31,7 +31,7 @@
 
     <main class="flex-wrap sm:flex lg:w-3/4 lg:pr-16">
 
-      {% for post in posts[2:] %}
+      {% for post in posts[2:posts|length] %}
       
         {% include "_components/help-advice-card.twig" %}
       

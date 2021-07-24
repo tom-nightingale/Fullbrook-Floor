@@ -76,7 +76,7 @@ class PH_Query {
 
         	if ( isset($_REQUEST['keyword']) && ph_clean($_REQUEST['keyword']) != '' )
         	{
-        		$ref_pos = strpos($where, '_reference_number');
+        		$ref_pos = strpos($where, '_features_concatenated');
         		$str_to_insert = " $wpdb->posts.post_excerpt LIKE '%" . esc_sql(ph_clean($_REQUEST['keyword'])) . "%' OR ";
         		$where = substr_replace($where, $str_to_insert, $ref_pos - 18, 0);
         	}
@@ -569,8 +569,8 @@ class PH_Query {
 
 		// default - menu_order
 		if (
-			( isset($_REQUEST['department']) && $_REQUEST['department'] != 'commercial' ) ||
-			( !isset($_REQUEST['department']) && get_option( 'propertyhive_primary_department' ) != 'commercial' )
+			( isset($_REQUEST['department']) && $_REQUEST['department'] != 'commercial' && ph_get_custom_department_based_on($_REQUEST['department']) != 'commercial' ) ||
+			( !isset($_REQUEST['department']) && get_option( 'propertyhive_primary_department' ) != 'commercial' && ph_get_custom_department_based_on(get_option( 'propertyhive_primary_department' )) != 'commercial' )
 		)
 		{
 			$args['orderby']  = 'meta_value_num';
@@ -578,8 +578,8 @@ class PH_Query {
 			$args['meta_key'] = '_price_actual';
 		}
 		elseif (
-			( isset($_REQUEST['department']) && $_REQUEST['department'] == 'commercial' ) ||
-			( !isset($_REQUEST['department']) && get_option( 'propertyhive_primary_department' ) == 'commercial' )
+			( isset($_REQUEST['department']) && ( $_REQUEST['department'] == 'commercial' || ph_get_custom_department_based_on($_REQUEST['department']) == 'commercial' ) ) ||
+			( !isset($_REQUEST['department']) && ( get_option( 'propertyhive_primary_department' ) == 'commercial' || ph_get_custom_department_based_on(get_option( 'propertyhive_primary_department' )) == 'commercial' ) )
 		)
 		{
 			$args['orderby']  = 'meta_value_num';
@@ -592,8 +592,8 @@ class PH_Query {
 				$args['orderby']  = 'meta_value_num';
 				$args['order']    = $order == 'ASC' ? 'ASC' : 'DESC';
 				if (
-					( isset($_REQUEST['department']) && $_REQUEST['department'] == 'commercial' ) ||
-					( !isset($_REQUEST['department']) && get_option( 'propertyhive_primary_department' ) == 'commercial' )
+					( isset($_REQUEST['department']) && ( $_REQUEST['department'] == 'commercial' || ph_get_custom_department_based_on($_REQUEST['department']) == 'commercial' ) ) ||
+					( !isset($_REQUEST['department']) && ( get_option( 'propertyhive_primary_department' ) == 'commercial' || ph_get_custom_department_based_on(get_option( 'propertyhive_primary_department' )) == 'commercial' ) )
 				)
 				{
 					$args['meta_key'] = '_price_from_actual';
@@ -833,8 +833,16 @@ class PH_Query {
 	      		'_address_two',
 	      		'_address_three',
 	      		'_address_four',
-	      		'_address_postcode'
+	      		'_address_postcode',
 	      	);
+
+	      	// add country to list of fields to query if it looks like we're working with an overseas site
+	      	$countries = get_option( 'propertyhive_countries', array() );
+	      	if ( !is_array($countries) ) { $countries = array(); }
+	      	if ( count($countries) > 1 )
+	      	{
+	      		$address_fields_to_query[] = '_address_country';
+	      	}
 
 	      	$address_fields_to_query = apply_filters( 'propertyhive_address_fields_to_query', $address_fields_to_query );
 
@@ -842,7 +850,7 @@ class PH_Query {
 	      	{
 	      		foreach ( $address_fields_to_query as $address_field )
 	      		{
-	      			if ( $address_field == '_address_postcode' ) { continue; } // ignore postcode as that is handled differently afterwards
+	      			if ( $address_field == '_address_postcode' || $address_field == '_address_country' ) { continue; } // ignore postcode and country as they're handled differently afterwards
 
 	      			$meta_query[] = array(
 					    'key'     => $address_field,
@@ -904,6 +912,34 @@ class PH_Query {
 					);
 		      	}
 		    }
+
+		    if ( in_array('_address_country', $address_fields_to_query) )
+			{
+				$meta_query[] = array(
+				    'key'     => '_address_country',
+				    'value'   => $address_keyword,
+				    'compare' => '='
+				);
+
+				// get country code for country entered
+				$PH_Countries = new PH_Countries();
+				$countries = $PH_Countries->countries;
+				if ( is_array($countries) && !empty($countries) )
+				{
+					foreach ( $countries as $country_code => $country )
+					{
+						if ( strtolower($address_keyword) == strtolower($country['name']) )
+						{
+							$meta_query[] = array(
+							    'key'     => '_address_country',
+							    'value'   => $country_code,
+							    'compare' => '='
+							);
+							break;
+						}
+					}
+				}
+			}
       	}
 
 		return $meta_query;
@@ -941,7 +977,7 @@ class PH_Query {
         $meta_query = array();
         
         if ( 
-            isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-sales' && 
+            isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-sales' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-sales' ) && 
             isset( $_REQUEST['minimum_price'] ) && $_REQUEST['minimum_price'] != '' 
         )
         {
@@ -978,7 +1014,7 @@ class PH_Query {
         $meta_query = array();
         
         if ( 
-            isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-sales' && 
+            isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-sales' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-sales' ) && 
             isset( $_REQUEST['maximum_price'] ) && $_REQUEST['maximum_price'] != '' 
         )
         {
@@ -1015,7 +1051,7 @@ class PH_Query {
         $meta_query = array();
         
         if ( 
-            isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-sales' && 
+            isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-sales' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-sales' ) && 
             isset( $_REQUEST['price_range'] ) && $_REQUEST['price_range'] != '' 
         )
         {
@@ -1076,7 +1112,7 @@ class PH_Query {
         $meta_query = array();
         
         if ( 
-            isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-lettings' && 
+            isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-lettings' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-lettings' ) && 
             isset( $_REQUEST['minimum_rent'] ) && $_REQUEST['minimum_rent'] != '' 
         )
         {
@@ -1089,6 +1125,15 @@ class PH_Query {
         		$ph_countries = new PH_Countries();
 
         		$minimum_rent = $ph_countries->convert_price_to_gbp( $minimum_rent, $search_form_currency );
+        	}
+
+        	$rent_frequency = apply_filters( 'propertyhive_search_form_rent_frequency', 'pcm' );
+        	switch ($rent_frequency)
+        	{
+        		case "pd": { $minimum_rent = ($minimum_rent * 365) / 12; break; }
+        		case "pw": { $minimum_rent = ($minimum_rent * 52) / 12; break; }
+        		case "pq": { $minimum_rent = ($minimum_rent * 4) / 12; break; }
+        		case "pa": { $minimum_rent = $minimum_rent / 12; break; }
         	}
 
             $meta_query = array(
@@ -1113,7 +1158,7 @@ class PH_Query {
         $meta_query = array();
         
         if ( 
-            isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-lettings' && 
+            isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-lettings' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-lettings' ) && 
             isset( $_REQUEST['maximum_rent'] ) && $_REQUEST['maximum_rent'] != '' 
         )
         {
@@ -1126,6 +1171,15 @@ class PH_Query {
         		$ph_countries = new PH_Countries();
 
         		$maximum_rent = $ph_countries->convert_price_to_gbp( $maximum_rent, $search_form_currency );
+        	}
+
+        	$rent_frequency = apply_filters( 'propertyhive_search_form_rent_frequency', 'pcm' );
+        	switch ($rent_frequency)
+        	{
+        		case "pd": { $maximum_rent = ($maximum_rent * 365) / 12; break; }
+        		case "pw": { $maximum_rent = ($maximum_rent * 52) / 12; break; }
+        		case "pq": { $maximum_rent = ($maximum_rent * 4) / 12; break; }
+        		case "pa": { $maximum_rent = $maximum_rent / 12; break; }
         	}
 
             $meta_query = array(
@@ -1150,13 +1204,15 @@ class PH_Query {
         $meta_query = array();
         
         if ( 
-            isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-lettings' && 
+            isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-lettings' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-lettings' ) && 
             isset( $_REQUEST['rent_range'] ) && $_REQUEST['rent_range'] != '' 
         )
         {
         	$explode_rent_range = explode("-", ph_clean($_REQUEST['rent_range']));
 
         	$search_form_currency = get_option( 'propertyhive_search_form_currency', 'GBP' );
+
+        	$rent_frequency = apply_filters( 'propertyhive_search_form_rent_frequency', 'pcm' );
 
         	if ( isset($explode_rent_range[0]) && $explode_rent_range[0] != '' )
         	{
@@ -1167,6 +1223,14 @@ class PH_Query {
 	        		$ph_countries = new PH_Countries();
 
 	        		$minimum_rent = $ph_countries->convert_price_to_gbp( $minimum_rent, $search_form_currency );
+	        	}
+
+	        	switch ($rent_frequency)
+	        	{
+	        		case "pd": { $minimum_rent = ($minimum_rent * 365) / 12; break; }
+	        		case "pw": { $minimum_rent = ($minimum_rent * 52) / 12; break; }
+	        		case "pq": { $minimum_rent = ($minimum_rent * 4) / 12; break; }
+	        		case "pa": { $minimum_rent = $minimum_rent / 12; break; }
 	        	}
 
 	            $meta_query[] = array(
@@ -1185,6 +1249,14 @@ class PH_Query {
 	        		$ph_countries = new PH_Countries();
 
 	        		$maximum_rent = $ph_countries->convert_price_to_gbp( $maximum_rent, $search_form_currency );
+	        	}
+
+	        	switch ($rent_frequency)
+	        	{
+	        		case "pd": { $maximum_rent = ($maximum_rent * 365) / 12; break; }
+	        		case "pw": { $maximum_rent = ($maximum_rent * 52) / 12; break; }
+	        		case "pq": { $maximum_rent = ($maximum_rent * 4) / 12; break; }
+	        		case "pa": { $maximum_rent = $maximum_rent / 12; break; }
 	        	}
 
 	            $meta_query[] = array(
@@ -1211,8 +1283,8 @@ class PH_Query {
         
         if ( 
         	(
-        		(isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-sales') ||
-        		(isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-lettings')
+        		(isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-sales' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-sales' )) ||
+        		(isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-lettings' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-lettings' ))
         	) &&
         	isset( $_REQUEST['bedrooms'] ) && $_REQUEST['bedrooms'] != '' 
         )
@@ -1240,8 +1312,8 @@ class PH_Query {
         
         if ( 
         	(
-        		(isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-sales') ||
-        		(isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-lettings')
+        		(isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-sales' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-sales' )) ||
+        		(isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-lettings' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-lettings' ))
         	) &&
         	isset( $_REQUEST['minimum_bedrooms'] ) && $_REQUEST['minimum_bedrooms'] != '' 
         )
@@ -1269,8 +1341,8 @@ class PH_Query {
         
         if ( 
         	(
-        		(isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-sales') ||
-        		(isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-lettings')
+        		(isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-sales' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-sales' )) ||
+        		(isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-lettings' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-lettings' ))
         	) &&
         	isset( $_REQUEST['maximum_bedrooms'] ) && $_REQUEST['maximum_bedrooms'] != '' 
         )
@@ -1298,8 +1370,8 @@ class PH_Query {
         
         if ( 
         	(
-        		(isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-sales') ||
-        		(isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-lettings')
+        		(isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-sales' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-sales' )) ||
+        		(isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-lettings' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-lettings' ))
         	) &&
         	isset( $_REQUEST['minimum_bathrooms'] ) && $_REQUEST['minimum_bathrooms'] != '' 
         )
@@ -1327,8 +1399,8 @@ class PH_Query {
         
         if ( 
         	(
-        		(isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-sales') ||
-        		(isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-lettings')
+        		(isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-sales' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-sales' )) ||
+        		(isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-lettings' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-lettings' ))
         	) &&
         	isset( $_REQUEST['maximum_bathrooms'] ) && $_REQUEST['maximum_bathrooms'] != '' 
         )
@@ -1356,8 +1428,8 @@ class PH_Query {
         
         if ( 
         	(
-        		(isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-sales') ||
-        		(isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-lettings')
+        		(isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-sales' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-sales' )) ||
+        		(isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-lettings' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-lettings' ))
         	) &&
         	isset( $_REQUEST['minimum_reception_rooms'] ) && $_REQUEST['minimum_reception_rooms'] != '' 
         )
@@ -1385,8 +1457,8 @@ class PH_Query {
         
         if ( 
         	(
-        		(isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-sales') ||
-        		(isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-lettings')
+        		(isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-sales' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-sales' )) ||
+        		(isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-lettings' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-lettings' ))
         	) &&
         	isset( $_REQUEST['maximum_reception_rooms'] ) && $_REQUEST['maximum_reception_rooms'] != '' 
         )
@@ -1413,7 +1485,7 @@ class PH_Query {
         $meta_query = array();
         
         if ( 
-        	isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'residential-lettings' &&
+        	isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'residential-lettings' || ph_get_custom_department_based_on($_REQUEST['department']) == 'residential-lettings' ) &&
         	isset( $_REQUEST['available_date_from'] ) && $_REQUEST['available_date_from'] != '' 
         )
         {
@@ -1448,7 +1520,7 @@ class PH_Query {
         $meta_query = array();
         
         if ( 
-            isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'commercial' && 
+            isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'commercial' || ph_get_custom_department_based_on($_REQUEST['department']) == 'commercial' ) && 
             isset( $_REQUEST['minimum_floor_area'] ) && $_REQUEST['minimum_floor_area'] != '' &&
             (
             	!isset( $_REQUEST['maximum_floor_area'] ) ||
@@ -1485,7 +1557,7 @@ class PH_Query {
         $meta_query = array();
         
         if ( 
-            isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'commercial' && 
+            isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'commercial' || ph_get_custom_department_based_on($_REQUEST['department']) == 'commercial' ) && 
             isset( $_REQUEST['maximum_floor_area'] ) && $_REQUEST['maximum_floor_area'] != '' &&
             (
             	!isset( $_REQUEST['minimum_floor_area'] ) ||
@@ -1522,7 +1594,7 @@ class PH_Query {
         $meta_query = array();
         
         if ( 
-            isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'commercial' && 
+            isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'commercial' || ph_get_custom_department_based_on($_REQUEST['department']) == 'commercial' ) && 
             isset( $_REQUEST['minimum_floor_area'] ) && $_REQUEST['minimum_floor_area'] != '' &&
             isset( $_REQUEST['maximum_floor_area'] ) && $_REQUEST['maximum_floor_area'] != ''
         )
@@ -1565,7 +1637,7 @@ class PH_Query {
         $meta_query = array();
         
         if ( 
-            isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'commercial' && 
+            isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'commercial' || ph_get_custom_department_based_on($_REQUEST['department']) == 'commercial' ) && 
             isset( $_REQUEST['floor_area_range'] ) && $_REQUEST['floor_area_range'] != '' 
         )
         {
@@ -1605,7 +1677,7 @@ class PH_Query {
         $meta_query = array();
         
         if ( 
-            isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'commercial' && 
+            isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'commercial' || ph_get_custom_department_based_on($_REQUEST['department']) == 'commercial' ) && 
             isset( $_REQUEST['commercial_for_sale_to_rent'] ) && $_REQUEST['commercial_for_sale_to_rent'] == 'for_sale' 
         )
         {
@@ -1617,7 +1689,7 @@ class PH_Query {
         }
 
         if ( 
-            isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'commercial' && 
+            isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'commercial' || ph_get_custom_department_based_on($_REQUEST['department']) == 'commercial' ) && 
             isset( $_REQUEST['commercial_for_sale_to_rent'] ) && $_REQUEST['commercial_for_sale_to_rent'] == 'to_rent' 
         )
         {
@@ -1642,7 +1714,7 @@ class PH_Query {
         $meta_query = array();
         
         if ( 
-            isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'commercial' && 
+            isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'commercial' || ph_get_custom_department_based_on($_REQUEST['department']) == 'commercial' ) && 
             isset( $_REQUEST['commercial_for_sale'] ) && $_REQUEST['commercial_for_sale'] == '1' 
         )
         {
@@ -1667,7 +1739,7 @@ class PH_Query {
         $meta_query = array();
         
         if ( 
-            isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'commercial' && 
+            isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'commercial' || ph_get_custom_department_based_on($_REQUEST['department']) == 'commercial' ) && 
             isset( $_REQUEST['commercial_to_rent'] ) && $_REQUEST['commercial_to_rent'] == '1' 
         )
         {
@@ -1692,7 +1764,7 @@ class PH_Query {
         $meta_query = array();
         
         if ( 
-            isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'commercial' && 
+            isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'commercial' || ph_get_custom_department_based_on($_REQUEST['department']) == 'commercial' ) && 
             (
             	( isset( $_REQUEST['commercial_for_sale_to_rent'] ) && $_REQUEST['commercial_for_sale_to_rent'] == 'for_sale' )
             	||
@@ -1734,7 +1806,7 @@ class PH_Query {
         $meta_query = array();
         
         if ( 
-            isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'commercial' && 
+            isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'commercial' || ph_get_custom_department_based_on($_REQUEST['department']) == 'commercial' ) && 
             (
             	( isset( $_REQUEST['commercial_for_sale_to_rent'] ) && $_REQUEST['commercial_for_sale_to_rent'] == 'for_sale' )
             	||
@@ -1776,7 +1848,7 @@ class PH_Query {
         $meta_query = array();
         
         if ( 
-            isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'commercial' && 
+            isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'commercial' || ph_get_custom_department_based_on($_REQUEST['department']) == 'commercial' ) && 
             (
             	( isset( $_REQUEST['commercial_for_sale_to_rent'] ) && $_REQUEST['commercial_for_sale_to_rent'] == 'to_rent' )
             	||
@@ -1818,7 +1890,7 @@ class PH_Query {
         $meta_query = array();
         
         if ( 
-            isset( $_REQUEST['department'] ) && $_REQUEST['department'] == 'commercial' && 
+            isset( $_REQUEST['department'] ) && ( $_REQUEST['department'] == 'commercial' || ph_get_custom_department_based_on($_REQUEST['department']) == 'commercial' ) && 
             (
             	( isset( $_REQUEST['commercial_for_sale_to_rent'] ) && $_REQUEST['commercial_for_sale_to_rent'] == 'to_rent' )
             	||
@@ -1934,14 +2006,14 @@ class PH_Query {
 	      	$meta_query = array( 'relation' => 'OR' );
 
 	      	$fields_to_query = array(
+	      		'_features_concatenated',
+	      		'_descriptions_concatenated',
 	      		'_reference_number',
 	      		'_address_street',
 	      		'_address_two',
 	      		'_address_three',
 	      		'_address_four',
 	      		'_address_postcode',
-	      		'_features_concatenated',
-	      		'_descriptions_concatenated'
 	      	);
 
 	      	$fields_to_query = apply_filters( 'propertyhive_keyword_fields_to_query', $fields_to_query );
@@ -2053,6 +2125,11 @@ class PH_Query {
         else
         {
             $department = get_option( 'propertyhive_primary_department', 'residential-sales' );
+        }
+
+        if ( ph_get_custom_department_based_on( $department ) !== false )
+        {
+        	$department = ph_get_custom_department_based_on( $department );
         }
 
         switch ( $department )

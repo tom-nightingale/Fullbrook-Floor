@@ -116,10 +116,11 @@
         {
             ?>
             <tr class="no-items">
-                <td class="colspanchange" colspan="4">No tenancies found</td>
+                <td class="colspanchange" colspan="4"><?php echo __( 'No tenancies found', 'propertyhive' ); ?></td>
             </tr>
             <?php
         }
+        wp_reset_postdata();
     ?>
     </tbody>
 </table>

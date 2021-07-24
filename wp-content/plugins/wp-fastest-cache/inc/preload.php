@@ -2,6 +2,18 @@
 	class PreloadWPFC{
 		private static $exclude_rules = false;
 
+		public static function wpml_get_permalink($post_id, $permalink){
+			$my_post_language_details = apply_filters( 'wpml_post_language_details', NULL, $post_id) ;
+
+			if(is_array($my_post_language_details) && isset($my_post_language_details["language_code"])){
+				$wpml_permalink = apply_filters( 'wpml_permalink', $permalink , $my_post_language_details["language_code"] ); 
+
+				return $wpml_permalink;
+			}
+
+			return $permalink;
+		}
+
 		public static function set_preload($slug){
 			$preload_arr = array();
 
@@ -158,7 +170,7 @@
 					}
 				}
 
-				if(is_array($order_arr)){
+				if(isset($order_arr) && is_array($order_arr)){
 					foreach ($order_arr as $o_key => $o_value){
 						if($o_value == "order" || $o_value == "number"){
 							unset($order_arr[$o_key]);
@@ -228,11 +240,11 @@
 				    		if(count($recent_custom_posts) > 0){
 				    			foreach ($recent_custom_posts as $key => $post) {
 				    				if($mobile_theme){
-				    					array_push($urls, array("url" => get_permalink($post["ID"]), "user-agent" => "mobile"));
+				    					array_push($urls, array("url" => self::wpml_get_permalink($post["ID"], get_permalink($post["ID"])), "user-agent" => "mobile"));
 				    					$number--;
 				    				}
 
-			    					array_push($urls, array("url" => get_permalink($post["ID"]), "user-agent" => "desktop"));
+			    					array_push($urls, array("url" => self::wpml_get_permalink($post["ID"], get_permalink($post["ID"])), "user-agent" => "desktop"));
 			    					$number--;
 
 				    				$pre_load->customposttypes = $pre_load->customposttypes + 1;
@@ -264,11 +276,11 @@
 			    		if(count($recent_posts) > 0){
 			    			foreach ($recent_posts as $key => $post) {
 			    				if($mobile_theme){
-			    					array_push($urls, array("url" => get_permalink($post["ID"]), "user-agent" => "mobile"));
+			    					array_push($urls, array("url" => self::wpml_get_permalink($post["ID"], get_permalink($post["ID"])), "user-agent" => "mobile"));
 			    					$number--;
 			    				}
 
-		    					array_push($urls, array("url" => get_permalink($post["ID"]), "user-agent" => "desktop"));
+		    					array_push($urls, array("url" => self::wpml_get_permalink($post["ID"], get_permalink($post["ID"])), "user-agent" => "desktop"));
 		    					$number--;
 
 			    				$pre_load->post = $pre_load->post + 1;
@@ -437,7 +449,7 @@
 				}
 
 
-				if($pre_load->$current_order == -1){
+				if(isset($pre_load->$current_order) && $pre_load->$current_order == -1){
 					array_shift($order_arr);
 
 					if(isset($order_arr[0])){

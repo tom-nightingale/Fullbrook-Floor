@@ -143,7 +143,7 @@ class PH_Meta_Box_Contact_Relationships {
                 {
                     $owner_type = __( 'Property Owner', 'propertyhive' );
                     $department = get_post_meta($property_post->ID, '_department', TRUE);
-                    if ($department == 'residential-lettings')
+                    if ( $department == 'residential-lettings' || ph_get_custom_department_based_on($department) == 'residential-lettings' )
                     {
                         $owner_type = __( 'Property Landlord', 'propertyhive' );
                     }   
@@ -158,7 +158,7 @@ class PH_Meta_Box_Contact_Relationships {
                 {
                     $owner_type = __( 'Potential Owner', 'propertyhive' );
                     $department = get_post_meta($appraisal_post->ID, '_department', TRUE);
-                    if ($department == 'residential-lettings')
+                    if ( $department == 'residential-lettings' || ph_get_custom_department_based_on($department) == 'residential-lettings' )
                     {
                         $owner_type = __( 'Potential Landlord', 'propertyhive' );
                     }   
@@ -186,18 +186,7 @@ class PH_Meta_Box_Contact_Relationships {
                         }
                         else
                         {
-                            if ( $applicant_profile['department'] == 'residential-sales' )
-                            {
-                                $label = __( 'Sales Applicant', 'propertyhive' );
-                            }
-                            elseif ( $applicant_profile['department'] == 'residential-lettings' )
-                            {
-                                $label = __( 'Lettings Applicant', 'propertyhive' );
-                            }
-                            elseif ( $applicant_profile['department'] == 'commercial' )
-                            {
-                                $label = __( 'Commercial Applicant', 'propertyhive' );
-                            }
+                            $label = __( ucwords(str_replace('-', ' ', str_replace('residential-', '', $applicant_profile['department']))) . ' Applicant', 'propertyhive' );
                         }
 
                         if ( isset($applicant_departments_count[$applicant_profile['department']]) )
@@ -312,6 +301,12 @@ class PH_Meta_Box_Contact_Relationships {
                     echo '<div id="tab_applicant_data_' . $key . '" class="panel propertyhive_options_panel" style="' . ( ($tab == 0) ? 'display:block;' : 'display:none;') . '">
                         
                         <div class="options_group applicant-fields-' . $key . '" style="float:left; width:100%;">';
+
+                        // This profile was created automatically from the Create Applicant button on an enquiry
+                        if ( isset( $applicant_profile['added_from_enquiry'] ) && $applicant_profile['added_from_enquiry'] == 'yes' )
+                        {
+                            echo '<div><p style="color:red;" >This applicant profile has been automatically created from an enquiry. Please confirm the requirements below are accurate.</p></div>';
+                        }
                         
                         $department_options = array();
 
@@ -379,7 +374,7 @@ class PH_Meta_Box_Contact_Relationships {
                             'custom_attributes' => array(
                                 'style' => 'width:100%; max-width:150px;'
                             ),
-                            'value' => ( ( isset($applicant_profile['max_price']) ) ? $applicant_profile['max_price'] : '' )
+                            'value' => ( ( isset($applicant_profile['max_price']) ) ? ph_display_price_field( $applicant_profile['max_price'] ) : '' )
                         ) );
 
                         $percentage_lower = get_option( 'propertyhive_applicant_match_price_range_percentage_lower', '' );
@@ -423,9 +418,9 @@ class PH_Meta_Box_Contact_Relationships {
                             
                                 <label for="_applicant_match_price_range_' . $key . '">' . __('Match Price Range', 'propertyhive') . ' (&pound;)</label>
                                 
-                                <input type="text" class="" name="_applicant_match_price_range_lower_' . $key . '" id="_applicant_match_price_range_lower_' . $key . '" value="' . $match_price_range_lower . '" style="width:20%; max-width:150px;">
+                                <input type="text" class="" name="_applicant_match_price_range_lower_' . $key . '" id="_applicant_match_price_range_lower_' . $key . '" value="' . ph_display_price_field( $match_price_range_lower ) . '" style="width:20%; max-width:150px;">
                                 <span style="float:left; margin:0 5px;">to</span>
-                                <input type="text" class="" name="_applicant_match_price_range_higher_' . $key . '" id="_applicant_match_price_range_higher_' . $key . '" value="' . $match_price_range_higher . '" style="width:20%; max-width:150px;">
+                                <input type="text" class="" name="_applicant_match_price_range_higher_' . $key . '" id="_applicant_match_price_range_higher_' . $key . '" value="' . ph_display_price_field( $match_price_range_higher ) . '" style="width:20%; max-width:150px;">
                                 
                             </p>';
 
@@ -503,7 +498,7 @@ class PH_Meta_Box_Contact_Relationships {
                         
                             <label for="_applicant_maximum_rent_' . $key . '">' . __('Maximum Rent', 'propertyhive') . ' (&pound;)</label>
                             
-                            <input type="text" class="" name="_applicant_maximum_rent_' . $key . '" id="_applicant_maximum_rent_' . $key . '" value="' . ( ( isset($applicant_profile['max_rent']) ) ? $applicant_profile['max_rent'] : '' ) . '" placeholder="" style="width:20%; max-width:150px;">
+                            <input type="text" class="" name="_applicant_maximum_rent_' . $key . '" id="_applicant_maximum_rent_' . $key . '" value="' . ( ( isset($applicant_profile['max_rent']) ) ? ph_display_price_field( $applicant_profile['max_rent']) : '' ) . '" placeholder="" style="width:20%; max-width:150px;">
                             
                             <select id="_applicant_rent_frequency_' . $key . '" name="_applicant_rent_frequency_' . $key . '" class="select short">
                                 <option value="pw"' . ( ($rent_frequency == 'pw') ? ' selected' : '') . '>' . __('Per Week', 'propertyhive') . '</option>
@@ -829,7 +824,7 @@ class PH_Meta_Box_Contact_Relationships {
                             'id' => '_send_matching_properties_' . $key, 
                             'label' => __( 'Send Matching Properties', 'propertyhive' ), 
                             'desc_tip' => false, 
-                            'value' => ( ( ( isset($applicant_profile['send_matching_properties']) && $applicant_profile['send_matching_properties'] == 'yes' ) || !isset($applicant_profile['send_matching_properties']) ) ? 'yes' : '' )
+                            'value' => ( ( ( isset($applicant_profile['send_matching_properties']) && $applicant_profile['send_matching_properties'] == 'yes' ) || ( !isset($applicant_profile['send_matching_properties']) && apply_filters( 'propertyhive_default_applicant_send_matching_properties', true ) === true ) ) ? 'yes' : '' )
                         ) );
 
                         $auto_property_match = get_option( 'propertyhive_auto_property_match', '' );
@@ -889,6 +884,7 @@ class PH_Meta_Box_Contact_Relationships {
                     <script>
 
                         var applicant_details_changed_' . $key . ' = false;
+                        var custom_departments = ' . json_encode(ph_get_custom_departments()) . ';
                         jQuery(document).ready(function()
                         {
                             showHideApplicantDepartmentMetaBox_' . $key . '();
@@ -922,27 +918,22 @@ class PH_Meta_Box_Contact_Relationships {
                             jQuery(\'.propertyhive-applicant-residential-lettings-details-' . $key . '\').hide();
                             jQuery(\'.propertyhive-applicant-commercial-details-' . $key . '\').hide();
                             
-                            switch (jQuery(\'input[type=\\\'radio\\\'][name=\\\'_applicant_department_' . $key . '\\\']:checked\').val())
-                            {
-                                case "residential-sales":
-                                {
-                                    jQuery(\'.propertyhive-applicant-residential-details-' . $key . '\').show();
-                                    jQuery(\'.propertyhive-applicant-residential-sales-details-' . $key . '\').show();
-                                    break;
-                                }
-                                case "residential-lettings":
-                                {
-                                    jQuery(\'.propertyhive-applicant-residential-details-' . $key . '\').show();
-                                    jQuery(\'.propertyhive-applicant-residential-lettings-details-' . $key . '\').show();
-                                    break;
-                                }
-                                case "commercial":
-                                {
-                                    jQuery(\'.propertyhive-applicant-commercial-details-' . $key . '\').show();
-                                    break;
-                                }
-                            }
+                            var selectedDepartment = jQuery(\'input[type=\\\'radio\\\'][name=\\\'_applicant_department_' . $key . '\\\']:checked\').val();
                             
+                            if ( selectedDepartment == \'residential-sales\' || ( custom_departments[selectedDepartment] && custom_departments[selectedDepartment].based_on == \'residential-sales\' ) )
+                            {
+                                jQuery(\'.propertyhive-applicant-residential-details-' . $key . '\').show();
+                                jQuery(\'.propertyhive-applicant-residential-sales-details-' . $key . '\').show();
+                            }
+                            else if ( selectedDepartment == \'residential-lettings\' || ( custom_departments[selectedDepartment] && custom_departments[selectedDepartment].based_on == \'residential-lettings\' ) )
+                            {
+                                jQuery(\'.propertyhive-applicant-residential-details-' . $key . '\').show();
+                                jQuery(\'.propertyhive-applicant-residential-lettings-details-' . $key . '\').show();
+                            }
+                            else if ( selectedDepartment == \'commercial\' || ( custom_departments[selectedDepartment] && custom_departments[selectedDepartment].based_on == \'commercial\' ) )
+                            {
+                                jQuery(\'.propertyhive-applicant-commercial-details-' . $key . '\').show();
+                            }                            
                         }
                         
                     </script>';
@@ -1030,7 +1021,7 @@ class PH_Meta_Box_Contact_Relationships {
 
                 $applicant_profile = array();
                 $applicant_profile['department'] = ph_clean($_POST['_applicant_department_' . $i]);
-                if ( $_POST['_applicant_department_' . $i] == 'residential-sales' )
+                if ( $_POST['_applicant_department_' . $i] == 'residential-sales' || ph_get_custom_department_based_on($_POST['_applicant_department_' . $i]) == 'residential-sales' )
                 {
                     $price = preg_replace("/[^0-9]/", '', ph_clean($_POST['_applicant_maximum_price_' . $i]));
 
@@ -1056,7 +1047,7 @@ class PH_Meta_Box_Contact_Relationships {
                         }
                     }
                 }
-                elseif ( $_POST['_applicant_department_' . $i] == 'residential-lettings' )
+                elseif ( $_POST['_applicant_department_' . $i] == 'residential-lettings' || ph_get_custom_department_based_on($_POST['_applicant_department_' . $i]) == 'residential-lettings' )
                 {
                     $rent = preg_replace("/[^0-9.]/", '', ph_clean($_POST['_applicant_maximum_rent_' . $i]));
 
@@ -1074,7 +1065,12 @@ class PH_Meta_Box_Contact_Relationships {
                     $applicant_profile['max_price_actual'] = $price_actual;
                 }
 
-                if ( $_POST['_applicant_department_' . $i] == 'residential-sales' || $_POST['_applicant_department_' . $i] == 'residential-lettings' )
+                if ( 
+                    $_POST['_applicant_department_' . $i] == 'residential-sales' ||
+                    $_POST['_applicant_department_' . $i] == 'residential-lettings' ||
+                    ph_get_custom_department_based_on($_POST['_applicant_department_' . $i]) == 'residential-sales' ||
+                    ph_get_custom_department_based_on($_POST['_applicant_department_' . $i]) == 'residential-lettings'
+                )
                 {
                     $beds = preg_replace("/[^0-9]/", '', ph_clean($_POST['_applicant_minimum_bedrooms_' . $i]));
                     $applicant_profile['min_beds'] = $beds;
@@ -1085,7 +1081,7 @@ class PH_Meta_Box_Contact_Relationships {
                     }
                 }
 
-                if ( $_POST['_applicant_department_' . $i] == 'commercial' )
+                if ( $_POST['_applicant_department_' . $i] == 'commercial' || ph_get_custom_department_based_on($_POST['_applicant_department_' . $i]) == 'commercial' )
                 {
                     $applicant_profile['available_as'] = ( isset($_POST['_applicant_available_as_' . $i]) && !empty($_POST['_applicant_available_as_' . $i]) ) ? ph_clean($_POST['_applicant_available_as_' . $i]) : array();
 

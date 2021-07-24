@@ -53,7 +53,7 @@ class Elementor_Property_Embedded_Virtual_Tours_Widget extends \Elementor\Widget
 			[
 				'name' => 'title_typography',
 				'label' => __( 'Title Typography', 'propertyhive' ),
-				'scheme' => \Elementor\Scheme_Typography::TYPOGRAPHY_1,
+				'scheme' => \Elementor\Core\Schemes\Typography::TYPOGRAPHY_1,
 				'selector' => '{{WRAPPER}} .embedded-virtual-tours h4',
 				'condition' => [
 		            'show_title' => 'yes'
@@ -67,8 +67,8 @@ class Elementor_Property_Embedded_Virtual_Tours_Widget extends \Elementor\Widget
 				'label' => __( 'Title Colour', 'propertyhive' ),
 				'type' => \Elementor\Controls_Manager::COLOR,
 				'scheme' => [
-					'type' => \Elementor\Scheme_Color::get_type(),
-					'value' => \Elementor\Scheme_Color::COLOR_1,
+					'type' => \Elementor\Core\Schemes\Color::get_type(),
+					'value' => \Elementor\Core\Schemes\Color::COLOR_1,
 				],
 				'selectors' => [
 					'{{WRAPPER}} .embedded-virtual-tours h4' => 'color: {{VALUE}}',
@@ -76,6 +76,18 @@ class Elementor_Property_Embedded_Virtual_Tours_Widget extends \Elementor\Widget
 				'condition' => [
 		            'show_title' => 'yes'
 		        ],
+			]
+		);
+
+		$this->add_control(
+			'oembed',
+			[
+				'label' => __( 'Use oEmbed', 'propertyhive' ),
+				'type' => \Elementor\Controls_Manager::SWITCHER,
+				'label_on' => __( 'Yes', 'propertyhive' ),
+				'label_off' => __( 'No', 'propertyhive' ),
+				'return_value' => 'yes',
+				'default' => 'no',
 			]
 		);
 
@@ -112,7 +124,28 @@ class Elementor_Property_Embedded_Virtual_Tours_Widget extends \Elementor\Widget
 
 				foreach ( $virtual_tours as $virtual_tour )
 				{
-					echo '<iframe src="' . $virtual_tour['url'] . '" height="500" width="100%" allowFullScreen frameborder="0"></iframe>';
+					if ( isset($settings['oembed']) && $settings['oembed'] == 'yes' )
+					{
+						$embed_code = wp_oembed_get($virtual_tour['url']);
+        				echo $embed_code;
+					}
+					else
+					{
+						$virtual_tour['url'] = preg_replace(
+							"/\s*[a-zA-Z\/\/:\.]*youtu(be.com\/watch\?v=|.be\/)([a-zA-Z0-9\-_]+)([a-zA-Z0-9\/\*\-\_\?\&\;\%\=\.]*)/i",
+							"//www.youtube.com/embed/$2",
+							$virtual_tour['url']
+						);
+
+
+						$virtual_tour['url'] = preg_replace(
+				        	'/(https?:\/\/)?(www\.)?(player\.)?vimeo\.com\/?(showcase\/)*([0-9))([a-z]*\/)*([0-9]{6,11})[?]?.*/i',
+				        	"//player.vimeo.com/video/$6",
+				        	$virtual_tour['url']
+				    	);
+
+						echo '<iframe src="' . $virtual_tour['url'] . '" height="500" width="100%" allowFullScreen frameborder="0"></iframe>';
+					}
 				}
 
 			echo '</div>';

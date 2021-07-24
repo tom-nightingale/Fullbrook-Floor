@@ -2,8 +2,8 @@
 Contributors: ninjateam
 Tags: multi-step, multi-step form, multistep, contact form 7, form, forms, form builder, multi page
 Requires at least: 3.0
-Tested up to: 5.6.2
-Stable tag: trunk
+Tested up to: 5.7
+Stable tag: 2.6.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -94,6 +94,26 @@ Considering upgrading your contact form to Pro? Check it out: [Contact Form 7 Mu
 5. Multi-Step Form in frontend with Progress Bar (PRO)
 
 == Changelog ==
+
+Apr 23, 2021 - Version 2.6.2
+- Fixed: Button color
+- Fixed: Form validation
+
+Mar 15, 2021 – Version 2.6.1
+- Improved: Admin UI
+- Fixed: Double click on Next button
+- Fixed: Error validate upload file since CF7 5.4
+- Fixed: Next button in WPBakery
+- Fixed: File upload validation
+- Fixed: Event click Allow Choose Step
+- Fixed: CSS of color board 
+- Fixed: CSS text Select Option
+- Fixed: Sanitize some fields
+- Fixed: Split of undefined
+- Fixed: CSS of Submit button only affected if its form has steps
+- Fixed: Compatible with Moana - Contact Form 7 Builder
+- Removed: Form border
+- Removed: Unused files
 
 = 2.5 - BIG UPDATE =
 - Fixed: Error with WordPress 5.5

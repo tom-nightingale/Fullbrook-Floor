@@ -98,7 +98,7 @@ class PH_Shortcodes {
 		$form_controls = apply_filters( 'propertyhive_search_form_fields_after', $form_controls, $atts );
 
 	    if (
-	    	isset($atts['default_department']) && in_array($atts['default_department'], array('residential-sales', 'residential-lettings', 'commercial')) &&
+	    	isset($atts['default_department']) && in_array($atts['default_department'], array_keys( ph_get_departments() )) &&
 	    	( !isset($_REQUEST['department']) )
 	    )
 	    {
@@ -125,7 +125,7 @@ class PH_Shortcodes {
 			'order'  			=> 'desc',
 			'meta_key' 			=> '_price_actual',
 			'ids'     			=> '',
-			'department'		=> '', // residential-sales / residential-lettings / commercial
+			'department'		=> '', // residential-sales / residential-lettings / commercial / any custom department
 			'minimum_price'		=> '',
 			'maximum_price'		=> '',
 			'bedrooms'			=> '',
@@ -142,6 +142,9 @@ class PH_Shortcodes {
 			'commercial_to_rent' => '',
 			'posts_per_page'	=> 10,
 			'no_results_output' => '',
+			'pagination'        => '',
+			'show_order'        => '',
+			'show_result_count' => '',
 		), $atts, 'properties' );
 
 		$meta_query = array(
@@ -151,7 +154,7 @@ class PH_Shortcodes {
 			)
 		);
 
-		if ( isset($atts['department']) && in_array($atts['department'], array("residential-sales", "residential-lettings", "commercial")) )
+		if ( isset($atts['department']) && in_array($atts['department'], array_keys( ph_get_departments() )) )
 		{
 			$meta_query[] = array(
 				'key' => '_department',
@@ -169,7 +172,13 @@ class PH_Shortcodes {
 			);
 		}
 
-		if ( isset($atts['department']) && $atts['department'] == 'residential-sales' && isset($atts['minimum_price']) && $atts['minimum_price'] != '' )
+		$base_department = $atts['department'];
+		if ( $atts['department'] !== '' && !in_array($atts['department'], array_keys( ph_get_departments( true ) )) )
+		{
+			$base_department = ph_get_custom_department_based_on($base_department);
+		}
+
+		if ( isset($atts['department']) && $base_department == 'residential-sales' && isset($atts['minimum_price']) && $atts['minimum_price'] != '' )
         {
         	$search_form_currency = get_option( 'propertyhive_search_form_currency', 'GBP' );
 
@@ -190,7 +199,7 @@ class PH_Shortcodes {
             );
         }
 
-        if ( isset($atts['department']) && $atts['department'] == 'residential-sales' && isset($atts['maximum_price']) && $atts['maximum_price'] != '' )
+        if ( isset($atts['department']) && $base_department == 'residential-sales' && isset($atts['maximum_price']) && $atts['maximum_price'] != '' )
         {
         	$search_form_currency = get_option( 'propertyhive_search_form_currency', 'GBP' );
 
@@ -355,7 +364,7 @@ class PH_Shortcodes {
 		{
 			// Change field to check when department is specified as commercial, or if commercial is the only active department
 			if (
-				( isset($atts['department']) && $atts['department'] == 'commercial' ) ||
+				( isset($atts['department']) && $base_department == 'commercial' ) ||
 				(
 					!isset($atts['department']) &&
 					get_option( 'propertyhive_active_departments_sales' ) != 'yes' &&
@@ -391,7 +400,7 @@ class PH_Shortcodes {
 
 		// Change default meta key when department is specified as commercial, or if commercial is the only active department
 		if (
-			( isset($atts['department']) && $atts['department'] == 'commercial' ) ||
+			( isset($atts['department']) && $base_department == 'commercial' ) ||
 			(
 				get_option( 'propertyhive_active_departments_sales' ) != 'yes' &&
 				get_option( 'propertyhive_active_departments_lettings' ) != 'yes' &&
@@ -402,6 +411,9 @@ class PH_Shortcodes {
 			$atts['meta_key'] = '_floor_area_from_sqft';
 		}
 
+		// Get which page we're currently viewing from the URL
+		$paged = max( 1, get_query_var( 'paged' ) );
+
 		$args = array(
 			'post_type'           => 'property',
 			'post_status'         => ( ( is_user_logged_in() && current_user_can( 'manage_propertyhive' ) ) ? array('publish', 'private') : 'publish' ),
@@ -409,8 +421,10 @@ class PH_Shortcodes {
 			'orderby'             => $atts['orderby'],
 			'order'               => $atts['order'],
 			'posts_per_page'      => $atts['posts_per_page'],
+			'paged'               => $paged,
 			'meta_query'		  => $meta_query,
-			'tax_query'		  	  => $tax_query
+			'tax_query'		  	  => $tax_query,
+			'has_password' 		  => false,
 		);
 		if ( ! empty( $atts['meta_key'] ) ) {
 			$args['meta_key'] = $atts['meta_key'];
@@ -427,10 +441,27 @@ class PH_Shortcodes {
 
 		ob_start();
 
+		if ( isset($atts['show_order']) && $atts['show_order'] != '' )
+		{
+			list( $args, $orderby ) = self::get_show_order_args( $atts, $args );
+
+			propertyhive_catalog_ordering( $atts['department'], $orderby );
+		}
+
 		$args = apply_filters( 'propertyhive_properties_query', $args, $atts );
 		$args = apply_filters( 'propertyhive_shortcode_properties_query', $args, $atts );
 
 		$properties = new WP_Query( $args );
+
+		if ( isset($atts['show_result_count']) && $atts['show_result_count'] != '' )
+		{
+			$total_posts = $properties->found_posts;
+
+			$first = ( $atts['posts_per_page'] * $paged ) - $atts['posts_per_page'] + 1;
+			$last = min( $total_posts, $atts['posts_per_page'] * $paged );
+
+			propertyhive_result_count( $paged, $atts['posts_per_page'], $total_posts, $first, $last);
+		}
 
 		$propertyhive_loop['columns'] = $atts['columns'];
 
@@ -451,6 +482,11 @@ class PH_Shortcodes {
             <?php echo $atts['no_results_output']; ?>
 
 		<?php endif;
+
+		if ( isset($atts['pagination']) && $atts['pagination'] != '' )
+		{
+			propertyhive_pagination( $properties->max_num_pages );
+		}
 
 		wp_reset_postdata();
 
@@ -479,6 +515,9 @@ class PH_Shortcodes {
 			'orderby' 		=> 'date',
 			'order' 		=> 'desc',
 			'no_results_output' => '',
+			'pagination'        => '',
+			'show_order'        => '',
+			'show_result_count' => '',
 		), $atts, 'recent_properties' );
 
 		$meta_query = PH()->query->get_meta_query();
@@ -521,15 +560,20 @@ class PH_Shortcodes {
             );
 		}
 
+		// Get which page we're currently viewing from the URL
+		$paged = max( 1, get_query_var( 'paged' ) );
+
 		$args = array(
 			'post_type'				=> 'property',
 			'post_status'			=> ( ( is_user_logged_in() && current_user_can( 'manage_propertyhive' ) ) ? array('publish', 'private') : 'publish' ),
 			'ignore_sticky_posts'	=> 1,
 			'posts_per_page' 		=> $atts['per_page'],
+			'paged'					=> $paged,
 			'orderby' 				=> $atts['orderby'],
 			'order' 				=> $atts['order'],
 			'meta_query' 			=> $meta_query,
 			'tax_query' 			=> $tax_query,
+			'has_password' 			=> false,
 		);
 
 		if ( isset($atts['orderby']) && $atts['orderby'] == 'date' )
@@ -540,7 +584,24 @@ class PH_Shortcodes {
 
 		ob_start();
 
+		if ( isset($atts['show_order']) && $atts['show_order'] != '' )
+		{
+			list( $args, $orderby ) = self::get_show_order_args( $atts, $args );
+
+			propertyhive_catalog_ordering( $atts['department'], $orderby );
+		}
+
 		$properties = new WP_Query( apply_filters( 'propertyhive_shortcode_recent_properties_query', $args, $atts ) );
+
+		if ( isset($atts['show_result_count']) && $atts['show_result_count'] != '' )
+		{
+			$total_posts = $properties->found_posts;
+
+			$first = ( $atts['per_page'] * $paged ) - $atts['per_page'] + 1;
+			$last = min( $total_posts, $atts['per_page'] * $paged );
+
+			propertyhive_result_count( $paged, $atts['per_page'], $total_posts, $first, $last);
+		}
 
 		$propertyhive_loop['columns'] = $atts['columns'];
 
@@ -561,6 +622,11 @@ class PH_Shortcodes {
             <?php echo $atts['no_results_output']; ?>
 
 		<?php endif;
+
+		if ( isset($atts['pagination']) && $atts['pagination'] != '' )
+		{
+			propertyhive_pagination( $properties->max_num_pages );
+		}
 
 		wp_reset_postdata();
 
@@ -591,15 +657,23 @@ class PH_Shortcodes {
 			'order' 	=> 'desc',
 			'meta_key' 	=> '',
 			'no_results_output' => '',
+			'pagination' => '',
+			'show_order' => '',
+			'show_result_count' => '',
 		), $atts, 'featured_properties' );
+
+		// Get which page we're currently viewing from the URL
+		$paged = max( 1, get_query_var( 'paged' ) );
 
 		$args = array(
 			'post_type'				=> 'property',
 			'post_status' 			=> ( ( is_user_logged_in() && current_user_can( 'manage_propertyhive' ) ) ? array('publish', 'private') : 'publish' ),
 			'ignore_sticky_posts'	=> 1,
 			'posts_per_page' 		=> $atts['per_page'],
+			'paged'                 => $paged,
 			'orderby' 				=> $atts['orderby'],
 			'order' 				=> $atts['order'],
+			'has_password' 			=> false,
 		);
 
 		$meta_query = array(
@@ -668,8 +742,25 @@ class PH_Shortcodes {
 		}
 
 		ob_start();
+
+		if ( isset($atts['show_order']) && $atts['show_order'] != '' )
+		{
+			list( $args, $orderby ) = self::get_show_order_args( $atts, $args );
+
+			propertyhive_catalog_ordering( $atts['department'], $orderby );
+		}
 		
 		$properties = new WP_Query( apply_filters( 'propertyhive_shortcode_featured_properties_query', $args, $atts ) );
+
+		if ( isset($atts['show_result_count']) && $atts['show_result_count'] != '' )
+		{
+			$total_posts = $properties->found_posts;
+
+			$first = ( $atts['per_page'] * $paged ) - $atts['per_page'] + 1;
+			$last = min( $total_posts, $atts['per_page'] * $paged );
+
+			propertyhive_result_count( $paged, $atts['per_page'], $total_posts, $first, $last);
+		}
 
 		$propertyhive_loop['columns'] = $atts['columns'];
 
@@ -690,6 +781,11 @@ class PH_Shortcodes {
             <?php echo $atts['no_results_output']; ?>
 
 		<?php endif;
+
+		if ( isset($atts['pagination']) && $atts['pagination'] != '' )
+		{
+			propertyhive_pagination( $properties->max_num_pages );
+		}
 
 		wp_reset_postdata();
 
@@ -756,6 +852,7 @@ class PH_Shortcodes {
 				'posts_per_page' 		=> $atts['per_page'],
 				'orderby' 				=> $atts['orderby'],
 				'order' 				=> $atts['order'],
+				'has_password' 			=> false,
 			);
 
 			$meta_query = array();
@@ -1320,5 +1417,56 @@ class PH_Shortcodes {
 
 		return ob_get_clean();
 
+	}
+
+	private static function get_show_order_args( $atts, $args )
+	{
+		$orderby = '';
+
+		if ( isset( $_GET['orderby'] ) && $_GET['orderby'] != '' )
+		{
+			$PH_Query = new PH_Query();
+			$ordering_args = $PH_Query->get_search_results_ordering_args();
+
+			$args['orderby'] = $ordering_args['orderby'];
+			$args['order'] = $ordering_args['order'];
+
+			if ( isset( $ordering_args['meta_key'] ) )
+			{
+				$args['meta_key'] = $ordering_args['meta_key'];
+			}
+			else
+			{
+				unset($args['meta_key']);
+			}
+		}
+		else
+		{
+			switch ( $atts['orderby'] )
+			{
+				case 'date':
+					$orderby = 'date';
+					break;
+				case 'meta_value_num':
+
+					switch ( $atts['meta_key'] )
+					{
+						case '_price_actual':
+							$orderby = 'price';
+							break;
+						case '_floor_area_from_sqft':
+							$orderby = 'floor_area';
+							break;
+					}
+
+					if ( $orderby != '' && !empty($atts['order']) )
+					{
+						$orderby .= '-' . $atts['order'];
+					}
+					break;
+			}
+		}
+
+		return array( $args, $orderby );
 	}
 }

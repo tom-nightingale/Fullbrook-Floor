@@ -575,18 +575,19 @@ class PH_Admin_Post_Types {
         global $wp_query;
 
         $selected_status = isset( $_GET['_status'] ) && in_array( $_GET['_status'], array( 'open', 'closed' ) ) ? $_GET['_status'] : '';
-        
+
         // Status filtering
         $output  = '<select name="_status" id="dropdown_enquiry_status">';
-            
-            $output .= '<option value="open"';
-            $output .= selected( 'open', $selected_status, false );
-            $output .= '>' . __( 'Open', 'propertyhive' ) . '</option>';
 
-            $output .= '<option value="closed"';
-            $output .= selected( 'closed', $selected_status, false );
-            $output .= '>' . __( 'Closed', 'propertyhive' ) . '</option>';
-            
+            $enquiry_statuses = ph_get_enquiry_statuses();
+
+            foreach ( $enquiry_statuses as $status => $display_status )
+            {
+                $output .= '<option value="' . $status . '"';
+                $output .= selected( $status, $selected_status, false );
+                $output .= '>' . $display_status . '</option>';
+            }
+
         $output .= '</select>';
 
         return $output;
@@ -752,37 +753,18 @@ class PH_Admin_Post_Types {
         
         // Status filtering
         $output  = '<select name="_status" id="dropdown_viewing_status">';
-            
-            $output .= '<option value="">All Statuses</option>';
 
-            $output .= '<option value="pending"';
-            $output .= selected( 'pending', $selected_status, false );
-            $output .= '>' . __( 'Pending', 'propertyhive' ) . '</option>';
+            $output .= '<option value="">' . __( 'All Statuses', 'propertyhive' ) . '</option>';
 
-            $output .= '<option value="confirmed"';
-            $output .= selected( 'confirmed', $selected_status, false );
-            $output .= '>- ' . __( 'Confirmed', 'propertyhive' ) . '</option>';
+            $viewing_statuses = ph_get_viewing_statuses();
 
-            $output .= '<option value="unconfirmed"';
-            $output .= selected( 'unconfirmed', $selected_status, false );
-            $output .= '>- ' . __( 'Awaiting Confirmation', 'propertyhive' ) . '</option>';
+            foreach ( $viewing_statuses as $status => $display_status )
+            {
+                $output .= '<option value="' . $status . '"';
+                $output .= selected( $status, $selected_status, false );
+                $output .= '>' . $display_status . '</option>';
+            }
 
-            $output .= '<option value="carried_out"';
-            $output .= selected( 'carried_out', $selected_status, false );
-            $output .= '>' . __( 'Carried Out', 'propertyhive' ) . '</option>';
-
-            $output .= '<option value="feedback_passed_on"';
-            $output .= selected( 'feedback_passed_on', $selected_status, false );
-            $output .= '>- ' . __( 'Feedback Passed On', 'propertyhive' ) . '</option>';
-
-            $output .= '<option value="feedback_not_passed_on"';
-            $output .= selected( 'feedback_not_passed_on', $selected_status, false );
-            $output .= '>- ' . __( 'Feedback Not Passed On', 'propertyhive' ) . '</option>';
-
-            $output .= '<option value="cancelled"';
-            $output .= selected( 'cancelled', $selected_status, false );
-            $output .= '>' . __( 'Cancelled', 'propertyhive' ) . '</option>';
-            
         $output .= '</select>';
 
         return $output;
@@ -821,6 +803,7 @@ class PH_Admin_Post_Types {
         
         $output .= $this->offer_status_filter();
         $output .= $this->property_office_filter();
+        $output .= $this->date_range_filter();
 
         echo apply_filters( 'propertyhive_offer_filters', $output );
     }
@@ -835,21 +818,18 @@ class PH_Admin_Post_Types {
         
         // Status filtering
         $output  = '<select name="_status" id="dropdown_offer_status">';
-            
-            $output .= '<option value="">All Statuses</option>';
 
-            $output .= '<option value="pending"';
-            $output .= selected( 'pending', $selected_status, false );
-            $output .= '>' . __( 'Pending', 'propertyhive' ) . '</option>';
+            $output .= '<option value="">' . __( 'All Statuses', 'propertyhive' ) . '</option>';
 
-            $output .= '<option value="accepted"';
-            $output .= selected( 'accepted', $selected_status, false );
-            $output .= '>' . __( 'Accepted', 'propertyhive' ) . '</option>';
+            $offer_statuses = ph_get_offer_statuses();
 
-            $output .= '<option value="declined"';
-            $output .= selected( 'declined', $selected_status, false );
-            $output .= '>' . __( 'Declined', 'propertyhive' ) . '</option>';
-            
+            foreach ( $offer_statuses as $status => $display_status )
+            {
+                $output .= '<option value="' . $status . '"';
+                $output .= selected( $status, $selected_status, false );
+                $output .= '>' . $display_status . '</option>';
+            }
+
         $output .= '</select>';
 
         return $output;
@@ -865,6 +845,7 @@ class PH_Admin_Post_Types {
         
         $output .= $this->sale_status_filter();
         $output .= $this->property_office_filter();
+        $output .= $this->date_range_filter();
 
         echo apply_filters( 'propertyhive_sale_filters', $output );
     }
@@ -880,23 +861,16 @@ class PH_Admin_Post_Types {
         // Status filtering
         $output  = '<select name="_status" id="dropdown_sale_status">';
             
-            $output .= '<option value="">All Statuses</option>';
+            $output .= '<option value="">' . __( 'All Statuses', 'propertyhive' ) . '</option>';
 
-            $output .= '<option value="current"';
-            $output .= selected( 'current', $selected_status, false );
-            $output .= '>' . __( 'Current', 'propertyhive' ) . '</option>';
+            $sale_statuses = ph_get_sale_statuses();
 
-            $output .= '<option value="exchanged"';
-            $output .= selected( 'exchanged', $selected_status, false );
-            $output .= '>' . __( 'Exchanged', 'propertyhive' ) . '</option>';
-
-            $output .= '<option value="completed"';
-            $output .= selected( 'completed', $selected_status, false );
-            $output .= '>' . __( 'Completed', 'propertyhive' ) . '</option>';
-
-            $output .= '<option value="fallen_through"';
-            $output .= selected( 'fallen_through', $selected_status, false );
-            $output .= '>' . __( 'Fallen Through', 'propertyhive' ) . '</option>';
+            foreach ( $sale_statuses as $status => $display_status )
+            {
+                $output .= '<option value="' . $status . '"';
+                $output .= selected( $status, $selected_status, false );
+                $output .= '>' . $display_status . '</option>';
+            }
             
         $output .= '</select>';
 
@@ -1171,79 +1145,14 @@ class PH_Admin_Post_Types {
                 );
             }
 
-            $vars = $this->filter_start_date_time_by_date_range($vars);
+            $vars = $this->filter_by_date_range($vars);
         }
         elseif ( 'viewing' === $typenow ) 
         {
             if ( ! empty( $_GET['_status'] ) ) {
-                switch ( sanitize_text_field( $_GET['_status'] ) )
-                {
-                    case "confirmed":
-                    {
-                        $vars['meta_query'][] = array(
-                            'key' => '_status',
-                            'value' => 'pending',
-                        );
-                        $vars['meta_query'][] = array(
-                            'key' => '_all_confirmed',
-                            'value' => 'yes',
-                        );
-                        break;
-                    }
-                    case "unconfirmed":
-                    {
-                        $vars['meta_query'][] = array(
-                            'key' => '_status',
-                            'value' => 'pending',
-                        );
-                        $vars['meta_query'][] = array(
-                            'key' => '_all_confirmed',
-                            'value' => '',
-                        );
-                        break;
-                    }
-                    case "feedback_passed_on":
-                    {
-                        $vars['meta_query'][] = array(
-                            'key' => '_status',
-                            'value' => 'carried_out',
-                        );
-                        $vars['meta_query'][] = array(
-                            'key' => '_feedback_status',
-                            'value' => array('interested', 'not_interested'),
-                            'compare' => 'IN'
-                        );
-                        $vars['meta_query'][] = array(
-                            'key' => '_feedback_passed_on',
-                            'value' => 'yes',
-                        );
-                        break;
-                    }
-                    case "feedback_not_passed_on":
-                    {
-                         $vars['meta_query'][] = array(
-                            'key' => '_status',
-                            'value' => 'carried_out',
-                        );
-                        $vars['meta_query'][] = array(
-                            'key' => '_feedback_status',
-                            'value' => array('interested', 'not_interested'),
-                            'compare' => 'IN'
-                        );
-                        $vars['meta_query'][] = array(
-                            'key' => '_feedback_passed_on',
-                            'value' => '',
-                        );
-                        break;
-                    }
-                    default:
-                    {
-                        $vars['meta_query'][] = array(
-                            'key' => '_status',
-                            'value' => sanitize_text_field( $_GET['_status'] ),
-                        );
-                    }
-                }
+
+                $vars['meta_query'] = add_viewing_status_meta_query( $vars['meta_query'], sanitize_text_field( $_GET['_status'] ) );
+
             }
             if ( ! empty( $_GET['_negotiator_id'] ) ) 
             {
@@ -1253,7 +1162,7 @@ class PH_Admin_Post_Types {
                 );
             }
 
-            $vars = $this->filter_start_date_time_by_date_range($vars);
+            $vars = $this->filter_by_date_range($vars);
         }
         elseif ( 'offer' === $typenow ) 
         {
@@ -1263,6 +1172,8 @@ class PH_Admin_Post_Types {
                     'value' => sanitize_text_field( $_GET['_status'] ),
                 );
             }
+
+            $vars = $this->filter_by_date_range($vars, '_offer_date_time');
         }
         elseif ( 'sale' === $typenow ) 
         {
@@ -1272,6 +1183,8 @@ class PH_Admin_Post_Types {
                     'value' => sanitize_text_field( $_GET['_status'] ),
                 );
             }
+
+            $vars = $this->filter_by_date_range($vars, '_sale_date_time');
         }
         elseif ( 'tenancy' === $typenow )
         {
@@ -1365,7 +1278,7 @@ class PH_Admin_Post_Types {
         return $vars;
     }
 
-    private function filter_start_date_time_by_date_range($vars)
+    private function filter_by_date_range($vars, $meta_key = '_start_date_time')
     {
 	    if (
 		    ! empty( $_GET['_date_range_label'] )
@@ -1378,13 +1291,13 @@ class PH_Admin_Post_Types {
 	    {
 		    $vars['meta_query'] = array_merge($vars['meta_query'], array (
 			    array(
-				    'key' => '_start_date_time',
+				    'key' => $meta_key,
 				    'value' => $_GET['_date_range_from'],
 				    'type'  => 'date',
 				    'compare' => '>='
 			    ),
 			    array(
-				    'key' => '_start_date_time',
+				    'key' => $meta_key,
 				    'value' => $_GET['_date_range_to'],
 				    'type'  => 'date',
 				    'compare' => '<='
@@ -1401,7 +1314,19 @@ class PH_Admin_Post_Types {
         if ( !isset($_GET['s']) || ( isset($_GET['s']) && ph_clean($_GET['s']) == '' ) )
             return $join;
 
-        if ( 'contact' === $typenow ) 
+        if ( 'property' === $typenow ) 
+        {
+            $join .= " 
+LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_name_number ON " . $wpdb->posts . ".ID = ph_property_filter_meta_name_number.post_id AND ph_property_filter_meta_name_number.meta_key = '_address_name_number'
+LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_street ON " . $wpdb->posts . ".ID = ph_property_filter_meta_street.post_id AND ph_property_filter_meta_street.meta_key = '_address_street'
+LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_2 ON " . $wpdb->posts . ".ID = ph_property_filter_meta_2.post_id AND ph_property_filter_meta_2.meta_key = '_address_two'
+LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_3 ON " . $wpdb->posts . ".ID = ph_property_filter_meta_3.post_id AND ph_property_filter_meta_3.meta_key = '_address_three'
+LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_4 ON " . $wpdb->posts . ".ID = ph_property_filter_meta_4.post_id AND ph_property_filter_meta_4.meta_key = '_address_four'
+LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_postcode ON " . $wpdb->posts . ".ID = ph_property_filter_meta_postcode.post_id AND ph_property_filter_meta_postcode.meta_key = '_address_postcode'
+LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_reference_number ON " . $wpdb->posts . ".ID = ph_property_filter_meta_reference_number.post_id AND ph_property_filter_meta_reference_number.meta_key = '_reference_number'
+";
+        }
+        elseif ( 'contact' === $typenow ) 
         {
             $join .= " 
 LEFT JOIN " . $wpdb->postmeta . " AS ph_contact_filter_meta_company_name ON " . $wpdb->posts . ".ID = ph_contact_filter_meta_company_name.post_id AND ph_contact_filter_meta_company_name.meta_key = '_company_name'
@@ -1426,7 +1351,7 @@ LEFT JOIN " . $wpdb->postmeta . " AS ph_appraisal_filter_meta_4 ON " . $wpdb->po
 LEFT JOIN " . $wpdb->postmeta . " AS ph_appraisal_filter_meta_postcode ON " . $wpdb->posts . ".ID = ph_appraisal_filter_meta_postcode.post_id AND ph_appraisal_filter_meta_postcode.meta_key = '_address_postcode'
 ";
         }
-        elseif ( 'viewing' === $typenow || 'offer' === $typenow || 'sale' === $typenow ) 
+        elseif ( 'viewing' === $typenow || 'offer' === $typenow || 'sale' === $typenow || 'tenancy' === $typenow ) 
         {
             $join .= " 
 LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta ON " . $wpdb->posts . ".ID = ph_property_filter_meta.post_id AND ph_property_filter_meta.meta_key = '_property_id'
@@ -1434,9 +1359,9 @@ LEFT JOIN " . $wpdb->posts . " AS ph_property_filter_posts ON ph_property_filter
 LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_name_number ON ph_property_filter_posts.ID = ph_property_filter_meta_name_number.post_id AND ph_property_filter_meta_name_number.meta_key = '_address_name_number'
 LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_street ON ph_property_filter_posts.ID = ph_property_filter_meta_street.post_id AND ph_property_filter_meta_street.meta_key = '_address_street' 
 LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_name_number_street ON ph_property_filter_posts.ID = ph_property_filter_meta_name_number_street.post_id AND ph_property_filter_meta_name_number_street.meta_key = '_address_name_number_street'
-LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_2 ON ph_property_filter_posts.ID = ph_property_filter_meta_2.post_id AND ph_property_filter_meta_2.meta_key = '_address_2' 
-LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_3 ON ph_property_filter_posts.ID = ph_property_filter_meta_3.post_id AND ph_property_filter_meta_3.meta_key = '_address_3' 
-LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_4 ON ph_property_filter_posts.ID = ph_property_filter_meta_4.post_id AND ph_property_filter_meta_4.meta_key = '_address_4' 
+LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_2 ON ph_property_filter_posts.ID = ph_property_filter_meta_2.post_id AND ph_property_filter_meta_2.meta_key = '_address_two' 
+LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_3 ON ph_property_filter_posts.ID = ph_property_filter_meta_3.post_id AND ph_property_filter_meta_3.meta_key = '_address_three' 
+LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_4 ON ph_property_filter_posts.ID = ph_property_filter_meta_4.post_id AND ph_property_filter_meta_4.meta_key = '_address_four' 
 LEFT JOIN " . $wpdb->postmeta . " AS ph_property_filter_meta_postcode ON ph_property_filter_posts.ID = ph_property_filter_meta_postcode.post_id AND ph_property_filter_meta_postcode.meta_key = '_address_postcode' 
 
 LEFT JOIN " . $wpdb->postmeta . " AS ph_applicant_filter_meta ON " . $wpdb->posts . ".ID = ph_applicant_filter_meta.post_id AND ph_applicant_filter_meta.meta_key = '_applicant_contact_id'
@@ -1453,7 +1378,31 @@ LEFT JOIN " . $wpdb->posts . " AS ph_applicant_filter_posts ON ph_applicant_filt
         if ( !isset($_GET['s']) || ( isset($_GET['s']) && ph_clean($_GET['s']) == '' ) )
             return $where;
 
-        if ( 'contact' === $typenow ) 
+        if ( 'property' === $typenow ) 
+        {
+            $where = preg_replace(
+                "/\(\s*" . $wpdb->posts . ".post_title\s+LIKE\s*(\'[^\']+\')\s*\)/",
+                "(
+                    (" . $wpdb->posts . ".post_title LIKE $1) 
+                    OR
+                    (ph_property_filter_meta_name_number.meta_value LIKE $1)
+                    OR 
+                    (ph_property_filter_meta_street.meta_value LIKE $1)
+                    OR 
+                    (ph_property_filter_meta_2.meta_value LIKE $1)
+                    OR 
+                    (ph_property_filter_meta_3.meta_value LIKE $1)
+                    OR 
+                    (ph_property_filter_meta_4.meta_value LIKE $1)
+                    OR 
+                    (ph_property_filter_meta_postcode.meta_value LIKE $1)
+                    OR 
+                    (ph_property_filter_meta_reference_number.meta_value = '" . esc_sql($_GET['s']) . "')
+                )", 
+                $where 
+            );
+        }
+        elseif ( 'contact' === $typenow ) 
         {
             $phone_number = '';
             if ( is_numeric(substr(ph_clean($_GET['s']), 0, 1)) )
@@ -1508,7 +1457,7 @@ LEFT JOIN " . $wpdb->posts . " AS ph_applicant_filter_posts ON ph_applicant_filt
                 $where 
             );
         }
-        elseif ( 'viewing' === $typenow || 'offer' === $typenow || 'sale' === $typenow ) 
+        elseif ( 'viewing' === $typenow || 'offer' === $typenow || 'sale' === $typenow || 'tenancy' === $typenow ) 
         {
             $where = preg_replace(
                 "/\(\s*" . $wpdb->posts . ".post_title\s+LIKE\s*(\'[^\']+\')\s*\)/",

@@ -81,9 +81,9 @@ function cf7mls_multistep_shortcode_callback( $tag ) {
 		$html .= '<button type="button" class="cf7mls_next cf7mls_btn action-button" name="cf7mls_next" id="cf7mls-next-btn-' . $name . '">' . $next . '<img src="' . $loader . '" alt="" /></button>';
 		$html .= apply_filters( 'cf7_step_after_next_btn', '', $name );
 	}
-	$contact_form         = wpcf7_get_current_contact_form();
+	$contact_form = wpcf7_get_current_contact_form();
 	if ( $checkBackLast === false ) {
-		$html .= '</div></fieldset><fieldset class="fieldset-cf7mls">';
+		$html .= '</div><p></p></fieldset><fieldset class="fieldset-cf7mls">';
 	}
 	// else {
 	// $html .= '</div></fieldset>';
@@ -144,8 +144,8 @@ function cf7mls_css_to_wp_head() {
 			$back_bg_color   = get_post_meta( $id, '_cf7mls_back_bg_color', true );
 			$back_text_color = get_post_meta( $id, '_cf7mls_back_text_color', true );
 
-			echo 'div[id^="wpcf7-f' . $id . '-p"] button.cf7mls_next { ' . ( ( ! empty( $next_bg_color ) ) ? 'background-color: ' . $next_bg_color . ';' : '' ) . ' ' . ( ( ! empty( $next_text_color ) ) ? 'color: ' . $next_text_color : '' ) . ' }';
-			echo 'div[id^="wpcf7-f' . $id . '-p"] button.cf7mls_back { ' . ( ( ! empty( $back_bg_color ) ) ? 'background-color: ' . $back_bg_color . ';' : '' ) . ' ' . ( ( ! empty( $back_text_color ) ) ? 'color: ' . $back_text_color : '' ) . ' }';
+			echo 'div[id^="wpcf7-f' . $id . '"] button.cf7mls_next { ' . ( ( ! empty( $next_bg_color ) ) ? 'background-color: ' . $next_bg_color . ';' : '' ) . ' ' . ( ( ! empty( $next_text_color ) ) ? 'color: ' . $next_text_color : '' ) . ' }';
+			echo 'div[id^="wpcf7-f' . $id . '"] button.cf7mls_back { ' . ( ( ! empty( $back_bg_color ) ) ? 'background-color: ' . $back_bg_color . ';' : '' ) . ' ' . ( ( ! empty( $back_text_color ) ) ? 'color: ' . $back_text_color : '' ) . ' }';
 		}
 		echo '</style>';
 	}

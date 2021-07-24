@@ -228,6 +228,7 @@
 		public function addJavaScript(){
 			wp_enqueue_script("jquery-ui-draggable");
 			wp_enqueue_script("jquery-ui-position");
+			wp_enqueue_script("jquery-ui-sortable");
 			wp_enqueue_script("wpfc-dialog", plugins_url("wp-fastest-cache/js/dialog.js"), array(), time(), false);
 			wp_enqueue_script("wpfc-dialog-new", plugins_url("wp-fastest-cache/js/dialog_new.js"), array(), time(), false);
 
@@ -381,7 +382,7 @@
 			
 
 			if(!get_option('permalink_structure')){
-				return array("You have to set <strong><u><a href='".admin_url()."options-permalink.php"."'>permalinks</a></u></strong>", "error");
+				return array("You have to set <strong><u><a target='_blank' href='https://www.wpfastestcache.com/tutorial/how-to-change-default-permalink-in-wordpress/'>permalinks</a></u></strong>", "error");
 			}else if($res = $this->checkSuperCache($path, $htaccess)){
 				return $res;
 			}else if($this->isPluginActive('fast-velocity-minify/fvm.php')){
@@ -575,7 +576,7 @@
 
 
 			$data = "# BEGIN LBCWpFastestCache"."\n".
-					'<FilesMatch "\.(webm|ogg|mp4|ico|pdf|flv|jpg|jpeg|png|gif|webp|js|css|swf|x-html|css|xml|js|woff|woff2|otf|ttf|svg|eot)(\.gz)?$">'."\n".
+					'<FilesMatch "\.(webm|ogg|mp4|ico|pdf|flv|avif|jpg|jpeg|png|gif|webp|js|css|swf|x-html|css|xml|js|woff|woff2|otf|ttf|svg|eot)(\.gz)?$">'."\n".
 					'<IfModule mod_expires.c>'."\n".
 					'AddType application/font-woff2 .woff2'."\n".
 					'AddType application/x-font-opentype .otf'."\n".
@@ -584,6 +585,7 @@
 					'ExpiresByType video/webm A10368000'."\n".
 					'ExpiresByType video/ogg A10368000'."\n".
 					'ExpiresByType video/mp4 A10368000'."\n".
+					'ExpiresByType image/avif A10368000'."\n".
 					'ExpiresByType image/webp A10368000'."\n".
 					'ExpiresByType image/gif A10368000'."\n".
 					'ExpiresByType image/png A10368000'."\n".

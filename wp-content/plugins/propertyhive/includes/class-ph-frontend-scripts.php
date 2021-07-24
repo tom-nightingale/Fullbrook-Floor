@@ -57,8 +57,8 @@ class PH_Frontend_Scripts {
 		// Register any scripts for later use, or used as dependencies
 		wp_register_script( 'jquery-cookie', $assets_path . 'js/jquery-cookie/jquery.cookie' . $suffix . '.js', array( 'jquery' ), '1.3.1', true );
 
-		wp_register_script( 'propertyhive_fancybox', $assets_path . 'js/fancybox/jquery.fancybox' . $suffix . '.js', array( 'jquery' ), '3.3.5', true );
-		wp_register_style( 'propertyhive_fancybox_css', $assets_path . 'css/jquery.fancybox' . $suffix . '.css', array(), '3.3.5' );
+		wp_register_script( 'propertyhive_fancybox', $assets_path . 'js/fancybox/jquery.fancybox' . $suffix . '.js', array( 'jquery' ), '3.5.7', true );
+		wp_register_style( 'propertyhive_fancybox_css', $assets_path . 'css/jquery.fancybox' . $suffix . '.css', array(), '3.5.7' );
 
 		if ( get_option('propertyhive_lettings_fees_display_search_results', '') == 'yes' )
 		{
@@ -101,6 +101,12 @@ class PH_Frontend_Scripts {
 
 		$assets_path = str_replace( array( 'http:', 'https:' ), '', PH()->plugin_url() ) . '/assets/';
 
+		if ( wp_script_is( 'propertyhive_search' ) ) {
+			wp_localize_script( 'propertyhive_search', 'propertyhive_search_params', apply_filters( 'propertyhive_search_params', array(
+				'custom_departments'	=> ph_get_custom_departments(),
+			) ) );
+		}
+
 		if ( wp_script_is( 'propertyhive_make_enquiry' ) ) {
 			wp_localize_script( 'propertyhive_make_enquiry', 'propertyhive_make_property_enquiry_params', apply_filters( 'propertyhive_make_property_enquiry_params', array(
 				'ajax_url'        => PH()->ajax_url()
@@ -111,6 +117,7 @@ class PH_Frontend_Scripts {
 			wp_localize_script( 'propertyhive_account', 'propertyhive_account_params', apply_filters( 'propertyhive_account_params', array(
 				'ajax_url'        		=> PH()->ajax_url(),
 				'my_account_url'  		=> get_permalink( ph_get_page_id('my_account') ),
+				'custom_departments'	=> ph_get_custom_departments(),
 				'login_nonce'	  		=> wp_create_nonce( "ph_login" ),
 				'register_nonce'	  	=> wp_create_nonce( "ph_register" ),
 				'details_nonce'	  		=> wp_create_nonce( "ph_details" ),

@@ -288,11 +288,12 @@ class wfWAFWordPressObserver extends wfWAFBaseObserver {
 									's'      => wfWAF::getInstance()->getStorageEngine()->getConfig('siteURL', null, 'synced') ? wfWAF::getInstance()->getStorageEngine()->getConfig('siteURL', null, 'synced') : $guessSiteURL,
 									'h'      => wfWAF::getInstance()->getStorageEngine()->getConfig('homeURL', null, 'synced') ? wfWAF::getInstance()->getStorageEngine()->getConfig('homeURL', null, 'synced') : $guessSiteURL,
 									't'		 => microtime(true),
+									'lang'   => wfWAF::getInstance()->getStorageEngine()->getConfig('WPLANG', null, 'synced'),
 								), null, '&'), $request);
 							
 							if ($response instanceof wfWAFHTTPResponse && $response->getBody()) {
 								$jsonData = wfWAFUtils::json_decode($response->getBody(), true);
-								if (array_key_exists('data', $jsonData)) {
+								if (is_array($jsonData) && array_key_exists('data', $jsonData)) {
 									if (preg_match('/^block:(\d+)$/i', $jsonData['data'], $matches)) {
 										wfWAF::getInstance()->getStorageEngine()->blockIP((int)$matches[1] + time(), wfWAF::getInstance()->getRequest()->getIP(), wfWAFStorageInterface::IP_BLOCKS_BLACKLIST);
 										$e = new wfWAFBlockException();
@@ -468,10 +469,17 @@ class wfWAFWordPress extends wfWAF {
 		}
 	}
 
+	private function isCli() {
+		return (php_sapi_name()==='cli') || !array_key_exists('REQUEST_METHOD', $_SERVER);
+	}
+
 	/**
 	 *
 	 */
 	public function runCron() {
+		if($this->isCli()){
+			return;
+		}
 		/**
 		 * Removed sending attack data. Attack data is sent in @see wordfence::veryFirstAction
 		 */
@@ -767,6 +775,10 @@ class wfWAFWordPressI18n implements wfWAFI18nEngine {
 	 * @return string
 	 */
 	public function __($text) {
+		if (!$this->storageEngine->getConfig('wordfenceI18n', true, 'synced')) {
+			return $text;
+		}
+
 		if ($this->mo) {
 			$translated = $this->mo->translate($text);
 			if ($translated) {
@@ -813,7 +825,9 @@ try {
 		define('WFWAF_STORAGE_ENGINE', 'mysqli');
 	}
 
-	if (defined('WFWAF_STORAGE_ENGINE')) {
+	$specifiedStorageEngine = defined('WFWAF_STORAGE_ENGINE');
+	$fallbackStorageEngine = false;
+	if ($specifiedStorageEngine) {
 		switch (WFWAF_STORAGE_ENGINE) {
 			case 'mysqli':
 				// Find the wp-config.php
@@ -867,9 +881,11 @@ try {
 			WFWAF_LOG_PATH . 'rules.php',
 			WFWAF_LOG_PATH . 'wafRules.rules'
 		);
+		if ($specifiedStorageEngine)
+			$fallbackStorageEngine = true;
 	}
 
-	wfWAF::setSharedStorageEngine($wfWAFStorageEngine);
+	wfWAF::setSharedStorageEngine($wfWAFStorageEngine, $fallbackStorageEngine);
 	wfWAF::setInstance(new wfWAFWordPress(wfWAFWordPressRequest::createFromGlobals(), wfWAF::getSharedStorageEngine()));
 	wfWAF::getInstance()->getEventBus()->attach(new wfWAFWordPressObserver);
 

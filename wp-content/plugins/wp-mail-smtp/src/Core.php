@@ -5,6 +5,7 @@ namespace WPMailSMTP;
 use WPMailSMTP\Admin\AdminBarMenu;
 use WPMailSMTP\Admin\Notifications;
 use WPMailSMTP\UsageTracking\UsageTracking;
+use WPMailSMTP\Compatibility\Compatibility;
 
 /**
  * Class Core to handle all plugin initialization.
@@ -103,11 +104,6 @@ class Core {
 	 */
 	public function hooks() {
 
-		// Force from_email_force to always return true if current mailer is Gmail.
-		if ( ( new Options() )->get( 'mail', 'mailer' ) === 'gmail' ) {
-			add_filter( 'wp_mail_smtp_options_get', [ $this, 'gmail_mailer_get_from_email_force' ], 1, 3 );
-		}
-
 		// Action Scheduler requires a special early loading procedure.
 		add_action( 'plugins_loaded', [ $this, 'load_action_scheduler' ], - 10 );
 
@@ -131,6 +127,7 @@ class Core {
 		add_action( 'plugins_loaded', [ $this, 'get_admin_bar_menu' ] );
 		add_action( 'plugins_loaded', [ $this, 'get_notifications' ] );
 		add_action( 'plugins_loaded', [ $this, 'get_connect' ], 15 );
+		add_action( 'plugins_loaded', [ $this, 'get_compatibility' ], 0 );
 	}
 
 	/**
@@ -887,6 +884,8 @@ class Core {
 	 *
 	 * The gmail mailer check is performed when this filter is added.
 	 *
+	 * @deprecated 2.7.0
+	 *
 	 * @since 2.2.0
 	 *
 	 * @param mixed  $value The value of the plugin option that is being retrieved via Options::get method.
@@ -896,6 +895,8 @@ class Core {
 	 * @return mixed
 	 */
 	public function gmail_mailer_get_from_email_force( $value, $group, $key ) {
+
+		_deprecated_function( __METHOD__, '2.7.0' );
 
 		if ( $group === 'mail' && $key === 'from_email_force' ) {
 			$value = true;
@@ -1021,5 +1022,35 @@ class Core {
 		}
 
 		return $connect;
+	}
+
+	/**
+	 * Load the plugin compatibility functionality and initializes it.
+	 *
+	 * @since 2.8.0
+	 *
+	 * @return Compatibility
+	 */
+	public function get_compatibility() {
+
+		static $compatibility;
+
+		if ( ! isset( $compatibility ) ) {
+
+			/**
+			 * Filters compatibility instance.
+			 *
+			 * @since 2.8.0
+			 *
+			 * @param \WPMailSMTP\Compatibility\Compatibility  $compatibility Compatibility instance.
+			 */
+			$compatibility = apply_filters( 'wp_mail_smtp_core_get_compatibility', new Compatibility() );
+
+			if ( method_exists( $compatibility, 'init' ) ) {
+				$compatibility->init();
+			}
+		}
+
+		return $compatibility;
 	}
 }

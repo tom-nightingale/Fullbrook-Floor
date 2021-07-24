@@ -32,6 +32,17 @@ class PH_Admin {
         add_action( 'admin_init', array( $this, 'preview_emails' ) );
         add_action( 'admin_init', array( $this, 'record_recently_viewed' ) );
         add_action( 'admin_init', array( $this, 'export_applicant_list' ) );
+        add_action( 'admin_init', array( $this, 'check_hide_demo_data_tab' ) );
+    }
+
+    public function check_hide_demo_data_tab()
+    {
+        if ( isset($_GET['tab']) && $_GET['tab'] == 'demodata' && isset($_GET['hidetab']) )
+        {
+            update_option( 'propertyhive_hide_demo_data_tab', 'yes' );
+            wp_redirect( admin_url('admin.php?page=ph-settings') );
+            die();
+        }
     }
 
     public function export_applicant_list()
@@ -343,6 +354,31 @@ class PH_Admin {
             }
 
             if ( 
+                !class_exists('PH_Demo_Data') && 
+                get_option( 'propertyhive_install_timestamp', '' ) >= 1618268400 &&
+                get_option( 'propertyhive_hide_demo_data_tab', '' ) != 'yes' && 
+                (
+                    !isset($_GET['page'])
+                    ||
+                    (
+                        isset($_GET['page']) && sanitize_title($_GET['page']) != 'ph-installed' && sanitize_title($_GET['page']) != 'ph-settings'
+                    )
+                )
+            )
+            {
+                echo "<div class=\"notice notice-info\" id=\"ph_notice_demo_data\">
+                        <p>
+                            " . __( '<strong>New To Property Hive?</strong> Did you know that you can quickly import demo data to get a feel for how Property Hive works?', 'propertyhive' ) . "
+                        </p>
+                        <p>
+                            <a href=\"". admin_url('admin.php?page=ph-settings&tab=demodata') . "\" class=\"button-primary\">Import Demo Data</a>
+                            <a href=\"\" class=\"button\" id=\"ph_dismiss_notice_demo_data\">Dismiss</a>
+                        </p>
+                        
+                    </div>";
+            }
+
+            if ( 
                 get_option('propertyhive_search_results_page_id', '') == '' && 
                 (
                     !isset($_GET['page'])
@@ -367,6 +403,7 @@ class PH_Admin {
             }
 
             if ( 
+                get_option('propertyhive_maps_provider') !== 'osm' &&
                 get_option('propertyhive_google_maps_api_key', '') == '' && 
                 !isset($_POST['propertyhive_google_maps_api_key']) &&
                 (
@@ -446,6 +483,15 @@ class PH_Admin {
                     </div>
                 ';
 	        }
+        }
+
+        if ( isset($_GET['propertyhive_contacts_merged']) )
+        {
+            echo '
+                <div class="notice notice-info">
+                    <p>' . __( 'Contacts merged successfully', 'propertyhive' ) . '</p>
+                </div>
+                ';
         }
     }
 

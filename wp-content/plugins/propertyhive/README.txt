@@ -1,10 +1,10 @@
 === PropertyHive ===
 Contributors: PropertyHive,BIOSTALL
-Tags: property, real estate, estate agents, estate agent, property management, propertyhive, property hive, properties, property plugin, estate agent plugin, rightmove, zoopla, blm, rtdf, jupix, vebra, expertagent, dezrez, expert agent, expertagent, reapit, reaxml, letmc, acquaint
+Tags: property, real estate, estate agents, estate agent, property management, propertyhive, property hive, properties, property plugin, estate agent plugin, rightmove, zoopla, blm, rtdf, jupix, vebra, alto, expertagent, dezrez, expert agent, expertagent, reapit, reaxml, letmc, acquaint
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=N68UHATHAEDLN&lc=GB&item_name=BIOSTALL&no_note=0&cn=Add%20special%20instructions%20to%20the%20seller%3a&no_shipping=1&currency_code=GBP&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 Requires at least: 3.8
-Tested up to: 5.7
-Stable tag: 1.4.79
+Tested up to: 5.7.2
+Stable tag: 1.5.13
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,7 +39,7 @@ Property Hive isn't a theme. It's a platform allowing you to integrate property 
 
 **Integrates with the major software providers and property portals**
 
-If you already use software such as Jupix, Vebra, Dezrez, Reapit, ExpertAgent, LetMC and more then it's easy to get your properties imported on an automatic basis at regular intervals so they display on your website. Our [Property Import Add On](https://wp-property-hive.com/addons/property-import/) can have you and running in minutes.
+If you already use software such as Jupix, Vebra Alto, Dezrez, Reapit, ExpertAgent, LetMC and more then it's easy to get your properties imported on an automatic basis at regular intervals so they display on your website. Our [Property Import Add On](https://wp-property-hive.com/addons/property-import/) can have you and running in minutes.
 
 Likewise, if you send properties to the portals such as Rightmove, Zoopla, OnTheMarket and Gumtree, we have various add ons to allow the exporting of properties to these sites.
 
@@ -89,6 +89,129 @@ Automatic updates should work like a charm; as always though, ensure you backup 
 14. The 'Settings' section gives you control over which departments are active, add and edit offices, and edit the custom fields (types, locations etc) that appear within your install
 
 == Changelog ==
+
+= 1.5.13 - 2021-06-14 =
+* History & Notes grid loaded when being viewed, not when record is loading. This should increase load times of all Property Hive records
+* Searching by address keyword to now include country name as included criteria on sites that operate with multiple countries enabled
+* New attributes added to properties shortcode (show_order, show_result_count, pagination) in preparation of Elementor/full site editing support. More to follow in coming weeks on this.
+* Added new actions before and after property enquiry wp_mail function called: 'propertyhive_(before|after)_property_enquiry_sent'
+* Moved filter 'propertyhive_property_enquiry_sent' earlier in process to more logical place
+
+= 1.5.12 - 2021-06-07 =
+* Updated currency exchange cron due to existing API no longer being available, plus multiple other enhancements and optimisations surrounding storing currencies
+* Added new filter 'propertyhive_show_tab_counts' to turn off counts in tabs on property and contact recoods
+* Added new filter 'propertyhive_features_autocomplete' to disable features autocomplete functionality
+* Corrected plugin update warning showing when an active license key exists but was due to renew in 30 days or less
+* Corrected Elementor Street View widget not working
+
+= 1.5.11 - 2021-06-01 =
+* Added new 'Property Hive-Only Mode' on user profiles making it possible to hide standard WP functionality and promote Property Hive functionality making it easier for negotiators wishing to use Property Hive as their primary estate agency CRM
+* Added new 'propertyhive_floor_area_output' to modify formatted floor area output
+* Added new 'propertyhive_site_area_output' to modify formatted site area output
+
+= 1.5.10 - 2021-05-24 =
+* New merge contacts tool allowing you to merge duplicate contacts. Available by selecting the contacts you wish to merge and choosing 'Merge' from the bulk actions dropdown
+* Added additional negotiator fields to user profiles including telephone number and photo upload
+* Updated PH_Property object to contain negotiator related properties ($property->negotiator_name, negotiator_telephone_number, negotiator_email_address and negotiator_photo)
+* Added new Elementor widgets for property office information
+* Added new Elementor widgets for property negotiator information
+* Added new tenancies grid to contact record showing all tenancies this contact is a tenant on
+* Corrected issue with related notes not showing in notes grids
+
+= 1.5.9 - 2021-05-17 =
+* Offers, Sales and Enquiries grids on property and contact records updated to new grid layout with status filter
+* Added filter 'propertyhive_search_form_rent_frequency' to change rent frequency used in search forms. Defaults to 'pcm'
+* Ensure thumbnail heights are consistent and work when lazyloading in effect
+* Corrected issue when viewing enquiry record introduced in last release
+* Declared compatibility for WordPress 5.7.2
+
+= 1.5.8 - 2021-05-10 =
+* Updated contacts viewing grid to use new UI to fit in better with WordPress styling and include filters
+* Updated properties viewing grid to use new UI to fit in better with WordPress styling and include filters
+* Added 'Per Day' rent frequency to commercial properties
+* Changed monetary input fields to display value with decimal and thousands separators
+* Added Book Viewing link on enquiry and auto-populate property and applicant
+* Removed notification about missing Google Maps API key warning if map provider is OpenStreetMaps
+* Added Back To Search Elementor widget
+* Added 'propertyhive_enquiry_email_show_manage_link' filter to allow users to prevent manage link from showing in enquiry email
+* Deleting a user with role propertyhive_contact removes any meta keys for contacts that links this user to a contact to prevent a 'floating' user with no relationship
+* Deleting a contact where a user login has been created deletes the user in question to prevent a 'floating' user with no relationship
+* Fake a window resize event on Flexslider image load to get around issue with wrong image height being calculated when lazy loading being used
+* Corrected map not loading correctly in Elementor tabbed details widget when OpenStreetMaps chosen as the provider
+* Corrected deprecated Elementor namespaces warnings
+* Corrected issue with license not showing as valid when within weeks of expiry
+
+= 1.5.7 - 2021-05-03 =
+* Added counts to tabs on property and contact records showing number of items in each tab (viewings, offers etc)
+* Added 'Enquiries' tab and list to contact record displaying enquiries made by that contact
+* Create applicant profile when creating a contact from an enquiry. Previously, unless you completed requirements there and then, the contact would go in as a contact with no relationships and would be easy to lose / result in duplicates
+* Related to the above, when an applicant profile is created it will use the price and bedrooms of the property being enquired about as the basis of the relationship. A notice will also appear alerting you to this fact
+* Added notification at the top of an enquiry record if a viewing between that contact and property already exists. This prevents confusion should an enquiry be a chase/follow up enquiry, or if someone else has dealt with the enquiry already
+* Added a link to enquiry emails sent allowing you to jump straight to the enquiry in WordPress. The link won't be included if the Enquiries module is disabled or the GDPR settings specify enquiries shouldn't be stored
+* Changed email address shown on enquiry record to be a mailto link
+* Updated jQuery UI CSS and images to match version of jQuery UI included by WordPress
+
+= 1.5.6 - 2021-04-27 =
+* Added preliminary support for Oxygen site builder by ensuring Property Hive templates still load
+* Removed comments from map JS as it was sometimes breaking sites when caching plugins minified the HTML
+* Default virtual tour tab to use embedded video instead of link in Elementor tabbed details widget
+* Corrected Vimeo links used in any Elementor widgets that reference embedded virtual tours
+* Corrected Elementor tabbed details widget following Elementor update which seemed to cause PHP error
+
+= 1.5.5 - 2021-04-20 =
+* Added previous and next links to top of viewings when there are multiple viewings for same applicant/property
+* Added date filter to admin offers and sales lists
+* Exclude password protected properties from shortcode output
+* When adding a tenancy the automatically calculated end date will be 1 day less the selected term. So a 12 month tenancy starting on 1st April 2021 will now have an end date calculated as 31st March 2022, as opposed to 1st April 2022
+* Added ability to delete a management key date from tenancies and properties
+* Can now search tenancies in backend by property address or tenant name(s)
+* Corrected issue with searching for viewing, offers and sales by address
+* Added office ID class to individual property results and single property body tag on frontend
+* Declared compatibility for WordPress 5.7.1
+
+= 1.5.4 - 2021-04-13 =
+* Added new rent frequency of 'Per Day' for lettings properties
+* Correct YouTube links used in any Elementor widgets that reference embedded virtual tours, converting https://www.youtube.com/watch?v=xxxxxxxx to https://www.youtube.com/embed/xxxxxxxx
+* Added a prompt to import demo data for new installations of Property Hive, including ability to dismiss it
+* Added a new 'Demo Data' settings tab for new installations of Property Hive, including ability to hide it
+* Ensure AJAX grids load on property record (i.e. Viewings grid) when block editor used for whatever reason (i.e. when using Houzez and Houzez Data Bridge add on)
+* Added filter 'propertyhive_default_applicant_send_matching_properties' to specify default 'send matching properties' status when an applicant is created
+
+= 1.5.3 - 2021-04-06 =
+* Changed default rent frequency to be PA when adding commercial properties
+* Added oEmbed option in Elementor embedded virtual tours widget
+* Default my account tab if hash is present in URL (i.e. #my-account-saved_searches)
+* Swapped order of address meta fields queried during keyword search to resolve issue when keyword and radius is set
+* Corrected issue with setting property on new viewing if address has an apostrophe
+* Include new note type of 'status_change' in notes grids to support old way of recording maintenance job status changes
+* Improved sanitization of locations when selecting them on a property record to prevent issue with new terms being created
+
+= 1.5.2 - 2021-03-29 =
+* Display feedback received date on viewings
+* Added classes to single property page body tag for department, on market, featured and taxonomy fields eg. availability, marketing flags. This allows different styling to be applied based on a property's features or for elements to be shown/hidden (for example, hide the enquiry button if a property is not on market)
+* Improved contact creation from enquiry including better checking for phone numbers and email addresses to support enquiries from different sources where the field names aren't always the same
+* Added filter 'propertyhive_tenancy_meter_reading_types' to customise meter reading types
+* Added new settings to store appliant registration and login pages. This allows us to redirect to the my account page if someone is already logged in but lands on the login page, as well as use by other add ons
+* Swapped meter readings and management tabs
+* Corrected undefined index error on tenancies list when tenants have no contact details entered
+* Corrected typo in various success messages: succesfully -> successfully
+* Corrected action name for custom deposit scheme fields
+
+= 1.5.1 - 2021-03-23 =
+* Added support for Rank Math SEO plugin whereby property taxonomies and off market properties are removed from XML sitemaps
+* Added new Elementor widgets: Floorplan Link, EPC Link, Brochure Link, Enquiry Form Link, Virtual Tour Link
+* Added filter 'property_search_results_thumbnail_size' to allow customisation of thumbnail size used in search results. New setting in Template Assistant add on utilises this
+* Added event details to new viewing details lightbox
+* Updated Fancybox jQuery library from 3.3.5 to 3.5.7
+* Corrected issue with department not getting set by default in applicant registration form following new custom department feature
+
+= 1.5.0 - 2021-03-15 =
+* Added the ability to add custom departments under 'Property Hive > Settings > General'. This should satisfy one of our most common support queries, as well as open Property Hive upto a whole host of new businesses
+* New property management and tenancies module taken out of BETA
+* Added address of contacts to new viewing details lightboxes
+* Added new 'propertyhive_lightbox_contact_details' action to new viewing details lightboxes
+* Corrected issue with owner/landlord details not showing in new viewing details lightboxes
+* Corrected Elementor map widget not showing options since recent Elementor update
 
 = 1.4.79 - 2021-03-08 =
 * New workflow when clicking to view viewings from a property or contact record. We'll now show a popup that shows viewing details, allows you to add notes and perform actions, and paginate through them without needing to click into the actual viewing. Aimed at making following up viewings a quicker process
