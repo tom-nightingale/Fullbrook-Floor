@@ -14,7 +14,7 @@ use DeliciousBrains\WPMDB\Pro\Transfers\Files\FileProcessor;
 use DeliciousBrains\WPMDB\Pro\Transfers\Files\PluginHelper;
 use DeliciousBrains\WPMDB\Pro\Queue\QueueHelper;
 use DeliciousBrains\WPMDB\Pro\Transfers\Files\TransferManager;
-
+use DeliciousBrains\WPMDB\Pro\Transfers\Files\Util as Files_Util;
 class MediaFilesLocal
 {
 
@@ -175,6 +175,9 @@ class MediaFilesLocal
         //Cleanup partial chunk files.
         $this->transfer_util->cleanup_temp_chunks(WP_CONTENT_DIR . DIRECTORY_SEPARATOR, 'tmpchunk');
 
+        //Bottleneck files scanning
+        Files_Util::enable_scandir_bottleneck();
+
         //State data populated
         $folder   = $state_data['folder'];
         $date     = isset($state_data['date']) ? $state_data['date'] : null;
@@ -193,7 +196,7 @@ class MediaFilesLocal
             $abs_path = apply_filters('wpmdb_mf_local_uploads_folder', $abs_path, $state_data);
             $items    = $this->plugin_helper->get_top_level_items($abs_path);
 
-            $file_list = $this->file_processor->get_local_files($items, $abs_path, $excludes, $state_data['stage'], $date, $timezone);
+            $file_list = $this->file_processor->get_local_files($items, $abs_path, $excludes, $state_data['stage'], $date, $timezone,'push');
         }
 
         if (is_wp_error($file_list)) {
@@ -202,6 +205,17 @@ class MediaFilesLocal
 
         $queue_status = $this->queue_helper->populate_queue($file_list, $state_data['intent'], $state_data['stage'], $state_data['migration_state_id']);
         set_site_transient('wpmdb_queue_status', $queue_status);
+
+        if (isset($file_list['meta']['scan_completed'])) {
+            if (true === $file_list['meta']['scan_completed']) {
+                return $this->http->end_ajax(['queue_status' => $queue_status]);
+            }
+            return $this->http->end_ajax(
+                [
+                    'recursive_queue'   => true,
+                    'items_count'       => $queue_status['total']
+                ]);
+        }
 
         return $this->http->end_ajax(['queue_status' => $queue_status]);
     }
@@ -317,4 +331,5 @@ class MediaFilesLocal
             update_site_option($profile_type, $saved_profiles);
         }
     }
+
 }

@@ -2,6 +2,7 @@
 
 namespace DeliciousBrains\WPMDB\Pro\Plugin;
 
+use DeliciousBrains\WPMDB\Common\Helpers;
 use DeliciousBrains\WPMDB\Common\Http\Helper;
 use DeliciousBrains\WPMDB\Common\Http\WPMDBRestAPIServer;
 use DeliciousBrains\WPMDB\Common\Migration\MigrationHelper;
@@ -534,7 +535,7 @@ class ProPluginManager extends PluginManagerBase
 
         wp_add_inline_script(
             'wp-migrate-db-pro-plugin-update-script',
-            sprintf('var wpmdbAPIBase = %s;', wp_json_encode(get_home_url() . '/wp-json/' . $this->props->rest_api_base)),
+            sprintf('var wpmdbAPIBase = %s;', wp_json_encode($this->util->rest_url())),
             'before'
         );
     }
@@ -561,7 +562,7 @@ class ProPluginManager extends PluginManagerBase
 
         delete_site_transient('wpmdb_upgrade_data');
         delete_site_transient('update_plugins');
-        delete_site_transient('wpmdb_licence_response');
+        delete_site_transient( Helpers::get_licence_response_transient_key() );
         delete_site_transient('wpmdb_dbrains_api_down');
     }
 

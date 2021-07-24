@@ -1,5 +1,7 @@
 <?php
 
+defined( 'ABSPATH' ) || exit;
+
 use DeliciousBrains\WPMDB\Pro\Cli\Export;
 use DeliciousBrains\WPMDB\WPMDBDI;
 

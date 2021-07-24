@@ -3,7 +3,7 @@
 Plugin Name: WP Fastest Cache
 Plugin URI: http://wordpress.org/plugins/wp-fastest-cache/
 Description: The simplest and fastest WP Cache system
-Version: 0.9.1.9
+Version: 0.9.2
 Author: Emre Vona
 Author URI: http://tr.linkedin.com/in/emrevona
 Text Domain: wp-fastest-cache
@@ -125,6 +125,11 @@ GNU General Public License for more details.
 				add_action('after_switch_theme', array($this, 'clear_cache_after_switch_theme'));
 			}
 
+			if(defined("WPFC_CLEAR_CACHE_AFTER_ACTIVATE_DEACTIVATE_PLUGIN") && WPFC_CLEAR_CACHE_AFTER_ACTIVATE_DEACTIVATE_PLUGIN){
+				add_action('activate_plugin', array($this, 'clear_cache_after_activate_plugin'));
+				add_action('deactivate_plugin', array($this, 'clear_cache_after_deactivate_plugin'));
+			}
+
 			if(defined("WPFC_CLEAR_CACHE_AFTER_PLUGIN_UPDATE") && WPFC_CLEAR_CACHE_AFTER_PLUGIN_UPDATE){
 				add_action('upgrader_process_complete', array($this, 'clear_cache_after_update_plugin'), 10, 2);
 			}
@@ -153,7 +158,7 @@ GNU General Public License for more details.
 
 
 
-			if(defined("WPFC_AUTOMATIC_CACHE") && WPFC_AUTOMATIC_CACHE){
+			if($this->isPluginActive('classic-editor/classic-editor.php')){
 				// to create cache for single content
 				add_action("add_meta_boxes", array($this, "add_meta_box"), 10, 2);
 				add_action('admin_notices', array($this, 'single_preload_inline_js'));
@@ -334,6 +339,14 @@ GNU General Public License for more details.
 					}
 				}
 			}
+		}
+
+		public function clear_cache_after_activate_plugin(){
+			$this->deleteCache(true);
+		}
+
+		public function clear_cache_after_deactivate_plugin(){
+			$this->deleteCache(true);
 		}
 
 		public function clear_cache_after_switch_theme(){

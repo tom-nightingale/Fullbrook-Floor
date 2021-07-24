@@ -39,7 +39,10 @@ class PH_Meta_Box_Tenancy_Details {
 			{
 				echo __( 'Pending', 'propertyhive' );
 			}
-			elseif ( $start_date && strtotime( $start_date ) <= time() && time() < strtotime( $end_date ) )
+			elseif ( 
+                $start_date && strtotime( $start_date ) <= time() && 
+                ( time() <= strtotime( $end_date ) || $end_date == '' )
+            )
 			{
 				echo __( 'Current', 'propertyhive' );
 			}
@@ -54,23 +57,52 @@ class PH_Meta_Box_Tenancy_Details {
         $length_units = get_post_meta( $thepostid, '_length_units', true );
         $lease_type = get_post_meta( $thepostid, '_lease_type', true );
 
-        echo '<p class="form-field lease_term_type_field">
-        
-            <label for="_length">' . __('Lease Term and Type', 'propertyhive') . '</label>
+        $show_lease_length =  apply_filters( 'propertyhive_show_tenancy_lease_length', true );
 
-            <input type="number" class="" name="_length" id="_length" value="' . get_post_meta( $post->ID, '_length', true ) . '" placeholder="" style="width:70px">
+        if ( $show_lease_length === true)
+        {
+            $lease_term_type_html = '
+                <p class="form-field lease_term_type_field">
             
-            <select id="_length_units" name="_length_units" class="select" style="width:auto">
-                <option value="week"' . ( $length_units == 'week' ? ' selected' : '') . '>' . __('Weeks', 'propertyhive') . '</option>
-                <option value="month"' . ( ($length_units == 'month' || $length_units == '') ? ' selected' : '') . '>' . __('Months', 'propertyhive') . '</option>
-            </select>
+                <label for="_length">' . __('Lease Term and Type', 'propertyhive') . '</label>
 
+                <input type="number" class="" name="_length" id="_length" value="' . get_post_meta( $post->ID, '_length', true ) . '" placeholder="" style="width:70px">
+                
+                <select id="_length_units" name="_length_units" class="select" style="width:auto">
+                    <option value="week"' . ( $length_units == 'week' ? ' selected' : '') . '>' . __('Weeks', 'propertyhive') . '</option>
+                    <option value="month"' . ( ($length_units == 'month' || $length_units == '') ? ' selected' : '') . '>' . __('Months', 'propertyhive') . '</option>
+                </select>';
+        }
+        else
+        {
+            $lease_term_type_html = '
+                <p class="form-field lease_term_type_field">
+            
+                <label for="_lease_type">' . __('Lease Type', 'propertyhive') . '</label>
+            ';
+        }
+
+        $lease_term_type_html .= '
             <select id="_lease_type" name="_lease_type" class="select" style="width:auto">
-                <option value="assured_shorthold"' . ( ($lease_type == 'assured_shorthold' || $lease_type == '') ? ' selected' : '') . '>' . __('Assured Shorthold', 'propertyhive') . '</option>
-                <option value="assured"' . ( $lease_type == 'assured' ? ' selected' : '') . '>' . __('Assured', 'propertyhive') . '</option>
-            </select>
-            
-        </p>';
+        ';
+
+        $lease_type_options = apply_filters( 'propertyhive_tenancy_lease_types', array(
+            'assured_shorthold' => 'Assured Shorthold',
+            'assured' => 'Assured',
+        ) );
+
+        $i = 1;
+        foreach ( $lease_type_options as $lease_type_name => $lease_type_display )
+        {
+            $lease_term_type_html .= '<option value="' . $lease_type_name . '"' . ( ($lease_type == $lease_type_name || ( $lease_type == '' && $i === 1 ) ) ? ' selected' : '') . '>' . __($lease_type_display, 'propertyhive') . '</option>';
+            $i++;
+        }
+
+        $lease_term_type_html .=  '
+                </select>
+            </p>';
+
+        echo $lease_term_type_html;
 
         $args = array(
             'id' => '_start_date', 
@@ -172,7 +204,12 @@ class PH_Meta_Box_Tenancy_Details {
             // Set end date to X weeks/months after when start date changed
             jQuery(\'#_start_date\').change(function()
             {
-                if ( jQuery(\'#_length\').val() != \'\' && jQuery(\'#_length_units\').val() != \'\' && jQuery(this).val() != \'\' && jQuery(\'#_end_date\').val() == \'\' )
+                if (
+                    jQuery(\'#_length\').val() !== undefined && jQuery(\'#_length_units\').val() !== undefined
+                    &&
+                    jQuery(\'#_length\').val() != \'\' && jQuery(\'#_length_units\').val() != \'\'
+                    &&
+                    jQuery(this).val() != \'\' && jQuery(\'#_end_date\').val() == \'\' )
                 {
                     // Only do stuff if it\'s not been set already. Don\'t want to be messing if things already entered
 
@@ -226,19 +263,30 @@ class PH_Meta_Box_Tenancy_Details {
             update_post_meta( $post_id, '_status', 'application' );
         }
 
-        update_post_meta( $post_id, '_length', (int)$_POST['_length'] );
-        update_post_meta( $post_id, '_length_units', ph_clean($_POST['_length_units']) );
-        update_post_meta( $post_id, '_lease_type', ph_clean($_POST['_lease_type']) );
+        if ( isset( $_POST['_length'] ) )
+        {
+            update_post_meta( $post_id, '_length', (int)$_POST['_length'] );
+        }
+
+        if ( isset( $_POST['_length_units'] ) )
+        {
+            update_post_meta( $post_id, '_length_units', ph_clean($_POST['_length_units']) );
+        }
+
+        if ( isset( $_POST['_lease_type'] ) )
+        {
+            update_post_meta( $post_id, '_lease_type', ph_clean($_POST['_lease_type']) );
+        }
 
         update_post_meta( $post_id, '_start_date', ph_clean($_POST['_start_date']) );
         update_post_meta( $post_id, '_end_date', ph_clean($_POST['_end_date']) );
 
-        $amount = preg_replace("/[^0-9]/", '', ph_clean($_POST['_rent']));
+        $amount = preg_replace("/[^0-9.]/", '', ph_clean($_POST['_rent']));
         update_post_meta( $post_id, '_rent', $amount );
         update_post_meta( $post_id, '_rent_frequency', ph_clean($_POST['_rent_frequency']) );
         update_post_meta( $post_id, '_currency', ph_clean($_POST['_rent_currency']) );
 
-	    $amount = preg_replace("/[^0-9]/", '', ph_clean($_POST['_deposit']));
+	    $amount = preg_replace("/[^0-9.]/", '', ph_clean($_POST['_deposit']));
 	    update_post_meta( $post_id, '_deposit', $amount );
 
         update_post_meta( $post_id, '_notes', sanitize_textarea_field($_POST['_notes']) );

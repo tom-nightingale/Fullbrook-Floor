@@ -135,6 +135,7 @@ class PluginHelper
             'date'     => 'string',
             'timezone' => 'string',
         );
+
         $_POST['folders']  = stripslashes($_POST['folders']);
         $_POST['excludes'] = stripslashes($_POST['excludes']);
 
@@ -193,10 +194,10 @@ class PluginHelper
             $items = $this->get_top_level_items($folders[0]);
         }
 
-        $files = $this->file_processor->get_local_files($items, $slashed, unserialize($state_data['excludes']), $stage, $date, $timezone);
+        $files = $this->file_processor->get_local_files($items, $slashed, unserialize($state_data['excludes']), $stage, $date, $timezone, 'pull');
 
 
-        $files = ZipAndEncode::encode(json_encode($files));
+        $files = ZipAndEncode::encode(serialize($files));
 
         return $this->http->end_ajax($files);
     }
@@ -243,9 +244,8 @@ class PluginHelper
         $queue_data   = unserialize(gzdecode(base64_decode($queue_status)));
 
         if ($queue_data) {
-            $this->transfer_util->remove_tmp_folder($state_data['stage']);
-
             try {
+                $queue_data = $this->transfer_util->concat_existing_remote_items($queue_data, $state_data['stage'], $state_data['remote_state_id']);
                 $this->transfer_util->save_queue_status($queue_data, $state_data['stage'], $state_data['remote_state_id']);
             } catch (\Exception $e) {
                 return $this->http->end_ajax(new \WP_Error('wpmdb_failed_save_queue', $e->getMessage()));

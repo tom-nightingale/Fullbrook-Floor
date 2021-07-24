@@ -2,6 +2,7 @@
 
 namespace DeliciousBrains\WPMDB\Pro;
 
+use DeliciousBrains\WPMDB\Common\Filesystem\RecursiveScanner;
 use DeliciousBrains\WPMDB\Pro\Backups\BackupsManager;
 use DeliciousBrains\WPMDB\Pro\Beta\BetaManager;
 use DeliciousBrains\WPMDB\Pro\Cli\Export;
@@ -75,6 +76,11 @@ class ClassMap extends \DeliciousBrains\WPMDB\ClassMap
      * @var QueueHelper
      */
     public $transfers_queue_helper;
+
+    /**
+     * @var RecursiveScanner
+     */
+    public $recursive_scanner;
 
     public function __construct()
     {
@@ -335,9 +341,12 @@ class ClassMap extends \DeliciousBrains\WPMDB\ClassMap
             $this->transfers_sender
         );
 
+        $this->recursive_scanner = new RecursiveScanner($this->filesystem, $this->transfers_util);
+
         $this->transfers_file_processor = new FileProcessor(
             $this->filesystem,
-            $this->http
+            $this->http,
+            $this->recursive_scanner
         );
 
         $this->transfers_plugin_helper = new PluginHelper(

@@ -4,6 +4,7 @@ namespace DeliciousBrains\WPMDB\Pro\Addon;
 
 use DeliciousBrains\WPMDB\Common\Error\ErrorLog;
 use DeliciousBrains\WPMDB\Common\BackupExport;
+use DeliciousBrains\WPMDB\Common\Helpers;
 use DeliciousBrains\WPMDB\Common\Properties\Properties;
 use DeliciousBrains\WPMDB\Common\Settings\Settings;
 use DeliciousBrains\WPMDB\Pro\Api;
@@ -241,7 +242,7 @@ class Addon
         $info = get_site_transient('wpmdb_upgrade_data');
 
         if (isset($info['version'])) {
-            delete_site_transient('wpmdb_licence_response');
+            delete_site_transient( Helpers::get_licence_response_transient_key() );
             delete_site_transient('wpmdb_upgrade_data');
             $info = false;
         }

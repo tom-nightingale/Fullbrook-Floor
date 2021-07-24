@@ -48,6 +48,7 @@ class PH_AJAX {
             // Contact actions
             'create_contact_login' => false,
             'get_contact_tenancies_grid' => false,
+            'get_contact_solicitor' => false,
 
             // Appraisal actions
             'get_appraisal_details_meta_box' => false,
@@ -1240,42 +1241,7 @@ class PH_AJAX {
                 array(
                     'relation' => 'OR',
                     array(
-                        'key' => '_address_name_number',
-                        'value' => ph_clean($_POST['keyword']),
-                        'compare' => 'LIKE'
-                    ),
-                    array(
-                        'key' => '_address_street',
-                        'value' => ph_clean($_POST['keyword']),
-                        'compare' => 'LIKE'
-                    ),
-                    array(
-                        'key' => '_address_name_number_street',
-                        'value' => ph_clean($_POST['keyword']),
-                        'compare' => 'LIKE'
-                    ),
-                    array(
-                        'key' => '_address_street',
-                        'value' => ph_clean($_POST['keyword']),
-                        'compare' => 'LIKE'
-                    ),
-                    array(
-                        'key' => '_address_two',
-                        'value' => ph_clean($_POST['keyword']),
-                        'compare' => 'LIKE'
-                    ),
-                    array(
-                        'key' => '_address_three',
-                        'value' => ph_clean($_POST['keyword']),
-                        'compare' => 'LIKE'
-                    ),
-                    array(
-                        'key' => '_address_four',
-                        'value' => ph_clean($_POST['keyword']),
-                        'compare' => 'LIKE'
-                    ),
-                    array(
-                        'key' => '_address_postcode',
+                        'key' => '_address_concatenated',
                         'value' => ph_clean($_POST['keyword']),
                         'compare' => 'LIKE'
                     ),
@@ -1575,6 +1541,19 @@ class PH_AJAX {
                     }
                 }
             }
+        }
+
+        if ( 
+            get_option( 'propertyhive_property_enquiry_form_disclaimer', '' ) != '' &&
+            ( 
+                !isset( $_POST['disclaimer'] ) || 
+                ( 
+                    isset( $_POST['disclaimer'] ) && empty( $_POST['disclaimer'] ) 
+                ) 
+            )
+        )
+        {
+            $errors[] = __( 'Missing required field', 'propertyhive' ) . ': disclaimer';
         }
         
         if ( !empty($errors) )
@@ -2350,7 +2329,7 @@ class PH_AJAX {
             ),
         );
 
-        $upcoming_threshold = new DateTime(PH_Key_Date::UPCOMING_THRESHOLD);
+        $upcoming_threshold = new DateTime('+ ' . apply_filters( 'propertyhive_key_date_upcoming_days', 7 ) . ' DAYS');
         $meta_query[] = array(
             'key' => '_date_due',
             'value' => $upcoming_threshold->format('Y-m-d'),
@@ -4076,6 +4055,25 @@ class PH_AJAX {
             add_post_meta( $offer_post_id, '_applicant_contact_id', $applicant_contact_id );
             add_post_meta( $offer_post_id, '_amount', $amount );
             add_post_meta( $offer_post_id, '_status', 'pending' );
+
+            $applicant_solicitor_contact_id = get_post_meta( $applicant_contact_id, '_contact_solicitor_contact_id', TRUE );
+            if ( !empty($applicant_solicitor_contact_id) )
+            {
+                add_post_meta( $offer_post_id, '_applicant_solicitor_contact_id', (int)$applicant_solicitor_contact_id );
+            }
+
+            $owner_contact_ids = get_post_meta((int)$_POST['property_id'], '_owner_contact_id', TRUE);
+            if ( !empty($owner_contact_ids) )
+            {
+                foreach ( $owner_contact_ids as $owner_contact_id )
+                {
+                    $property_owner_solicitor_contact_id = get_post_meta( (int)$owner_contact_id, '_contact_solicitor_contact_id', TRUE );
+                    if ( !empty($property_owner_solicitor_contact_id) )
+                    {
+                        add_post_meta( $offer_post_id, '_property_owner_solicitor_contact_id', (int)$property_owner_solicitor_contact_id );
+                    }
+                }
+            }
         }
 
         $applicant_contacts = array();
@@ -4153,6 +4151,25 @@ class PH_AJAX {
             add_post_meta( $offer_post_id, '_applicant_contact_id', (int)$_POST['contact_id'] );
             add_post_meta( $offer_post_id, '_amount', $amount );
             add_post_meta( $offer_post_id, '_status', 'pending' );
+
+            $applicant_solicitor_contact_id = get_post_meta( (int)$_POST['contact_id'], '_contact_solicitor_contact_id', TRUE );
+            if ( !empty($applicant_solicitor_contact_id) )
+            {
+                add_post_meta( $offer_post_id, '_applicant_solicitor_contact_id', (int)$applicant_solicitor_contact_id );
+            }
+
+            $owner_contact_ids = get_post_meta($property_id, '_owner_contact_id', TRUE);
+            if ( !empty($owner_contact_ids) )
+            {
+                foreach ( $owner_contact_ids as $owner_contact_id )
+                {
+                    $property_owner_solicitor_contact_id = get_post_meta( (int)$owner_contact_id, '_contact_solicitor_contact_id', TRUE );
+                    if ( !empty($property_owner_solicitor_contact_id) )
+                    {
+                        add_post_meta( $offer_post_id, '_property_owner_solicitor_contact_id', (int)$property_owner_solicitor_contact_id );
+                    }
+                }
+            }
         }
 
         $properties = array();
@@ -4760,6 +4777,7 @@ class PH_AJAX {
             $date_description = wp_kses_post( trim( stripslashes( $_POST['key_date_description'] ) ) );
             $date_type_id = ph_clean( stripslashes( $_POST['key_date_type'] ) );
             $date_due = ph_clean($_POST['key_date_due']) . ' ' . ph_clean($_POST['key_date_hours']) . ':' . ph_clean($_POST['key_date_minutes']);
+            $date_notes = sanitize_textarea_field($_POST['key_date_notes']);
 
             $parent_post_type = get_post_type( $parent_post_id );
 
@@ -4786,6 +4804,7 @@ class PH_AJAX {
             add_post_meta( $key_date_post_id, '_date_due', $date_due );
             add_post_meta( $key_date_post_id, '_key_date_status', 'pending' );
             add_post_meta( $key_date_post_id, '_key_date_type_id', $date_type_id );
+            add_post_meta( $key_date_post_id, '_key_date_notes', $date_notes );
 
             switch ( $parent_post_type )
             {
@@ -4904,6 +4923,7 @@ class PH_AJAX {
         update_post_meta( $key_date_post_id, '_date_due', $_POST['due_date_time'] );
         update_post_meta( $key_date_post_id, '_key_date_status', $_POST['status'] );
         update_post_meta( $key_date_post_id, '_key_date_type_id', $_POST['type'] );
+        update_post_meta( $key_date_post_id, '_key_date_notes', sanitize_textarea_field($_POST['notes'] ));
 
         if ( isset($_POST['next_key_date']) )
         {
@@ -4982,6 +5002,59 @@ class PH_AJAX {
         }
 
         include( PH()->plugin_path() . '/includes/admin/views/html-contact-tenancies-meta-box.php' );
+
+        // Quit out
+        die();
+    }
+
+    public function get_contact_solicitor()
+    {
+        switch( get_post_type($_POST['post_id']) )
+        {
+            case 'contact':
+            {
+                $contact_post_ids = array( $_POST['post_id'] );
+                break;
+            }
+            case 'property':
+            {
+                $owner_contact_ids = get_post_meta($_POST['post_id'], '_owner_contact_id', TRUE);
+                if ( !empty( $owner_contact_ids ) )
+                {
+                    if ( !is_array($owner_contact_ids) )
+                    {
+                        $owner_contact_ids = array($owner_contact_ids);
+                    }
+
+                    $contact_post_ids = $owner_contact_ids;
+                }
+                break;
+            }
+        }
+
+        if ( isset( $contact_post_ids ) )
+        {
+            foreach ( $contact_post_ids as $contact_post_id )
+            {
+                $solicitor_contact_id = get_post_meta( $contact_post_id, '_contact_solicitor_contact_id', TRUE );
+                if ( !empty($solicitor_contact_id) )
+                {
+                    $solicitor_name = get_the_title($solicitor_contact_id);
+
+                    $solicitor_company_name = get_post_meta( $solicitor_contact_id, '_company_name', TRUE );
+                    if ( !empty($solicitor_company_name) && $solicitor_company_name != $solicitor_name )
+                    {
+                        $solicitor_name .= ' (' . $solicitor_company_name . ')';
+                    }
+
+                    echo json_encode( array(
+                        'id' => $solicitor_contact_id,
+                        'name' => $solicitor_name,
+                    ) );
+                    break;
+                }
+            }
+        }
 
         // Quit out
         die();

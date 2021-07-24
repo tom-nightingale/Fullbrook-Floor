@@ -77,7 +77,6 @@ class Util
         $data['folders']  = serialize($directories);
         $data['excludes'] = serialize($excludes);
         $data['stage']    = $state_data['stage'];
-
         $data['sig'] = $this->http_helper->create_signature($data, $state_data['key']);
 
         if (!is_null($date)) {
@@ -91,7 +90,7 @@ class Util
         $ajax_url         = trailingslashit($state_data['url']) . 'wp-admin/admin-ajax.php';
         $response         = $this->remote_post->post($ajax_url, $data, __FUNCTION__);
         $response         = $this->remote_post->verify_remote_post_response($response);
-        $response['data'] = json_decode(ZipAndEncode::decode($response['data']), true);
+        $response['data'] = unserialize(ZipAndEncode::decode($response['data']));
 
         if (isset($response['wpmdb_error'])) {
             return $response;
@@ -265,6 +264,28 @@ class Util
     }
 
     /**
+     * Merges a stored queue status (if exists) with the provided one.
+     *
+     * @param array $queue_status
+     * @param string $stage
+     * @param string $migration_state_id
+     * @return array
+     */
+    public function concat_existing_remote_items($queue_status, $stage, $migration_state_id)
+    {
+        $stored_queue = $this->get_queue_status($stage, $migration_state_id);
+        if (false !== $stored_queue) {
+            $queue_status['total'] += $stored_queue['total'];
+            $queue_status['size'] += $stored_queue['size'];
+            $queue_status['manifest'] = array_merge($stored_queue['manifest'], $queue_status['manifest']);
+
+            $this->remove_tmp_folder($stage);
+        }
+
+        return $queue_status;
+    }
+
+    /**
      * Saves queue data to the manifest file
      *
      * @param array $data
@@ -275,17 +296,13 @@ class Util
      */
     public function save_queue_status(array $data, $stage, $migration_state_id)
     {
-        $tmp_path = Receiver::get_temp_dir() . $stage . DIRECTORY_SEPARATOR . 'tmp';
-
-        if ($stage === 'media_files') {
-            $tmp_path = self::get_wp_uploads_dir();
-        }
+        $tmp_path = $this->get_queue_tmp_path($stage);
 
         if (!$this->filesystem->mkdir($tmp_path)) {
             throw new \Exception(sprintf(__('Unable to create folder for file transfers: %s'), $tmp_path));
         }
 
-        $filename = '.' . $migration_state_id . '-manifest';
+        $filename = $this->get_queue_manifest_file_name($migration_state_id);
         $manifest = @file_put_contents($tmp_path . DIRECTORY_SEPARATOR . $filename, serialize($data));
 
         if (!$manifest) {
@@ -293,6 +310,55 @@ class Util
         }
 
         return $manifest;
+    }
+
+    /**
+     * Get stored queue manifest array.
+     *
+     * @param $stage
+     * @param $migration_state_id
+     *
+     * @return array|false
+     */
+    public function get_queue_status($stage, $migration_state_id)
+    {
+        $filename = $this->get_queue_manifest_file_name($migration_state_id);
+        $tmp_path = $this->get_queue_tmp_path($stage);
+        $manifest = @file_get_contents($tmp_path . DIRECTORY_SEPARATOR . $filename);
+
+        if (false !== $manifest) {
+            return unserialize($manifest);
+        }
+
+        return false;
+    }
+
+    /**
+     * Get queue tmp path.
+     *
+     * @param $stage
+     * @return string
+     */
+    private function get_queue_tmp_path($stage)
+    {
+        $tmp_path = Receiver::get_temp_dir() . $stage . DIRECTORY_SEPARATOR . 'tmp';
+
+        if ($stage === 'media_files') {
+            $tmp_path = self::get_wp_uploads_dir();
+        }
+
+        return $tmp_path;
+    }
+
+    /**
+     * Get manifest file name.
+     *
+     * @param $migration_state_id
+     * @return string
+     */
+    private function get_queue_manifest_file_name($migration_state_id)
+    {
+        return '.' . $migration_state_id . '-manifest';
     }
 
     public function cleanup_media_migration()
@@ -603,5 +669,14 @@ class Util
         $bottleneck -= 250000;
 
         return $bottleneck;
+    }
+
+    /**
+     * Enables the bottleneck-ed recursive file scanner.
+     */
+    public static function enable_scandir_bottleneck() {
+        add_filter('wpmdb_bottleneck_dir_scan', function ($bottleneck) {
+            return true;
+        });
     }
 }

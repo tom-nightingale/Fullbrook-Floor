@@ -52,6 +52,9 @@ class QueueHelper
         $this->util           = $util;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function populate_queue($file_data, $intent, $stage, $migration_state_id)
     {
         if (!$file_data) {
@@ -74,31 +77,84 @@ class QueueHelper
             'manifest' => $file_data['meta']['manifest'],
         ];
 
-        if ('pull' === $intent) {
-            $this->transfer_util->remove_tmp_folder($stage);
-            try {
-                $this->transfer_util->save_queue_status($queue_status, $stage, $migration_state_id);
-            } catch (\Exception $e) {
-                return $this->transfer_util->ajax_error($e->getMessage());
-            }
-        } else {
-            $key = $stage === 'media_files' ? 'mf' : 'tp';
+        //Always store local manifest even for push intents, to keep track of recursive scanning items count.
+        $complete_status = $this->store_local_manifest($queue_status, $file_data, $stage, $migration_state_id);
 
-            // Push
-            $response         = $this->transfer_util->save_queue_status_to_remote($queue_status, "wpmdb{$key}_respond_to_save_queue_status");
-            $decoded_response = json_decode($response->body, true);
-
-            if (isset($decoded_response['success']) && $decoded_response['success'] === false || empty($decoded_response)) {
-                return $this->transfer_util->ajax_error($decoded_response['data']);
+        if ('push' === $intent) {
+            $response = $this->store_remote_manifest($queue_status, $stage);
+            if (true !== $response) {
+                return $response;
             }
         }
 
         // Manifest can get quite large, so remove it once it's no longer needed
-        unset($queue_status['manifest']);
+        unset($queue_status['manifest'], $complete_status['manifest']);
+
+        return $complete_status;
+    }
+
+    /**
+     * Saves the remote manifest.
+     *
+     * @param array $queue_status
+     * @param string $stage
+     * @return bool|mixed
+     * @throws \Exception
+     */
+    private function store_remote_manifest($queue_status, $stage) {
+        $key = $stage === 'media_files' ? 'mf' : 'tp';
+        $response         = $this->transfer_util->save_queue_status_to_remote($queue_status, "wpmdb{$key}_respond_to_save_queue_status");
+        $decoded_response = json_decode($response->body, true);
+
+        if ((isset($decoded_response['success']) && $decoded_response['success'] === false) || empty($decoded_response)) {
+            return $this->transfer_util->ajax_error($decoded_response['data']);
+        }
+
+        return true;
+    }
+
+    /**
+     * Saves the local manifest.
+     *
+     * @param array $queue_status
+     * @param array $file_data
+     * @param string $stage
+     * @param string $migration_state_id
+     * @return bool|mixed
+     */
+    private function store_local_manifest($queue_status, $file_data, $stage, $migration_state_id) {
+        $queue_status = $this->concat_existing_queue_items($queue_status, $file_data, $stage, $migration_state_id);
+
+        try {
+            $this->transfer_util->save_queue_status($queue_status, $stage, $migration_state_id);
+        } catch (\Exception $e) {
+            return $this->transfer_util->ajax_error($e->getMessage());
+        }
 
         return $queue_status;
     }
 
+    /**
+     * Concat existing queue status if exists.
+     *
+     * @param array $queue_status
+     * @param array $file_data
+     * @param string $stage
+     * @param string $migration_state_id
+     * @return array
+     */
+    private function concat_existing_queue_items($queue_status, $file_data, $stage, $migration_state_id) {
+        //attempt to load queue status
+        $stored_queue = $this->transfer_util->get_queue_status($stage, $migration_state_id);
+        if (false !== $stored_queue) {
+            $queue_status = $stored_queue;
+            $queue_status['total'] += $file_data['meta']['count'];
+            $queue_status['size'] += $file_data['meta']['size'];
+            $queue_status['manifest'] = array_merge($file_data['meta']['manifest'], $queue_status['manifest']);
+        }
+
+        return $queue_status;
+    }
 
     public function get_queue_items()
     {

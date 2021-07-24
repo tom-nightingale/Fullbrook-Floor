@@ -3,6 +3,7 @@
 namespace DeliciousBrains\WPMDB\Common\Settings;
 
 use DeliciousBrains\WPMDB\Common\Filesystem\Filesystem;
+use DeliciousBrains\WPMDB\Common\Helpers;
 use DeliciousBrains\WPMDB\Common\Util\Util;
 
 class Settings
@@ -122,6 +123,11 @@ class Settings
 
         if ($update_settings) {
             update_site_option('wpmdb_settings', $this->settings);
+        }
+
+        $user_licence = Helpers::get_user_licence_key();
+        if ( $user_licence ) {
+            $this->settings['licence'] = $user_licence;
         }
 
         self::$static_settings = $this->settings;

@@ -3,6 +3,7 @@
 namespace DeliciousBrains\WPMDB\Pro\Transfers\Files;
 
 use DeliciousBrains\WPMDB\Common\Filesystem\Filesystem;
+use DeliciousBrains\WPMDB\Common\Filesystem\RecursiveScanner;
 use DeliciousBrains\WPMDB\Common\Http\Http;
 
 /**
@@ -20,6 +21,11 @@ class FileProcessor
     private $http;
 
     /**
+     * @var RecursiveScanner
+     */
+    private $recursive_scanner;
+
+    /**
      * FileProcessor constructor.
      *
      * @param Filesystem $filesystem
@@ -27,55 +33,77 @@ class FileProcessor
      */
     public function __construct(
         Filesystem $filesystem,
-        Http $http
+        Http $http,
+        RecursiveScanner $recursive_scanner
     ) {
         $this->filesystem = $filesystem;
         $this->http       = $http;
+        $this->recursive_scanner = $recursive_scanner;
     }
 
     /**
      * Given an array of directory paths, loops over each dir and returns an array of files and metadata
      *
-     * @param $directories
-     * @param $abs_path
+     * @param array $directories
+     * @param string $abs_path
+     * @param array $excludes
+     * @param string $stage
+     * @param string|null $date
+     * @param string|null $timezone
+     * @param string|null $intent
      *
      * @return array
      */
-    public function get_local_files($directories, $abs_path = '', $excludes = array(), $stage = '', $date = null, $timezone = null)
+    public function get_local_files($directories, $abs_path = '', $excludes = array(), $stage = '', $date = null, $timezone = null, $intent = null)
     {
         $count      = 0;
         $total_size = 0;
         $files      = [];
         $manifest   = [];
 
-        foreach ($directories as $directory) {
+        $scan_completed = false;
+        $directories = $this->recursive_scanner->unset_manifest_file($directories);
+        $dirs_count = count($directories);
+
+        $this->recursive_scanner->set_excludes($excludes);
+        $this->recursive_scanner->set_intent($intent);
+
+        foreach ($directories as $directory => $current_dir) {
             $file_size          = 0;
             $is_single          = false;
             $files_in_directory = [];
+            $processed_files = [];
 
-            if (!$this->filesystem->file_exists($directory)) {
+            if (!$this->filesystem->file_exists($current_dir)) {
+                if($directory >= $dirs_count-1) {
+                    $scan_completed = true;
+                }
                 continue;
             }
 
-            if (!$this->filesystem->is_dir($directory)) {
+            if (!$this->filesystem->is_dir($current_dir)) {
                 $is_single = true;
             }
 
-            $nice_name = $this->get_item_nice_name($stage, $directory, $is_single);
+            $nice_name = $this->get_item_nice_name($stage, $current_dir, $is_single);
 
             if ($is_single) {
-                $basename                      = wp_basename($directory);
-                $file_info                     = $this->filesystem->get_file_info(wp_basename($directory), $abs_path);
+                $basename                      = wp_basename($current_dir);
+                $file_info                     = $this->filesystem->get_file_info(wp_basename($current_dir), $abs_path);
                 $files_in_directory[$basename] = $file_info;
             } else {
-                $files_in_directory = $this->get_files_by_path($directory);
+                $files_in_directory = $this->get_files_by_path($current_dir);
             }
 
             if (is_wp_error($files_in_directory)) {
                 return $files_in_directory;
             }
 
-            foreach ($files_in_directory as $key => $file) {
+            $files_count = count($files_in_directory);
+            $files_keys  = array_keys($files_in_directory);
+            for ($file_index = 0; $file_index < $files_count; $file_index++) {
+                $file_key      = $files_keys[$file_index];
+                $file          = $files_in_directory[$file_key];
                 $not_excluded = $this->check_file_against_excludes($file, $excludes);
                 $date_compare = true;
 
@@ -91,35 +119,46 @@ class FileProcessor
                     $not_excluded === false ||
                     $date_compare === false
                 ) {
-                    unset($files_in_directory[$key]);
+                    unset($files_in_directory[$file_key]);
                     continue;
                 }
 
                 //Check for manifest files, don't want those suckers
-                if (preg_match("/(([a-z0-9]+-){5})manifest/", $key)) {
-                    unset($files_in_directory[$key]);
+                if (preg_match("/(([a-z0-9]+-){5})manifest/", $file_key)) {
+                    unset($files_in_directory[$file_key]);
                     continue;
                 }
 
-                $file_size  += $file['size'];
-                $total_size += $file['size'];
-                $manifest[] = $file['subpath'];
+                $file_size        += $file['size'];
+                $total_size      += $file['size'];
+                $manifest[]       = $file['subpath'];
+                $processed_files[] = $file;
+                $count++;
             }
 
-            $filtered_files = $this->filter_folder_data($files_in_directory, $file_size, $directory, $nice_name);
+            $filtered_files = $this->filter_folder_data($processed_files, $file_size, $current_dir, $nice_name);
 
             if (!empty($filtered_files)) {
-                $files[$directory] = $filtered_files;
+                $files[$current_dir] = $filtered_files;
             }
 
-            $count += \count($files_in_directory);
+            if($this->recursive_scanner->is_enabled()) {
+                if ($this->recursive_scanner->reached_bottleneck() || !$this->recursive_scanner->is_scan_complete($current_dir)) {
+                    break;
+                }
+            }
+
+            if($directory >= $dirs_count-1) {
+                $scan_completed = true;
+            }
         }
 
         $return = [
             'meta'  => [
-                'count'    => $count,
-                'size'     => $total_size,
-                'manifest' => $manifest,
+                'count'          => $count,
+                'size'           => $total_size,
+                'manifest'       => $manifest,
+                'scan_completed' => $scan_completed
             ],
             'files' => $files,
         ];
@@ -221,7 +260,12 @@ class FileProcessor
     public function get_files_by_path($directory)
     {
         // @TODO potentially filter this list
-        $files = $this->filesystem->scandir_recursive($directory);
+        if($this->recursive_scanner->is_enabled()) {
+            $this->recursive_scanner->initialize($directory);
+            $files = $this->recursive_scanner->scan($directory);
+        } else {
+            $files = $this->filesystem->scandir_recursive($directory);
+        }
 
         if (is_wp_error($files)) {
             return $this->http->end_ajax($files);
