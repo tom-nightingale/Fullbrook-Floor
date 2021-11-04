@@ -8,6 +8,7 @@ use DeliciousBrains\WPMDB\Common\Http\WPMDBRestAPIServer;
 use DeliciousBrains\WPMDB\Common\Migration\MigrationHelper;
 use DeliciousBrains\WPMDB\Common\Plugin\Assets;
 use DeliciousBrains\WPMDB\Common\Plugin\PluginManagerBase;
+use DeliciousBrains\WPMDB\Common\Profile\ProfileManager;
 use DeliciousBrains\WPMDB\Common\Properties\Properties;
 use DeliciousBrains\WPMDB\Common\Filesystem\Filesystem;
 use DeliciousBrains\WPMDB\Common\Http\Http;
@@ -58,7 +59,8 @@ class ProPluginManager extends PluginManagerBase
         WPMDBRestAPIServer $rest_API_server,
         Helper $http_helper,
         TemplateBase $template,
-        Notice $notice
+        Notice $notice,
+        ProfileManager $profile_manager
     ) {
         parent::__construct(
             $settings,
@@ -73,7 +75,8 @@ class ProPluginManager extends PluginManagerBase
             $rest_API_server,
             $http_helper,
             $template,
-            $notice
+            $notice,
+            $profile_manager
         );
 
         $this->addon    = $addon;
@@ -431,6 +434,10 @@ class ProPluginManager extends PluginManagerBase
                 $plugin_response->id          = '0';
                 $plugin_response->plugin      = $plugin_basename;
 
+                if (isset($upgrade_data['icon_url'])) {
+                    $plugin_response->icons['svg'] = $upgrade_data['icon_url'];
+                }
+
                 if (isset($upgrade_data['requires_php'])) {
                     $plugin_response->requires_php = $upgrade_data['requires_php'];
                 }
@@ -482,7 +489,7 @@ class ProPluginManager extends PluginManagerBase
     }
 
     /**
-     * Adds settings link to plugin page
+     * Adds profiles and settings links to plugin page
      *
      * @param array $links
      *
@@ -490,10 +497,12 @@ class ProPluginManager extends PluginManagerBase
      */
     function plugin_action_links($links)
     {
-        $link = sprintf('<a href="%s">%s</a>', network_admin_url($this->props->plugin_base) . '#settings', _x('Settings', 'Plugin configuration and preferences', 'wp-migrate-db'));
-        array_unshift($links, $link);
+        $start_links = array(
+            'profiles'   => sprintf('<a href="%s">%s</a>', network_admin_url($this->props->plugin_base) , __('Migrate', 'wp-migrate-db')),
+            'settings'   => sprintf('<a href="%s">%s</a>', network_admin_url($this->props->plugin_base) . '#settings', _x('Settings', 'Plugin configuration and preferences', 'wp-migrate-db'))
+        );
 
-        return $links;
+        return $start_links + $links;
     }
 
     /**

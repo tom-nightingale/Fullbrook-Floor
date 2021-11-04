@@ -4,7 +4,7 @@ Plugin Name: WP Migrate DB Pro Media Files
 Plugin URI: https://deliciousbrains.com/wp-migrate-db-pro/
 Description: An extension to WP Migrate DB Pro, allows the migration of media files.
 Author: Delicious Brains
-Version: 2.0.2
+Version: 2.1.0
 Author URI: https://deliciousbrains.com
 Network: True
 */
@@ -25,7 +25,7 @@ defined( 'ABSPATH' ) || exit;
 require_once 'version.php';
 $GLOBALS['wpmdb_meta']['wp-migrate-db-pro-media-files']['folder'] = basename(plugin_dir_path(__FILE__));
 
-const WPMDB_MF_REQUIRED_CORE_VERSION = '2.0';
+const WPMDB_MF_REQUIRED_CORE_VERSION = '2.2';
 
 function get_mdb_version_mf()
 {

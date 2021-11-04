@@ -134,12 +134,18 @@ class PluginHelper
             'sig'      => 'string',
             'date'     => 'string',
             'timezone' => 'string',
+            'is_cli_migration' => 'int',
         );
 
         $_POST['folders']  = stripslashes($_POST['folders']);
         $_POST['excludes'] = stripslashes($_POST['excludes']);
 
         $state_data = Persistence::setRemotePostData($key_rules, __METHOD__);
+
+        // Check for CLI migration and skip enabling recursive scanner if necessary.
+        if (!isset($state_data['is_cli_migration']) || 0 === (int)$state_data['is_cli_migration']) {
+            Util::enable_scandir_bottleneck();
+        }
 
         $filtered_post = $this->http_helper->filter_post_elements(
             $state_data,
@@ -149,9 +155,9 @@ class PluginHelper
                 'folders',
                 'excludes',
                 'stage',
+                'is_cli_migration'
             )
         );
-
         $verification = $this->http_helper->verify_signature($filtered_post, $this->settings['key']);
 
         if (!$verification) {
@@ -182,10 +188,6 @@ class PluginHelper
 
         if ('media_files' === $stage) {
             $folders = apply_filters('wpmdb_mf_remote_uploads_folder', $folders, $state_data);
-        }
-
-        if (empty($folders)) {
-            return $this->http->end_ajax(new \WP_Error('wpmdb_empty_folder_list', __('Empty folder path provided.', 'wp-migrate-db')));
         }
 
         $items = $folders;
@@ -310,7 +312,9 @@ class PluginHelper
             'intent'          => 'string',
             'folders'         => 'array',
             'theme_folders'   => 'array',
+            'themes_option'   => 'string',
             'plugin_folders'  => 'array',
+            'plugins_option'  => 'string',
             'sig'             => 'string',
         );
 

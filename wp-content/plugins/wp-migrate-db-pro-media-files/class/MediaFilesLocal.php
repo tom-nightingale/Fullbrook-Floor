@@ -159,6 +159,7 @@ class MediaFilesLocal
             'stage'              => 'string',
             'date'               => 'string',
             'timezone'           => 'string',
+            'is_cli_migration'   => 'int'
         );
 
         $state_data = Persistence::setPostData($key_rules, __METHOD__);
@@ -176,7 +177,9 @@ class MediaFilesLocal
         $this->transfer_util->cleanup_temp_chunks(WP_CONTENT_DIR . DIRECTORY_SEPARATOR, 'tmpchunk');
 
         //Bottleneck files scanning
-        Files_Util::enable_scandir_bottleneck();
+        if (empty($state_data['is_cli_migration'])) {
+            Files_Util::enable_scandir_bottleneck();
+        }
 
         //State data populated
         $folder   = $state_data['folder'];
@@ -321,7 +324,7 @@ class MediaFilesLocal
         $datetime = new \DateTime();
         $newdate  = $datetime->format(\DateTime::ATOM);
 
-        $profile_data->media_files->date = $newdate;
+        $profile_data->media_files->last_migration = $newdate;
 
         $profile_type   = $option === 'unsaved' ? 'wpmdb_recent_migrations' : 'wpmdb_saved_profiles';
         $saved_profiles = get_site_option($profile_type);

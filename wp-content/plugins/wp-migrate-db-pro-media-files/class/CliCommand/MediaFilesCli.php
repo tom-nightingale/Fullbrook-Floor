@@ -250,14 +250,19 @@ class MediaFilesCli extends \DeliciousBrains\WPMDBMF\MediaFilesAddon
             'date'               => null,
             'timezone'           => $tz->getName(),
             'stage'              => 'media_files',
+            'is_cli_migration'   => 1,
         ];
 
         if (!empty($mf_options['excludes'])) {
             $_POST['excludes'] = json_encode($mf_options['excludes']);
         }
 
-        if ('all' !== $mf_options['option'] && isset($mf_options['date'])) {
+        if ('new' === $mf_options['option'] && ! empty($mf_options['date'])) {
             $_POST['date'] = $mf_options['date'];
+        }
+
+        if ('new_subsequent' === $mf_options['option'] && ! empty($mf_options['last_migration'])) {
+            $_POST['date'] = $mf_options['last_migration'];
         }
 
         $response = $this->media_files_local->ajax_initiate_media_file_migration();

@@ -33,7 +33,6 @@ class MediaFilesRemote {
      */
     public function respond_to_get_remote_media()
     {
-        Util::enable_scandir_bottleneck();
         return $this->plugin_helper->respond_to_get_remote_folders('media_files');
     }
 
