@@ -531,7 +531,8 @@
 
 		public function exclude_page($buffer = false){
 			$preg_match_rule = "";
-			$request_url = urldecode(trim($_SERVER["REQUEST_URI"], "/"));
+			//$request_url = urldecode(trim($_SERVER["REQUEST_URI"], "/"));
+			$request_url = urldecode($_SERVER["REQUEST_URI"]);
 
 			if($this->exclude_rules){
 
@@ -544,18 +545,24 @@
 						}
 					}else if(isset($value->prefix) && $value->prefix && ($value->type == "page")){
 						$value->content = trim($value->content);
-						$value->content = trim($value->content, "/");
+						//$value->content = trim($value->content, "/");
 
 						if($buffer && preg_match("/^(homepage|category|tag|post|page|archive|attachment)$/", $value->prefix)){
 							if(preg_match('/<\!--WPFC_PAGE_TYPE_'.$value->prefix.'-->/i', $buffer)){
 								return true;
 							} 
 						}else if($value->prefix == "exact"){
+							$request_url = trim($request_url, "/");
+							$value->content = trim($value->content, "/");
+
 							if(strtolower($value->content) == strtolower($request_url)){
 								return true;	
 							}
 						}else{
 							if($value->prefix == "startwith"){
+								$request_url = ltrim($request_url, "/");
+								$value->content = ltrim($value->content, "/");
+
 								$preg_match_rule = "^".preg_quote($value->content, "/");
 							}else if($value->prefix == "contain"){
 								$preg_match_rule = preg_quote($value->content, "/");
@@ -654,7 +661,8 @@
 				return true;
 			}
 
-			if(preg_match("/<body id\=\"error-page\">\s*<p>[^\>]+<\/p>\s*<\/body>/i", $buffer)){
+			//to exclude "There has been a critical error on this website" page
+			if(preg_match("/<body\sid\=\"error-page\">\s*<div\sclass\=\"wp-die-message\">/i", $buffer)){
 				return true;
 			}
 		}
@@ -678,6 +686,12 @@
 					return $buffer."<!-- DONOTCACHEPAGE is defined as TRUE -->";
 				}
 			}
+
+			// for Divi Theme
+			if(defined('DONOTCACHEPAGE') && (get_template() == "Divi")){
+				return $buffer."<!-- DONOTCACHEPAGE is defined as TRUE -->";
+			}
+
 
 			if($this->exclude_page($buffer)){
 				$buffer = preg_replace('/<\!--WPFC_PAGE_TYPE_[a-z]+-->/i', '', $buffer);	
@@ -838,6 +852,14 @@
 					$content = $this->cdn_rewrite($content);
 
 					$content = $this->fix_pre_tag($content, $buffer);
+
+					if(preg_match("/<link[^\>]+href\s*\=\s*[\'\"][^\"\']+\.\.[\"\'][^\>]+>/", $content)){
+						/*
+						to check that resources have been successfully optimized
+						<link rel='stylesheet'  href='//site.com/wp-content/cache/wpfc-minified/895p0t5d/..' media='all' />
+						*/
+						return $buffer."<!-- Cache has NOT been created due to optimized resource -->";
+					}
 
 					if($this->cacheFilePath){
 						if($this->is_html()){

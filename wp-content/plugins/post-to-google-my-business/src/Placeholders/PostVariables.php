@@ -9,9 +9,11 @@ use PGMB\Vendor\Html2Text\Html2Text;
 class PostVariables implements VariableInterface {
 
 	private $post_id;
+	private $do_links;
 
-	public function __construct( $post_id ) {
+	public function __construct( $post_id, $do_links = 'inline' ) {
 		$this->post_id = $post_id;
+		$this->do_links = $do_links;
 	}
 
 
@@ -22,6 +24,7 @@ class PostVariables implements VariableInterface {
 			$text,
 			array(
 				'width'    => 0,
+				'do_links'  => $this->do_links
 			)
 		);
 		$text = $parse_html->getText();

@@ -329,9 +329,9 @@
 				var b_end = "</b>"
 
 				if(prefix == "exact"){
-					request_uri = b_start + content + b_end;
+					request_uri = b_start + content.replace(/^\//, "") + b_end;
 				}else if(prefix == "startwith"){
-					request_uri = b_start + content + b_end + '(.*)';
+					request_uri = b_start + content.replace(/^\//, "") + b_end + '(.*)';
 				}else if(prefix == "contain"){
 					request_uri = '(.*)' + b_start + content + b_end + '(.*)';
 				}else if(prefix == "homepage"){
@@ -445,7 +445,7 @@
 
 						content = self.remove_host_name(content);
 
-						content = content.replace(/^\/|\/$/g, '');
+						//content = content.replace(/^\/|\/$/g, '');
 
 						if(self.is_empty_values(prefix, content)){
 							self.add_line(number + 1, {"prefix" : prefix, "content" : content, "type" : type});
@@ -546,7 +546,7 @@
 		remove_host_name: function(content){
 			//to replace the urls which start with http:// or www. or with Host_Name
 			content = content.replace(new RegExp('.*' + location.hostname.replace(/www\./, "") + "\/", "gi"), "");
-			content = content.replace(/\/$/, "");
+			//content = content.replace(/\/$/, "");
 
 			return content;
 		},

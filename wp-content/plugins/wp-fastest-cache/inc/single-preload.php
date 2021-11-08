@@ -101,9 +101,9 @@
 	            $res = array("success" => true);
 
 	            if(get_option("WpFastestCache_autocache")){
-	                update_option("WpFastestCache_autocache", $_POST["is_enable"]);
+	                update_option("WpFastestCache_autocache", sanitize_text_field($_POST["is_enable"]));
 	            }else{
-	                add_option("WpFastestCache_autocache", $_POST["is_enable"], null, "yes");
+	                add_option("WpFastestCache_autocache", sanitize_text_field($_POST["is_enable"]), null, "yes");
 	            }
 
 	            wp_send_json($res);
@@ -114,7 +114,8 @@
 
 		public static function set_id(){
 			if(isset($_GET["post"]) && $_GET["post"]){
-				static::$id = esc_sql($_GET["post"]);
+				
+				static::$id = (int) $_GET["post"];
 
 				if(get_post_status(static::$id) != "publish"){
 					static::$id = 0;

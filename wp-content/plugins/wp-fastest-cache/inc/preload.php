@@ -143,7 +143,7 @@
 
 			foreach ($total as $key => $value) {
 				$pre_load->$key = $pre_load->$key == -1 ? $value : $pre_load->$key;
-				echo $key.": ".$pre_load->$key."/".$value."<br>";
+				echo esc_html($key).": ".esc_html($pre_load->$key)."/".esc_html($value)."<br>";
 			}
 		}
 
@@ -487,7 +487,7 @@
 
 
 
-						echo $status." ".$arr["url"]." (".$arr["user-agent"].")<br>";
+						echo $status." ".esc_html($arr["url"])." (".esc_html($arr["user-agent"]).")<br>";
 					}
 					echo "<br>";
 					echo count($urls)." page have been cached";

@@ -26,7 +26,7 @@ class GoogleAPIError extends Exception {
 			}
 
 			foreach($detail->errorDetails as $errorDetail){
-				$this->googlemessage .= "\n['.(int)$errorDetail->code.']" .
+				$this->googlemessage .= "\n[".(int)$errorDetail->code."]" .
 				                        (string)$errorDetail->message.
 				                        ' Field: '.(string)$errorDetail->field.
 										' Value: '.(string)$errorDetail->value;

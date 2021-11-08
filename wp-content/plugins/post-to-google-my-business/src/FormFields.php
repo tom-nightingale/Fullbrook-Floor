@@ -31,6 +31,7 @@ class FormFields
         'mbp_selected_location' => array(),
         'mbp_content_image'     => false,
         'mbp_featured_image'    => true,
+        'mbp_link_parsing_mode' => 'inline',
     ) ;
     public static function default_autopost_fields()
     {

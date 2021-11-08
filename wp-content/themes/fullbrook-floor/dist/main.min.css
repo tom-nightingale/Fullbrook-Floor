@@ -20535,12 +20535,12 @@ figure {
   background-blend-mode: multiply;
 }
 
-.carousel-item {
+.hero-carousel-item {
   opacity: 0;
   transition: all .6s;
 }
 
-.carousel-item.active {
+.hero-carousel-item.active {
   opacity: 1;
 }
 

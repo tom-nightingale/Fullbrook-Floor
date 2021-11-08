@@ -153,15 +153,25 @@ button:focus {outline:0;}
     opacity: 0.25;
 }
 
-.buttons-blood {
-    background-color: red;
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAABaCAIAAAAU4rCTAAACEElEQVQ4EQXBMQElSwFFwTrzerGABGI8YAULJFjAExkuyJHwd/dNX6r63z/+TgKF/vvXPwMAzoCBRudONhpiZ7uTjLbZ2bANEs6FWZhL596BAexcbACxc+/AiLHzbjEy4NytWQLj3M0Yaca5FyPDpvPugsHSzr0EI3Odd9cCwM47mcES594pm7hw7t1iE+D8vlcZJnS+s3tRXLPz+70AI5zvexWzmHbeOyZstM53WAOsnXcXjZA5G3YnsXHuhtgGnM/zAAD641//1KOUovP7P/8GAJw7DMRwdu+KwVadd7OBgZ27CwKzzvdiLIF77l4LjNF5343aRrLz3WyINeu898KIsZ33vTQD4vy+y6UR47z3xdQGOd87w8Bwvu+FTcGc73vBlMH5fa8tQOy872UEhvN931Exmp2f7wsY2Zw/fn1VYBvOz++LGJp1fn6/CAycX9/LZBM4v96vESPm/P5eBrFwvvfd0gBzvu+4CjacH08EKPS3PwEw4vzlsGYxygkt2Sp2niJWDTofaSCwc54wYuQ5nyeQYXROCAp0Tg8ymcd2fjwxHmHW+fHJTEhyPlIMxM6TshWLdT5PRsYTOR9kqlnsPE9GmaLORxqEtPNUWrMnW53PY7R6GDoPEBI6T8UgNOehECyP83kiZnmG82iowOo8gZHp4VTGM6tG52GplpachxVC2Klilmbp/Pg8AID/A42AjXF48qy/AAAAAElFTkSuQmCC') !important;
+.buttons-blood, .buttons-orange, .buttons-start{
     background-repeat: repeat-x;
     border: 1px solid #333 !important;
     color: #fff;
     text-shadow: 0 1px 0 #000 !important;
     float: left;
     font-weight: bold;
+}
+
+.buttons-blood {
+    background-image:url("../images/button-back-blood.png") !important;
+}
+
+.buttons-orange {
+    background-image:url("../images/button-back-fire.png") !important;
+}
+
+.buttons-start {
+    background-image:url("../images/button-back-green.png") !important;
 }
 
 .wpfc-green-button {

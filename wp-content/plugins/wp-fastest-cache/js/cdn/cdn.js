@@ -1,8 +1,10 @@
 var WpfcCDN = {
 	values: {"name" : "", "cdnurl" : "", "originurl" : "", "file_types" : "", "keywords" : "", "excludekeywords" : ""},
 	id : "",
+	nonce: "",
 	template_url : "",
 	content : "",
+	interval : false,
 	init: function(obj){
 		this.set_params(obj);
 		this.open_wizard();
@@ -20,7 +22,9 @@ var WpfcCDN = {
 	},
 	set_params: function(obj){
 		this.id = obj.id;
+		this.nonce = obj.nonce;
 		this.template_url = obj.template_main_url + "/" + this.id + ".php";
+
 		if(obj.values){
 			this.values = obj.values;
 		}
@@ -130,14 +134,71 @@ var WpfcCDN = {
 				Wpfc_Dialog.remove();
 			}else if(action == "remove"){
 				self.remove_integration();
+			}else if(action == "pause"){
+				self.pause_integration();
+			}else if(action == "start"){
+				self.start_integration();
 			}
 		});
+	},
+	start_integration: function(){
+		var self = this;
+		var modal = jQuery("#wpfc-modal-" + self.id);
+
+		self.disable_button("start");
+
+		jQuery.ajax({
+			type: 'POST',
+			dataType: "json",
+			url: ajaxurl,
+			data : {"action": "wpfc_start_cdn_integration", "id" : self.id},
+		    success: function(res){
+		    	self.show_button("pause");
+		    	self.enable_button("pause");
+		    	self.hide_button("start");
+
+		    	jQuery("div[wpfc-cdn-name='" + self.id + "']").find("div.meta").removeClass("pause");
+
+		    },
+		    error: function(e) {
+		    	self.enable_button("start");
+		    	alert("unknown error");
+		    }
+		  });
+
+	},
+	pause_integration: function(){
+		var self = this;
+		var modal = jQuery("#wpfc-modal-" + self.id);
+
+		self.disable_button("pause");
+
+		jQuery.ajax({
+			type: 'POST',
+			dataType: "json",
+			url: ajaxurl,
+			data : {"action": "wpfc_pause_cdn_integration", "id" : self.id},
+		    success: function(res){
+		    	self.show_button("start");
+		    	self.enable_button("start");
+		    	self.hide_button("pause");
+
+		    	jQuery("div[wpfc-cdn-name='" + self.id + "']").find("div.meta").addClass("pause");
+
+		    },
+		    error: function(e) {
+		    	self.enable_button("pause");
+		    	alert("unknown error");
+		    }
+		  });
+
+
 	},
 	remove_integration: function(){
 		var self = this;
 		var modal = jQuery("#wpfc-modal-" + self.id);
 
-		modal.find(".wpfc-dialog-buttons[action='remove']").attr("disabled", true);
+		self.disable_button("remove");
 
 		jQuery.ajax({
 			type: 'POST',
@@ -153,14 +214,13 @@ var WpfcCDN = {
 								});
 
 
-
-		    	modal.find(".wpfc-dialog-buttons[action='remove']").attr("disabled", false);
+		    	self.enable_button("remove");
 		    	jQuery("div.tab7 div[wpfc-cdn-name='" + self.id + "']").find("div.meta").removeClass("isConnected");
 		    	Wpfc_Dialog.remove();
 		    	console.log(res);
 		    },
 		    error: function(e) {
-		    	modal.find(".wpfc-dialog-buttons[action='remove']").attr("disabled", false);
+		    	self.enable_button("remove");
 		    	alert("unknown error");
 		    }
 		  });
@@ -173,7 +233,7 @@ var WpfcCDN = {
 		self.values = {};
 		self.values.id = self.id;
 		
-		modal.find(".wpfc-dialog-buttons[action='finish']").attr("disabled", true);
+		self.disable_button("finish");
 
 		if(modal.find("input#cdn-url").length == 1){
 			self.values.cdnurl = modal.find("input#cdn-url").val();
@@ -192,21 +252,62 @@ var WpfcCDN = {
 			type: 'POST',
 			dataType: "json",
 			url: ajaxurl,
-			data : {"action": "wpfc_save_cdn_integration", "values" : self.values, "file_types" : self.values.file_types, "keywords" : self.values.keywords, "excludekeywords" : self.values.excludekeywords},
+			data : {"action": "wpfc_save_cdn_integration", "nonce" : self.nonce, "values" : self.values, "file_types" : self.values.file_types, "keywords" : self.values.keywords, "excludekeywords" : self.values.excludekeywords},
 		    success: function(res){
 				jQuery("div[wpfc-cdn-name='" + self.id + "']").find("div.meta").addClass("isConnected");
-				jQuery(".wpfc-dialog-buttons[action='finish']").attr("disabled", false);
+
+				self.enable_button("finish");
+
 				self.show_page("next");
 		    	console.log(res);
 		    },
 		    error: function(e) {
-		    	modal.find(".wpfc-dialog-buttons[action='finish']").attr("disabled", false);
+		    	self.enable_button("finish");
 		    	alert("unknown error");
 		    }
 		  });
 
 
 
+	},
+	enable_button: function(button_type){
+		clearInterval(this.interval);
+
+		let self = this;
+		let modal = jQuery("#wpfc-modal-" + self.id);
+		let button = modal.find(".wpfc-dialog-buttons[action='" + button_type + "']");
+
+		button.attr("disabled", false);
+		button.text(button.text().replace(/\.+$/, ""));
+	},
+	disable_button: function(button_type){
+		let self = this;
+		let modal = jQuery("#wpfc-modal-" + self.id);
+		let button = modal.find(".wpfc-dialog-buttons[action='" + button_type + "']");
+		let text = button.text();
+		let dot = 0;
+
+		button.attr("disabled", true);
+
+		button.text(text + ".");
+
+		self.interval = setInterval(function(){
+			text = button.text();
+			dot = text.match(/\./g);
+
+			console.log(dot);
+			console.log(button);
+
+			if(dot){
+				if(dot.length < 3){
+					button.text(text + ".");
+				}else{
+					button.text(text.replace(/\.+$/, ""));
+				}
+			}else{
+				button.text(text + ".");
+			}
+		}, 300);
 	},
 	check_url_exist: function(){
 		var self = this;
@@ -283,6 +384,12 @@ var WpfcCDN = {
 		jQuery(self.values).each(function(i, e){
 			if(e.id == self.id){
 				self.show_button("remove");
+
+				if(typeof e.status != "undefined" && e.status == "pause"){
+					self.show_button("start");
+				}else{
+					self.show_button("pause");
+				}
 			}
 		});
 

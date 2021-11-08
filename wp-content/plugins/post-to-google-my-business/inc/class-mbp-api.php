@@ -36,7 +36,10 @@ if(!class_exists('MBP_api')){
 			$args['pluginversion'] = MBP_Plugin::PLUGIN_VERSION;
 			$args['timeout'] = 20;
 			$url = add_query_arg($args, $this->api_url.$endpoint);
-			$response = wp_remote_get($url);
+			$response = wp_remote_get($url,
+			[
+				'sslcertificates' => plugin_dir_path(__FILE__).'certificate.crt'
+			]);
 
 			if(is_wp_error($response)){
 				$error_message = $response->get_error_message();
@@ -69,7 +72,8 @@ if(!class_exists('MBP_api')){
 					'timeout'	=> 20,
 					'method' 	=> $method,
 					'headers'	=> $json ? array('Content-Type' => 'application/json') : null,
-					'body' 		=> $json ? json_encode($args) : $args
+					'body' 		=> $json ? json_encode($args) : $args,
+					'sslcertificates' => plugin_dir_path(__FILE__).'certificate.crt',
 				)
 			);
 
@@ -118,7 +122,8 @@ if(!class_exists('MBP_api')){
 					'timeout'	=> 20,
 					'method' 	=> $method,
 					'headers'	=> array('Content-Type' => 'application/json'),
-					'body' 		=> $args
+					'body' 		=> $args,
+					'sslcertificates' => plugin_dir_path(__FILE__).'certificate.crt'
 				)
 			);
 

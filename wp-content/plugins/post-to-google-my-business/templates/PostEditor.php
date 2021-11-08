@@ -496,10 +496,67 @@ if ( $this instanceof \PGMB\Components\PostEditor ) {
     ?></span>
                             </td>
                         </tr>
+                        <tr class='mbp-whatsnew-field mbp-product-field mbp-offer-field mbp-event-field'>
+                            <th>
+		                        <?php 
+    _e( 'Links', 'post-to-google-my-business' );
+    ?>
+                            </th>
+                            <td>
+                                <label><input type='radio'
+                                              name='<?php 
+    echo  $this->fieldName ;
+    ?>[mbp_link_parsing_mode]'
+                                              value='none'
+                                              <?php 
+    checked( $this->fields['mbp_link_parsing_mode'], 'none' );
+    ?> /> <?php 
+    _e( 'Hide', 'post-to-google-my-business' );
+    ?>
+                                </label><br />
+                                <label><input type='radio'
+                                              name='<?php 
+    echo  $this->fieldName ;
+    ?>[mbp_link_parsing_mode]'
+                                              value='inline'
+                                              <?php 
+    checked( $this->fields['mbp_link_parsing_mode'], 'inline' );
+    ?> /> <?php 
+    _e( 'Inline', 'post-to-google-my-business' );
+    ?>
+                                </label><br />
+                                <label><input type='radio'
+                                              name='<?php 
+    echo  $this->fieldName ;
+    ?>[mbp_link_parsing_mode]'
+                                              value='nextline'
+                                              <?php 
+    checked( $this->fields['mbp_link_parsing_mode'], 'nextline' );
+    ?> /> <?php 
+    _e( 'Next line', 'post-to-google-my-business' );
+    ?>
+                                </label><br />
+                                <label><input type='radio'
+                                              name='<?php 
+    echo  $this->fieldName ;
+    ?>[mbp_link_parsing_mode]'
+                                              value='table'
+                                              <?php 
+    checked( $this->fields['mbp_link_parsing_mode'], 'table' );
+    ?> /> <?php 
+    _e( 'Table of links (at the end of the post)', 'post-to-google-my-business' );
+    ?>
+                                </label>
+                                <br/><span
+                                        class='description'><?php 
+    _e( 'How the plugin should handle links in the content (when using %post_content%)', 'post-to-google-my-business' );
+    ?></span>
+                            </td>
+                        </tr>
                     </table>
                     <?php 
     
-    if ( mbp_fs()->is_not_paying() ) {
+    if ( !mbp_fs()->can_use_premium_code() ) {
         ?>
                         <br/>
                         <?php 

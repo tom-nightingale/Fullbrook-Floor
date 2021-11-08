@@ -727,7 +727,7 @@
 			}
 
 			if(isset($_POST["wpFastestCacheMobile"]) && $_POST["wpFastestCacheMobile"] == "on"){
-				$mobile = "RewriteCond %{HTTP_USER_AGENT} !^.*(".$this->getMobileUserAgents().").*$ [NC]"."\n";
+				$mobile = "RewriteCond %{HTTP_USER_AGENT} !^.*".$this->getMobileUserAgents().".*$ [NC]"."\n";
 
 				if(isset($_SERVER['HTTP_CLOUDFRONT_IS_MOBILE_VIEWER'])){
 					$mobile = $mobile."RewriteCond %{HTTP_CLOUDFRONT_IS_MOBILE_VIEWER} false [NC]"."\n";
@@ -921,8 +921,8 @@
 				
 				$htaccess = preg_replace("/\n+/","\n", $htaccess);
 
-				echo "<noscript id='wpfc-htaccess-data'>".$htaccess."</noscript>";
-				echo "<noscript id='wpfc-htaccess-path-data'>".$path.".htaccess"."</noscript>";
+				echo "<noscript id='wpfc-htaccess-data'>".esc_html($htaccess)."</noscript>";
+				echo "<noscript id='wpfc-htaccess-path-data'>".esc_html($path).".htaccess"."</noscript>";
 				?>
 				<script type="text/javascript">
 					jQuery(document).ready(function(){
@@ -1031,8 +1031,8 @@
 							}else if((isset($_POST["wpFastestCachePage"])) && ("wpfc-".$_POST["wpFastestCachePage"] == $value["id"])){
 								$checked = ' checked="checked" ';
 							}
-							echo '<input '.$checked.' type="radio" id="'.$value["id"].'" name="tabGroup1" style="display:none;">'."\n";
-							echo '<label for="'.$value["id"].'">'.$value["title"].'</label>'."\n";
+							echo '<input '.esc_html($checked).' type="radio" id="'.esc_html($value["id"]).'" name="tabGroup1" style="display:none;">'."\n";
+							echo '<label for="'.esc_html($value["id"]).'">'.esc_html($value["title"]).'</label>'."\n";
 						}
 					?>
 				    <br>
@@ -1465,6 +1465,9 @@
 				   		<div class="exclude_section_clear" style=" margin-left: 3%; width: 95%; margin-bottom: 20px; margin-top: 0;"><div></div></div>
 
 				   		<h2 id="delete-cache-h2" style="padding-left:20px;padding-bottom:10px;"><?php _e("Delete Cache", "wp-fastest-cache"); ?></h2>
+
+				   		<?php //include_once(WPFC_MAIN_PATH."templates/cache_path.php"); ?>
+
 				    	<form method="post" name="wp_manager" class="delete-line" action="options.php">
 							<?php settings_fields( 'wpfc-group' ); ?>
 				    		<input type="hidden" value="deleteCache" name="wpFastestCachePage">
@@ -1979,7 +1982,12 @@
 						    				if($cdn_value->id == "amazonaws" || $cdn_value->id == "keycdn" || $cdn_value->id == "cdn77"){
 						    					$cdn_value->id = "other";
 						    				}
-						    				?>jQuery("div[wpfc-cdn-name='<?php echo $cdn_value->id;?>']").find("div.meta").addClass("isConnected");<?php
+
+						    				if(isset($cdn_value->status) && $cdn_value->status == "pause"){
+						    					?>jQuery("div[wpfc-cdn-name='<?php echo $cdn_value->id;?>']").find("div.meta").addClass("isConnected pause");<?php
+						    				}else{
+						    					?>jQuery("div[wpfc-cdn-name='<?php echo $cdn_value->id;?>']").find("div.meta").addClass("isConnected");<?php
+						    				}
 					    				}
 					    			}
 					    		?>
@@ -2003,7 +2011,8 @@
 
 											WpfcCDN.init({"id" : jQuery(e.currentTarget).attr("wpfc-cdn-name"),
 							    				"template_main_url" : "<?php echo plugins_url('wp-fastest-cache/templates/cdn'); ?>",
-							    				"values" : data
+							    				"values" : data,
+							    				"nonce" : "<?php echo wp_create_nonce("cdn-nonce"); ?>"
 							    			});
 
 

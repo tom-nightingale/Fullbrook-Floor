@@ -40,7 +40,7 @@
   const carouselRene = document.querySelector('.carousel-2');
 
   if (carousel) {
-    var slides = document.querySelectorAll('.carousel-item');
+    var slides = document.querySelectorAll('.hero-carousel-item');
 
     var totalSlides = slides.length;
     var currentSlide = 0;

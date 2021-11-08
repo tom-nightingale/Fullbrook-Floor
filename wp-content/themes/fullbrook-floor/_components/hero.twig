@@ -1,16 +1,16 @@
 {% if front_page %}
 
-<div class="relative w-full bg-white lg:mt-32 xl:mt-30 lg:min-h-96 xl:min-h-128 2xl:min-h-160">
+<div class="w-full bg-white lg:mt-32 xl:mt-30 lg:min-h-96 xl:min-h-128 2xl:min-h-160">
 
-    <div class="w-full h-full carousel">
+    <div class="relative w-full h-full carousel min-h-96 lg:min-h-128 2xl:min-h-160">
 
-      {% for image in post.meta('hero_carousel') %}    
+      {% for item in post.meta('hero_carousel') %}    
 
-        <div class="absolute top-0 left-0 z-0 w-full carousel-item">
+        <div class="absolute top-0 left-0 z-0 flex items-center justify-start w-full h-full hero-carousel-item">
       
           {% include "_components/picture.twig" with {
-            source: image.url,
-            pictureClasses : 'hero--home',
+            source: item.image.url,
+            pictureClasses : 'absolute top-0 left-0 w-full h-full hero--home',
             breakpoints: {
               "1530px" : {
                 w: 2000,
@@ -61,9 +61,9 @@
               
               <div class="flex flex-col w-full max-w-sm p-8 mx-auto text-center lg:py-16 lg:mx-0 lg:text-left lg:w-6/12">
           
-                <p class="text-2xl leading-snug text-primary-dark lg:text-3xl 2xl:text-4xl">{{image.url}}</p>
+                <p class="text-2xl leading-snug text-primary-dark lg:text-3xl 2xl:text-4xl">{{item.hero_heading}}</p>
           
-                <p class="mt-4 mb-8 leading-snug lg:text-xl 2xl:text-lg text-primary-dark">{{middle_line}}</p>
+                <p class="mt-4 mb-8 leading-snug lg:text-xl 2xl:text-lg text-primary-dark">{{item.hero_subheading}}</p>
           
                 <div>
           

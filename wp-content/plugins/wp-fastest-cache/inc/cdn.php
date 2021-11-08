@@ -281,8 +281,8 @@
 			//admin OR author OR editor
 			if(current_user_can('manage_options') || current_user_can('delete_published_posts') || current_user_can('edit_published_posts')){
 				if(isset($_GET["url"]) && isset($_GET["origin_url"])){
-					$email = $_GET["url"];
-					$key = $_GET["origin_url"];
+					$email = sanitize_text_field($_GET["url"]);
+					$key = sanitize_text_field($_GET["origin_url"]);
 				}
 
 				$zone = CdnWPFC::cloudflare_get_zone_id($email, $key);
@@ -412,6 +412,78 @@
 			}
 		}
 
+		public static function start_cdn_integration(){
+			if(current_user_can('manage_options')){
+    			$cdn_values = get_option("WpFastestCacheCDN");
+
+    			if($cdn_values){
+    				$std_obj = json_decode($cdn_values);
+    				$cdn_values_arr = array();
+
+    				if(is_array($std_obj)){
+						$cdn_values_arr = $std_obj;
+					}else{
+						array_push($cdn_values_arr, $std_obj);
+					}
+
+    				foreach ($cdn_values_arr as $cdn_key => $cdn_value) {
+	    				if($cdn_value->id == "amazonaws" || $cdn_value->id == "keycdn" || $cdn_value->id == "cdn77"){
+	    					$cdn_value->id = "other";
+	    				}
+
+	    				if($cdn_value->id == $_POST["id"]){
+	    					unset($cdn_value->status);
+	    				}
+    				}
+
+    				$cdn_values_arr = array_values($cdn_values_arr);
+    				
+    				update_option("WpFastestCacheCDN", json_encode($cdn_values_arr));
+    			}
+
+				echo json_encode(array("success" => true));
+				exit;
+			}else{
+				wp_die("Must be admin");
+			}
+		}
+
+		public static function pause_cdn_integration(){
+			if(current_user_can('manage_options')){
+    			$cdn_values = get_option("WpFastestCacheCDN");
+
+    			if($cdn_values){
+    				$std_obj = json_decode($cdn_values);
+    				$cdn_values_arr = array();
+
+    				if(is_array($std_obj)){
+						$cdn_values_arr = $std_obj;
+					}else{
+						array_push($cdn_values_arr, $std_obj);
+					}
+
+    				foreach ($cdn_values_arr as $cdn_key => $cdn_value) {
+	    				if($cdn_value->id == "amazonaws" || $cdn_value->id == "keycdn" || $cdn_value->id == "cdn77"){
+	    					$cdn_value->id = "other";
+	    				}
+
+	    				if($cdn_value->id == $_POST["id"]){
+	    					$cdn_value->status = "pause";
+	    				}
+    				}
+
+    				$cdn_values_arr = array_values($cdn_values_arr);
+    				
+    				update_option("WpFastestCacheCDN", json_encode($cdn_values_arr));
+    			}
+
+				echo json_encode(array("success" => true));
+				exit;
+			}else{
+				wp_die("Must be admin");
+			}
+		}
+
 		public static function remove_cdn_integration(){
 			if(current_user_can('manage_options')){
     			$cdn_values = get_option("WpFastestCacheCDN");
@@ -487,12 +559,15 @@
 		}
 
 		public static function save_cdn_integration(){
-			if(current_user_can('manage_options')){
-				if(isset($_POST) && isset($_POST["values"])){
-					foreach ($_POST["values"] as $val_key => &$val_value) {
-						$val_value = sanitize_text_field($val_value);
+			if(current_user_can('manage_options') && wp_verify_nonce($_POST["nonce"], "cdn-nonce")){
+				$values = array();
+
+				if(isset($_POST) && isset($values)){
+					foreach ($_POST["values"] as $val_key => $val_value) {
+						$values[$val_key] = sanitize_text_field($val_value);
 					}
 				}
+
 				
 				if($data = get_option("WpFastestCacheCDN")){
 					$cdn_exist = false;
@@ -500,32 +575,32 @@
 
 					if(is_array($arr)){
 						foreach ($arr as $cdn_key => &$cdn_value) {
-							if($cdn_value->id == $_POST["values"]["id"]){
-								$cdn_value = $_POST["values"];
+							if($cdn_value->id == $values["id"]){
+								$cdn_value = $values;
 								$cdn_exist = true;
 							}
 						}
 
 						if(!$cdn_exist){
-							array_push($arr, $_POST["values"]);	
+							array_push($arr, $values);	
 						}
 
 						update_option("WpFastestCacheCDN", json_encode($arr));
 					}else{
 						$tmp_arr = array();
 						
-						if($arr->id == $_POST["values"]["id"]){
-							array_push($tmp_arr, $_POST["values"]);
+						if($arr->id == $values["id"]){
+							array_push($tmp_arr, $values);
 						}else{
 							array_push($tmp_arr, $arr);
-							array_push($tmp_arr, $_POST["values"]);
+							array_push($tmp_arr, $values);
 						}
 
 						update_option("WpFastestCacheCDN", json_encode($tmp_arr));
 					}
 				}else{
 					$arr = array();
-					array_push($arr, $_POST["values"]);
+					array_push($arr, $values);
 
 					add_option("WpFastestCacheCDN", json_encode($arr), null, "yes");
 				}

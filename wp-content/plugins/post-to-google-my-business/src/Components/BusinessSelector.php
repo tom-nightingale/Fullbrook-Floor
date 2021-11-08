@@ -93,7 +93,10 @@ class BusinessSelector {
 	}
 
 	protected function location_data_column($location) {
-		$addressLines = implode(' - ', (array)$location->address->addressLines);
+		$addressLines = '';
+		if(isset($location->address->addressLines)){
+			$addressLines = implode(' - ', (array)$location->address->addressLines);
+		}
 
 		return sprintf(
 	"<td class=\"mbp-info-container\">
@@ -112,8 +115,8 @@ class BusinessSelector {
 			$location->locationName,
 			isset( $location->metadata->mapsUrl ) ? $location->metadata->mapsUrl : '',
 			$addressLines,
-			$location->address->postalCode,
-			$location->address->locality
+			isset( $location->address->postalCode ) ? $location->address->postalCode : '',
+			isset( $location->address->locality ) ? $location->address->locality : ''
 		);
 	}
 

@@ -37,7 +37,8 @@ if(!class_exists('MBP_Connector')){
 					'body' => array(
 						'post_url' 	=> esc_url(admin_url('admin-post.php')),
 						'nonce'		=> wp_create_nonce('mbp_generate_url')
-					)
+					),
+					'sslcertificates' => plugin_dir_path(__FILE__).'certificate.crt'
 				))
 			);
 

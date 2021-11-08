@@ -5,11 +5,53 @@ var Wpfc_New_Dialog = {
 	clone: "",
 	current_page_number: 1,
 	total_page_number: 0,
+	interval : false,
+	enable_button: function(button_type){
+		clearInterval(this.interval);
+
+		let self = this;
+		let modal = jQuery("#" + self.id);
+		let button = modal.find(".wpfc-dialog-buttons[action='" + button_type + "']");
+
+		button.attr("disabled", false);
+		button.text(button.text().replace(/\.+$/, ""));
+	},
+	disable_button: function(button_type){
+		let self = this;
+		let modal = jQuery("#" + self.id);
+		let button = modal.find(".wpfc-dialog-buttons[action='" + button_type + "']");
+		let text = button.text();
+		let dot = 0;
+
+		button.attr("disabled", true);
+
+		button.text(text + ".");
+
+		self.interval = setInterval(function(){
+			text = button.text();
+			dot = text.match(/\./g);
+
+			console.log(dot);
+			console.log(button);
+
+			if(dot){
+				if(dot.length < 3){
+					button.text(text + ".");
+				}else{
+					button.text(text.replace(/\.+$/, ""));
+				}
+			}else{
+				button.text(text + ".");
+			}
+		}, 300);
+	},
 	dialog: function(id, buttons, callback){
 		var self = this;
 		self.clone = jQuery("div[template-id='" + id + "']").clone();
 
 		self.total_page_number = self.clone.find("div[wpfc-page]").length;
+		self.total_page_number = self.total_page_number > 0 ? self.total_page_number : self.clone.find("div[wpfc-cdn-page]").length;
+
 
 		self.template_id = id;
 		self.id = id + "-" + new Date().getTime();
@@ -107,8 +149,8 @@ var Wpfc_New_Dialog = {
 		this.clone.find("button[action='" + index + "']").hide();
 	},
 	show_page: function(number){
-		this.clone.find("div[wpfc-page]").hide();
-		this.clone.find("div[wpfc-page='" + number + "']").show();
+		this.clone.find("div[wpfc-page], div[wpfc-cdn-page]").hide();
+		this.clone.find("div[wpfc-page='" + number + "'], div[wpfc-cdn-page='" + number + "']").show();
 		this.current_page_number = number;
 	},
 	update_ids_for_label: function(){
