@@ -1,4 +1,4 @@
-<header class="w-full {{ front_page ? 'absolute' : 'border-b-2 border-white bg-primary-dark' }} lg:fixed lg:z-20 lg:top-0 lg:left-0 lg:pt-0">
+<header class="w-full {{ front_page ? 'absolute' : 'bg-primary-darkest' }} z-50 lg:fixed lg:z-20 lg:top-0 lg:left-0 lg:pt-0">
 
   <p class="p-2 text-sm text-center text-white bg-secondary xl:hidden">Find out how much your home is worth today! <span class="inline-block font-bold">Call
     {% include "_components/phone-number.twig" %}</span>
@@ -16,11 +16,9 @@
         {{ function('icon', 'bars') }}<span class="ml-1 font-bold">Menu</span></div>
     </div>    
 
-    
-
     <div class="items-center justify-end lg:flex">
 
-      <nav id="menu-primary" class="hidden menu lg:block">
+      <nav id="menu-primary" class="hidden menu lg:block menu-primary {{front_page ? 'front-page' : '' }}">
         <ul class="flex flex-wrap justify-center w-full menu-primary">
           {% for item in primaryMenu.items %}
           <li class="{{item.class}} {{ item.current ? 'current-menu-item' }}">

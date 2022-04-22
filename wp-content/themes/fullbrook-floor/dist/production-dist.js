@@ -338,13 +338,18 @@
   		// --------------------------------------------------------------------------------------------------
   		// Add icon to menu items with children
   		// --------------------------------------------------------------------------------------------------
+
+  		if(window.scrollY > 50) {
+  			document.querySelector('header').classList.add('active');
+  		}
+
   		$(window).scroll(function() {    
   			var scroll = $(window).scrollTop();
-  			if (scroll > 500) {
-  				$(".header-container").addClass("active");
+  			if (scroll > 100) {
+  				$("header").addClass("active");
   			}
   			else {
-  				$(".header-container").removeClass("active");
+  				$("header").removeClass("active");
   			}
   		});
 
@@ -392,12 +397,14 @@
       }
   }
 
-  var autoScroll = setInterval(function() {
-      if(autoIndex >= 0 && autoIndex <= totalItems) {
-          document.querySelector('.carousel-arrow-right').click();
-      }
-      autoIndex++;
-  }, 5000);
+  if(carouselItems) {
+      var autoScroll = setInterval(function() {
+          if(autoIndex >= 0 && autoIndex <= totalItems) {
+              document.querySelector('.carousel-arrow-right').click();
+          }
+          autoIndex++;
+      }, 5000);
+  }
 
   (function(){if("undefined"!==typeof window&&window.addEventListener){var e=Object.create(null),l,d=function(){clearTimeout(l);l=setTimeout(n,100);},m=function(){},t=function(){window.addEventListener("resize",d,!1);window.addEventListener("orientationchange",d,!1);if(window.MutationObserver){var k=new MutationObserver(d);k.observe(document.documentElement,{childList:!0,subtree:!0,attributes:!0});m=function(){try{k.disconnect(),window.removeEventListener("resize",d,!1),window.removeEventListener("orientationchange",
   d,!1);}catch(v){}};}else document.documentElement.addEventListener("DOMSubtreeModified",d,!1),m=function(){document.documentElement.removeEventListener("DOMSubtreeModified",d,!1);window.removeEventListener("resize",d,!1);window.removeEventListener("orientationchange",d,!1);};},u=function(k){function e(a){if(void 0!==a.protocol)var c=a;else c=document.createElement("a"),c.href=a;return c.protocol.replace(/:/g,"")+c.host}if(window.XMLHttpRequest){var d=new XMLHttpRequest;var m=e(location);k=e(k);d=void 0===

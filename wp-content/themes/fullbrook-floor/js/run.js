@@ -79,13 +79,18 @@
 		// --------------------------------------------------------------------------------------------------
 		// Add icon to menu items with children
 		// --------------------------------------------------------------------------------------------------
+
+		if(window.scrollY > 50) {
+			document.querySelector('header').classList.add('active');
+		}
+
 		$(window).scroll(function() {    
 			var scroll = $(window).scrollTop();
-			if (scroll > 500) {
-				$(".header-container").addClass("active");
+			if (scroll > 100) {
+				$("header").addClass("active");
 			}
 			else {
-				$(".header-container").removeClass("active");
+				$("header").removeClass("active");
 			}
 		});
 

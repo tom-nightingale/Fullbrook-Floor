@@ -45,10 +45,13 @@ function moveCarousel(arrow, arrowClass) {
     }
 }
 
-var autoScroll = setInterval(function() {
-    if(autoIndex >= 0 && autoIndex <= totalItems) {
-        document.querySelector('.carousel-arrow-right').click();
-    }
-    autoIndex++;
-}, 5000);
+if(carouselItems) {
+    var autoScroll = setInterval(function() {
+        if(autoIndex >= 0 && autoIndex <= totalItems) {
+            document.querySelector('.carousel-arrow-right').click();
+        }
+        autoIndex++;
+    }, 5000);
+}
+
 

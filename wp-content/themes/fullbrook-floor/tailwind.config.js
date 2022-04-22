@@ -1,4 +1,5 @@
 module.exports = {
+  content: ["./_views/**/*.twig", "./_components/**/*.twig", './safelist.txt'],
   theme: {
     screens: {
       xs : '480px',
@@ -6,6 +7,9 @@ module.exports = {
       md: '768px',
       lg: '1024px',
       xl: '1280px',
+      "2xl": "1400px",
+      "3xl": "1600px",
+      "4xl": "1900px",
     },
     fontFamily: {
       sans: [
@@ -21,24 +25,20 @@ module.exports = {
       colors: {
         primary: {
           light: '#CDE4F2',
-          default: '#84b8cd',
+          DEFAULT: '#84b8cd',
           dark: '#2a466c', 
-          darkest: '#2d3748',
+          darkest: '#182B44',
         },
         secondary: {
           light: '#cd5480',
-          default: '#b70a4a',
+          DEFAULT: '#b70a4a',
           dark: '#800734',
         },
         tertiary: {
           light: '#cd5480',
-          default: '#b70a4a',
+          DEFAULT: '#b70a4a',
           dark: '#800734',
         },
-      },
-      screens: {
-        '2xl': '1530px',
-        '3xl': '1800px',
       },
       spacing: {
         '27': '6.75rem',
@@ -72,12 +72,8 @@ module.exports = {
       },
     },
   },
-  variants: {
-    boxShadow: ['responsive', 'hover', 'focus', 'group-hover'],
-  },
   plugins: [
-    require('tailwindcss-filters'), // https://github.com/benface/tailwindcss-filters
-    require('tailwindcss-gradients'), //https://github.com/benface/tailwindcss-gradients
+    
   ],
   corePlugins: {
       container: false,

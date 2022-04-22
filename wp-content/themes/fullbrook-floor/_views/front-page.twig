@@ -34,22 +34,84 @@
   
   </main>
 
-  <div class="w-full bg-gray-500 min-h-50">
+  <img src="" data-src="{{theme.link}}/images/full-image.jpg" alt="" class="w-full bg-gray-100 lazyload max-h-[600px] object-center object-cover">  
 
-  </div>
+  <div class="flex flex-wrap justify-between max-w-2xl p-8 mx-auto sm:p-12 lg:py-24">
 
-  <div class="container flex flex-wrap py-12 lg:py-24 lg:justify-between">
+    <div class="w-full sm:w-[47%] bg-primary-darkest mb-8 sm:mb-0 group overflow-hidden">
 
-    <div class="w-full bg-red-100 lg:w-5/12 min-h-50">
+      <div class="w-full h-auto overflow-hidden">
+        <img src="" data-src="{{theme.link}}/images/how-to-sell.jpg" alt="{{site.title}}" class="object-center w-full h-auto overflow-hidden transition duration-500 lazyload group-hover:scale-110">
+      </div>
+
+      <div class="p-8 text-white md:p-12 lg:w-1/2">
+        <p class="mb-2 text-xl">Sell with us</p>
+        <p class="text-sm">We will support, advise and guide you through the entire moving process</p>
+        <a class="inline-block mt-8 btn btn-white" href="{{site.url}}/how-to-sell-a-home">How to sell a home...</a>
+      </div>
       
     </div>
 
-    <div class="w-full bg-red-100 lg:w-5/12 min-h-50">
+    <div class="w-full sm:w-[47%] bg-secondary group overflow-hidden">
+
+      <div class="w-full h-auto overflow-hidden">
+        <img src="" data-src="{{theme.link}}/images/buy-next-home.jpg" alt="{{site.title}}" class="object-center w-full h-auto overflow-hidden transition duration-500 lazyload group-hover:scale-110">
+      </div>
+    
+    
+      <div class="p-8 text-white md:p-12 lg:w-1/2">
+        <p class="mb-2 text-xl">Sell with us</p>
+        <p class="text-sm">We will support, advise and guide you through the entire moving process</p>
+        <a class="inline-block mt-8 btn btn-white text-secondary" href="{{site.url}}/buy-with-us">View properties</a>
+      </div>
     
     </div>
 
   </div>
+
+  <img src="" data-src="{{theme.link}}/images/full-image2.jpg" alt="" class="w-full bg-gray-100 lazyload max-h-[600px] object-center object-cover">
+
+  <div class="max-w-2xl p-8 mx-auto text-center sm:p-12 lg:py-24">
+
+    <div class="mb-4 text-xl text-yellow-500 stars">
+      {{function('icon', 'star', 'mx-1')}}
+      {{function('icon', 'star', 'mx-1')}}
+      {{function('icon', 'star', 'mx-1')}}
+      {{function('icon', 'star', 'mx-1')}}
+      {{function('icon', 'star', 'mx-1')}}
+    </div>
+
+    <p class="max-w-lg mx-auto md:text-lg">&ldquo;We sold our home through Fullbrook and Floor and it was a great experience. Rene was extremely responsive and proactive in helping us secure a quick sale at a good price and was then extremely patient and understanding in managing our buyer during the long journey of us finding our new place. Highly recommend their professional service to anyone looking to sell or buy a property.&rdquo;</p>
+
+    <div class="flex flex-wrap justify-center mt-12 lg:mt-24">
+      {% for logo in options.logos %}
+        <img data-src="{{logo.image.url}}" alt="{{logo.name}}" class="mx-4 max-w-32 lg:max-w-56 lazyload">
+      {% endfor %}
+    </div>
+
+  </div>
   
+  <div class="bg-gray-200">
+    <div class="max-w-2xl p-8 mx-auto text-center sm:p-12 lg:py-24 md:text-lg">
+    
+      <p>Ready to instruct us to market your property?</p>
+
+      <p class="font-bold">Get your property noticed on the most popular platforms</p>
+    
+      <div class="flex flex-wrap justify-center mt-12 lg:mt-24">
+        {% for logo in options.mover_logos %}
+          <img data-src="{{logo.logo.url}}" alt="{{logo.name}}" class="mx-4 max-w-32 lg:max-w-56 lazyload">
+        {% endfor %}
+      </div>
+
+      {% include "_components/btn-free-valuation.twig" with {
+        classes: "btn btn-secondary mt-8 inline-block",
+      } %}
+    
+    </div>
+  </div>
+
+
 {% endblock %}
 
 {% block footer %}

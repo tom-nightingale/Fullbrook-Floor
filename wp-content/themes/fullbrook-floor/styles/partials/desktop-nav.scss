@@ -55,7 +55,7 @@ Desktop Navs **********************************************/
       @apply
         absolute
         top-full
-        w-48
+        w-56
         z-50
         opacity-0
         hidden;
@@ -71,14 +71,25 @@ Desktop Navs **********************************************/
         }
 
         a {
-          @apply text-center block text-sm w-auto text-primary-dark px-4 bg-white bg-opacity-50 rounded-full;
-
-          
-          &:hover {
-            @apply bg-opacity-75;
-          }
+          @apply text-center block text-sm w-auto text-primary-darkest px-4 bg-white rounded-full;
         }
     }
+  }
+}
+
+.menu-primary.front-page {
+  a {
+    @apply text-primary-darkest transition duration-500;
+  }
+}
+
+header.active .menu-primary.front-page {
+  a {
+    @apply text-white;
+  }
+
+  .sub-menu a {
+    @apply text-primary-darkest bg-opacity-100;
   }
 }
 
