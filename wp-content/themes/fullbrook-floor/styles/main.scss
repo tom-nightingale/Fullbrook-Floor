@@ -1,20 +1,20 @@
-@tailwind base;
-@tailwind components;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
 
-@import   'partials/fonts.scss',
-          'partials/core.scss',
-          'partials/buttons.scss',
-          'partials/cookies.scss',
-          'partials/desktop-nav.scss',
-          'partials/forms.scss',
-          'partials/mobile-nav.scss',
-          'partials/cf7.scss',
-          'partials/leaflet.scss',
-          'partials/typography.scss';
+@import 'partials/fonts.scss';
+@import 'partials/core.scss';
+@import 'partials/buttons.scss';
+@import 'partials/cookies.scss';
+@import 'partials/desktop-nav.scss';
+@import 'partials/mobile-nav.scss';
+@import 'partials/forms.scss';
+@import 'partials/cf7.scss';
+@import 'partials/leaflet.scss';
+@import 'partials/typography.scss';
 
-@tailwind utilities;
+@import "tailwindcss/utilities";
 
-// Custom CSS Here
+/* custom CSS */
 .pattern-house {
   background-image: url(../images/pattern-house.svg);
 }
@@ -65,7 +65,7 @@
   @apply object-cover object-center;
 }
 
-// Process steps for valuation page
+/* Process steps for valuation page */
 .process-step {
   @apply relative;
 
@@ -93,7 +93,7 @@
   }
 }
 
-// scroll header classess
+/* scroll header classess */
 @screen lg {
   header .header-container {
     @apply py-6 transition-all duration-300;
@@ -180,25 +180,19 @@
 
     }
 
-    @screen md {
-      @apply w-1/2 p-4;
+    @apply md:w-1/2 md:p-4;
+    @apply lg:w-1/4;
 
       &.input-group {
-        @apply w-full my-0 text-center;
+        @apply md:w-full md:my-0 md:text-center;
 
         ul {
-          @apply flex justify-center;
+          @apply md:flex md:justify-center;
         }
 
         li {
-          @apply mr-6 text-sm;
+          @apply md:mr-6 md:text-sm;
         }
       }
     }
-
-    @screen lg {
-      @apply w-1/4;
-    }
   }
-}
-

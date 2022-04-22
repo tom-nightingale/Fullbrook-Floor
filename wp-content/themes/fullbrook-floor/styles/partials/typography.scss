@@ -14,7 +14,7 @@
   font-style: bold;
 }
 
-// Headings
+/* headings */
 
 h1, .h1,
 h2, .h2,
@@ -54,7 +54,7 @@ h3 {
   }
 }
 
-// Copy
+/* Copy */
 
 .copy {
   h1 + p {
@@ -137,7 +137,7 @@ h3 {
   }
 }
 
-//WP Generated Styles 
+/* WP Generated */
 
 figure {
   @apply max-w-full;

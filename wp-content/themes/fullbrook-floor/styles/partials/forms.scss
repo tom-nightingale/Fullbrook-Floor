@@ -1,6 +1,4 @@
-// --------------------------------------------------------------------------------------------------
-// Base Form Styles
-// --------------------------------------------------------------------------------------------------
+/* Base Form Styles */
 label {
     @apply block my-4 font-bold text-secondary;
 }
@@ -22,10 +20,6 @@ select {
 }
 
 select {
-    // background-position: 90% center;
-    // background-repeat: no-repeat;
-    // background-size: 12px;
-    // background-color: #fff;
     -webkit-appearance: none;
     background-image:
       linear-gradient(45deg, transparent 50%, gray 50%),
@@ -69,9 +63,7 @@ button {
     }
 }
 
-// --------------------------------------------------------------------------------------------------
-// CF7
-// --------------------------------------------------------------------------------------------------
+/* CF7 */
 
 .wpcf7-form .wpcf7-not-valid-tip {
     @apply text-sm font-bold mt-2 text-right;
@@ -120,41 +112,38 @@ button {
       }
     }
 
-    @screen lg {
-      .your-house-name-number,
-      .your-name {
-        input {
-          @apply rounded-r-none;
-        }
+    
+    .your-house-name-number,
+    .your-name {
+      input {
+        @apply lg:rounded-r-none;
       }
-      .your-postcode,
-      .your-phone-number {
-        input {
-          @apply rounded-l-none;
-        }
+    }
+    .your-postcode,
+    .your-phone-number {
+      input {
+        @apply lg:rounded-l-none;
       }
+    }
 
-      .wpcf7-submit {
-        @apply p-4;
-      }
+    .wpcf7-submit {
+      @apply lg:p-4;
+    }
 
-      .wpcf7-submit + .ajax-loader + .cf7mls_back {
-        @apply w-1/2 mt-8;
-      }
+    .wpcf7-submit + .ajax-loader + .cf7mls_back {
+      @apply lg:w-1/2 lg:mt-8;
     }
 }
 /* purgecss end ignore */
 
 
 
-// --------------------------------------------------------------------------------------------------
-// Propertyhive Search Form
-// --------------------------------------------------------------------------------------------------
+/* Property Hive Search Form */
 
 .property-search-container {
   
   .property-search-form, {
-    @apply block;
+    @apply block sm:flex sm:flex-wrap sm:items-center;
 
     .control {
       @apply w-full block p-0 mb-4;
@@ -169,24 +158,17 @@ button {
         @apply rounded-full;
     }
 
-    @screen sm {
-      @apply flex flex-wrap items-center;
-
-      .control {
-        @apply w-1/2 p-2;
-      }
+    .control {
+      @apply sm:w-1/2 sm:p-2;
+    }
+    
+    .control {
+      @apply lg:w-1/5;
     }
 
-    @screen lg {
-      .control {
-        @apply w-1/5;
-      }
-
-      .btn-primary {
-          @apply mt-2 border-none;
-      }
+    .btn-primary {
+        @apply lg:mt-2 lg:border-none;
     }
-
   }
 }
 .fancybox-container {

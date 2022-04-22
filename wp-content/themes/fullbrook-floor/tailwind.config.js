@@ -1,4 +1,5 @@
 module.exports = {
+  mode: 'jit',
   content: ["./_views/**/*.twig", "./_components/**/*.twig", './safelist.txt'],
   theme: {
     screens: {

@@ -1,5 +1,4 @@
-/***********************************************************
-Layouts ***************************************************/
+/* layouts */
 
 body, html {
   min-height: 101%;
@@ -14,7 +13,7 @@ body {
     leading-relaxed;
 }
 
-// Uses IntersectionObserver to identify when the viewport has scrolled, and then show back to top
+
 #pixel-to-watch {
   position: absolute;
   width: 1px;
@@ -40,8 +39,7 @@ a {
   @apply transition duration-300;
 }
 
-/***********************************************************
-Lazyload **************************************************/
+/* Lazyload */
 
 .lazyload,
 .lazyloading {
@@ -53,8 +51,7 @@ Lazyload **************************************************/
     transition: opacity 300ms;
 }
 
-/***********************************************************
-SVG Icons **************************************************/
+/* SVG icons */
 
 .icon {
     display: inline-block;

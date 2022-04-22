@@ -1,12 +1,9 @@
-// --------------------------------------------------------------------------------------------------
-// Mobile Navigation
-// --------------------------------------------------------------------------------------------------
+/* Mobile Navigation */
 
 /* Important to set */
 $menuTitleHeight :    59px;
 
 /* Colours */
-
 $panelBg :            #eee;
 
 $linkBg :             transparent;
@@ -166,7 +163,7 @@ $dropdownArrowText :  inherit;
     left-0
     overflow-y-scroll;
     top: $menuTitleHeight;
-    height: calc(100vh - #{$menuTitleHeight});
+    height: calc(100vh - 59px);
     -webkit-overflow-scrolling: touch;
     padding-bottom: 100px;
 
