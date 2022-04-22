@@ -53,13 +53,15 @@ Desktop Navs **********************************************/
 
     .sub-menu {
       @apply
-        w-64
         absolute
         top-full
-        left-0
+        w-48
         z-50
         opacity-0
         hidden;
+        left: 50%;
+        transform: translateX(-50%);
+        
 
         &:hover {
           @apply
@@ -69,16 +71,12 @@ Desktop Navs **********************************************/
         }
 
         a {
-          @apply text-white px-4 bg-primary-dark border-b border-white;
+          @apply text-center block text-sm w-auto text-primary-dark px-4 bg-white bg-opacity-50 rounded-full;
 
           
           &:hover {
-            @apply bg-primary-darkest;
+            @apply bg-opacity-75;
           }
-        }
-
-        li:last-of-type a {
-          @apply border-none;
         }
     }
   }
@@ -95,6 +93,10 @@ Desktop Navs **********************************************/
 @screen 2xl {
   .menu-primary {
     a {
+      @apply text-base;
+    }
+
+    .sub-menu a{
       @apply text-base;
     }
   }

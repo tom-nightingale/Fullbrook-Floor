@@ -1,5 +1,12 @@
 {% extends 'base.twig' %}
 
+{% block header %}
+  {% include "_components/header.twig"  with {
+    front_page: true,
+  }%}
+{% endblock %}
+
+
 {% block hero %}
 
   {% include "_components/hero.twig" with {
@@ -12,51 +19,40 @@
 {% endblock %}
 
 {% block page_content %}
+
+  <main class="container text-center">
   
-  {% include "_components/property-search.twig" %}
-  {% include "_components/featured-properties.twig" %}
-  {% include "_components/buckets.twig" %}
+    <article class="max-w-lg py-12 lg:py-24 md:mx-auto md:text-lg">
+  
+      <h1 class="mb-8 font-normal">{{post.meta('h1') ? post.meta('h1') : post.title}}</h1>
+  
+      {{post.content}}
 
-  <div class="container flex-wrap flex-grow lg:my-8 xl:my-24 lg:flex lg:px-8 2xl:px-40">
-    
-    <main class="mb-8 lg:w-1/2 lg:pr-16 lg:mb-0">
+      <a href="{{site.url}}/buy-a-home" class="inline-block mt-12 btn btn-primary">Search for your next home</a>
+  
+    </article>
+  
+  </main>
 
-      <article class="copy">
-
-        <h1>{{post.meta('h1') ? post.meta('h1') : post.title}}</h1>
-
-        {{post.content}}
-        
-      </article>
-
-      {% include "_components/cta-bottom.twig" %}
-
-    </main>
-
-    <aside class="items-center lg:w-1/2 lg:flex">
-      {% include "_components/sidebar.twig" with {
-        cta_padding : 'p-8 xl:p-16 2xl:p-24',
-        front_page: true,
-      } %}
-    </aside>
+  <div class="w-full bg-gray-500 min-h-50">
 
   </div>
 
-  {% include "_components/testimonials.twig" with {
-    classes : 'border-t border-gray-200 mb-8',
-  } %}
+  <div class="container flex flex-wrap py-12 lg:py-24 lg:justify-between">
 
-  {% include "_components/mailchimp-form.twig" %}
-  
-  {% include "_components/team.twig" %}
+    <div class="w-full bg-red-100 lg:w-5/12 min-h-50">
+      
+    </div>
+
+    <div class="w-full bg-red-100 lg:w-5/12 min-h-50">
+    
+    </div>
+
+  </div>
   
 {% endblock %}
 
 {% block footer %}
-  
-  {% include "_components/accreditations.twig" with {
-    classes : '',
-  }%}
   
   {% include "_components/footer.twig" %}
 

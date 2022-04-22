@@ -1,99 +1,21 @@
 {% if front_page %}
 
-<div class="w-full bg-white lg:mt-32 xl:mt-30 lg:min-h-96 xl:min-h-128 2xl:min-h-160">
+<div class="w-full bg-blue-500 min-h-75 lg:pt-32 xl:pt-30">
 
-    <div class="relative w-full h-full carousel min-h-96 lg:min-h-128 2xl:min-h-160">
+    <div class="flex flex-col items-center justify-center p-4 min-h-75">
 
-      {% for item in post.meta('hero_carousel') %}    
-
-        <div class="absolute top-0 left-0 z-0 flex items-center justify-start w-full h-full hero-carousel-item">
+      <div class="max-w-md mt-16 text-center">
       
-          {% include "_components/picture.twig" with {
-            source: item.image.url,
-            pictureClasses : 'absolute top-0 left-0 w-full h-full hero--home',
-            breakpoints: {
-              "1530px" : {
-                w: 2000,
-                h: 650,
-                crop: 'center'
-              },
-              "1280px" : {
-                w: 1600,
-                h: 520,
-                crop: 'center'
-              },
-              "1024px" : {
-                w: 1280,
-                h: 400,
-                crop: 'center'
-              },
-              "768px" : {
-                w: 1024,
-                h: 310,
-                crop: 'center'
-              },
-              "640px" : {
-                w: 768,
-                h: 315,
-                crop: 'center'
-              },
-              "375px" : {
-                w: 640,
-                h: 320,
-                crop: 'center'
-              },
-            },
-            img: {
-              classes: 'absolute top-0 left-0 z-0 object-cover object-center w-full h-full opacity-20 lg:opacity-100',
-              alt: site.title,
-              w: null,
-              h: 600,
-              crop: 'center',
-            }
-          }
-          %}
+        <p class="text-2xl font-bold leading-snug text-center text-primary-dark lg:text-3xl 2xl:text-4xl">Your Local Property Experts built on Experience, Knowledge and Trust.</p>
+        
+        {% include "_components/btn-free-valuation.twig" with {
+        classes : "block mt-8 text-sm text-center modal-trigger lg:mr-4 btn btn-tertiary inline-flex xl:mt-12
+        lg:text-base",
+        } %}
 
-          <div class="container relative lg:min-h-96 xl:min-h-128 2xl:min-h-160 z-1 lg:flex">
-          
-            <div class="flex flex-wrap items-center justify-between w-full min-h-full">
-          
-              
-              
-              <div class="flex flex-col w-full max-w-sm p-8 mx-auto text-center lg:py-16 lg:mx-0 lg:text-left lg:w-6/12">
-          
-                <p class="text-2xl leading-snug text-primary-dark lg:text-3xl 2xl:text-4xl">{{item.hero_heading}}</p>
-          
-                <p class="mt-4 mb-8 leading-snug lg:text-xl 2xl:text-lg text-primary-dark">{{item.hero_subheading}}</p>
-          
-                <div>
-          
-                  {% include "_components/btn-free-valuation.twig" with {
-                  classes : "block mt-4 text-sm text-center modal-trigger lg:mr-4 btn btn-tertiary lg:inline-flex xl:mt-12
-                  lg:text-base",
-                  } %}
-          
-                  <div class="lg:block">
-                    <a href="{{site.url}}/buy-a-home"
-                      class="inline-flex mt-4 text-sm text-center lg:mr-4 lg:text-base btn btn-white opacity-90 hover:opacity-100">
-                      Search homes for sale
-                    </a>
-                  </div>
-          
-                </div>
-          
-              </div>
+      </div>
 
-
-          
-            </div>
-
-          </div>
-      
-        </div>
-
-      {% endfor %}
-
-  </div>
+    </div>
   
 </div> 
 

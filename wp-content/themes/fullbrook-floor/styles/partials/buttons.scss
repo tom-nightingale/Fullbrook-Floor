@@ -3,7 +3,7 @@ Buttons ***************************************************/
 input[type="button"],
 button,
 .btn {
-  @apply rounded py-2 px-4 rounded-full transition duration-300 font-bold;
+  @apply rounded py-2 px-5 rounded-full transition duration-300;
 }
 
 .btn-primary {

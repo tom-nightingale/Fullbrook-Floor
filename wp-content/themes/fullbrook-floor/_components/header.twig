@@ -1,4 +1,4 @@
-<header class="w-full border-b-2 border-white bg-primary-dark lg:fixed lg:z-20 lg:top-0 lg:left-0 lg:pt-0">
+<header class="w-full {{ front_page ? 'absolute' : 'border-b-2 border-white bg-primary-dark' }} lg:fixed lg:z-20 lg:top-0 lg:left-0 lg:pt-0">
 
   <p class="p-2 text-sm text-center text-white bg-secondary xl:hidden">Find out how much your home is worth today! <span class="inline-block font-bold">Call
     {% include "_components/phone-number.twig" %}</span>

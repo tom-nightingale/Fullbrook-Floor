@@ -707,12 +707,11 @@ button,
   border-radius: 0.25rem;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
   border-radius: 9999px;
   transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
   transition-duration: 300ms;
-  font-weight: 700;
 }
 
 .btn-primary {
@@ -963,13 +962,14 @@ Desktop Navs **********************************************/
   }
 
   .menu-primary .sub-menu {
-    width: 16rem;
     position: absolute;
     top: 100%;
-    left: 0;
+    width: 12rem;
     z-index: 50;
     opacity: 0;
     display: none;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   .menu-primary .sub-menu:hover {
@@ -979,28 +979,24 @@ Desktop Navs **********************************************/
   }
 
   .menu-primary .sub-menu a {
+    text-align: center;
+    display: block;
+    font-size: 0.875rem;
+    width: auto;
     --text-opacity: 1;
-    color: #fff;
-    color: rgba(255, 255, 255, var(--text-opacity));
+    color: #2a466c;
+    color: rgba(42, 70, 108, var(--text-opacity));
     padding-left: 1rem;
     padding-right: 1rem;
     --bg-opacity: 1;
-    background-color: #2a466c;
-    background-color: rgba(42, 70, 108, var(--bg-opacity));
-    border-bottom-width: 1px;
-    --border-opacity: 1;
-    border-color: #fff;
-    border-color: rgba(255, 255, 255, var(--border-opacity));
+    background-color: #fff;
+    background-color: rgba(255, 255, 255, var(--bg-opacity));
+    --bg-opacity: 0.5;
+    border-radius: 9999px;
   }
 
   .menu-primary .sub-menu a:hover {
-    --bg-opacity: 1;
-    background-color: #2d3748;
-    background-color: rgba(45, 55, 72, var(--bg-opacity));
-  }
-
-  .menu-primary .sub-menu li:last-of-type a {
-    border-style: none;
+    --bg-opacity: 0.75;
   }
 }
 
@@ -1012,6 +1008,10 @@ Desktop Navs **********************************************/
 
 @media (min-width: 1530px) {
   .menu-primary a {
+    font-size: 1rem;
+  }
+
+  .menu-primary .sub-menu a {
     font-size: 1rem;
   }
 }
