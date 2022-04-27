@@ -27,11 +27,9 @@
 
     <div class="container flex flex-wrap justify-center">
     
-        {% set queryParams = app.request.query.all %}
-        
         {% if properties %}   
         
-            {% if queryParams.length > 0 %}
+            {% if query %}
             // query params present
                 
                 {% for property in properties %}
