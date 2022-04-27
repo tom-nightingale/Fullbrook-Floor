@@ -42,9 +42,7 @@
                             {% set property_availability = term.name %}
                         {% endif %}
                     {% endfor %}
-
-                    {% if property_availability == "For Sale" %}
-
+                    
                     {% include "_components/property-card.twig" with {
                         property : property,
                         property_id : property.id,
@@ -58,8 +56,6 @@
                         availability : property_availability,
                         }
                     %}
-
-                    {% endif %}
 
                 {% endfor %}
         
