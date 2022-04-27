@@ -26,70 +26,110 @@
     </div>
 
     <div class="container flex flex-wrap justify-center">
+    
+        {% set queryParams = app.request.query.all %}
         
-        {% if properties %}
+        {% if properties %}   
         
-        {% for property in properties %}
+            {% if queryParams.length > 0 %}
+            // query params present
+                
+                {% for property in properties %}
 
-            {# set default property_availability #}
-            {% set property_availability = "" %}
-            
-            {% for term in property.terms %}
-                {% if term.taxonomy == "availability" %}
-                    {% set property_availability = term.name %}
-                {% endif %}
-            {% endfor %}
-            
-            {% if property_availability == "For Sale" %}
+                    {# set default property_availability #}
+                    {% set property_availability = "" %}
 
-            {% include "_components/property-card.twig" with {
-                property : property,
-                property_id : property.id,
-                image : property.thumbnail,
-                title : property.post_title,
-                street : property._address_postcode,
-                link: property.link,
-                bedrooms : property._bedrooms,
-                bathrooms : property._bathrooms,
-                reception_rooms : property._reception_rooms,
-                availability : property_availability,
-                }
-            %}
-            
+                    {% for term in property.terms %}
+                        {% if term.taxonomy == "availability" %}
+                            {% set property_availability = term.name %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if property_availability == "For Sale" %}
+
+                    {% include "_components/property-card.twig" with {
+                        property : property,
+                        property_id : property.id,
+                        image : property.thumbnail,
+                        title : property.post_title,
+                        street : property._address_postcode,
+                        link: property.link,
+                        bedrooms : property._bedrooms,
+                        bathrooms : property._bathrooms,
+                        reception_rooms : property._reception_rooms,
+                        availability : property_availability,
+                        }
+                    %}
+
+                    {% endif %}
+
+                {% endfor %}
+        
+            {% else %}
+        
+                {% for property in properties %}
+
+                    {# set default property_availability #}
+                    {% set property_availability = "" %}
+
+                    {% for term in property.terms %}
+                        {% if term.taxonomy == "availability" %}
+                            {% set property_availability = term.name %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if property_availability == "For Sale" %}
+
+                        {% include "_components/property-card.twig" with {
+                            property : property,
+                            property_id : property.id,
+                            image : property.thumbnail,
+                            title : property.post_title,
+                            street : property._address_postcode,
+                            link: property.link,
+                            bedrooms : property._bedrooms,
+                            bathrooms : property._bathrooms,
+                            reception_rooms : property._reception_rooms,
+                            availability : property_availability,
+                            }
+                        %}
+
+                    {% endif %}
+
+                {% endfor %}
+        
+                {% for property in properties %}
+
+                    {# set default property_availability #}
+                    {% set property_availability = "" %}
+
+                    {% for term in property.terms %}
+                        {% if term.taxonomy == "availability" %}
+                            {% set property_availability = term.name %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if property_availability != "For Sale" %}
+
+                    {% include "_components/property-card.twig" with {
+                        property : property,
+                        property_id : property.id,
+                        image : property.thumbnail,
+                        title : property.post_title,
+                        street : property._address_postcode,
+                        link: property.link,
+                        bedrooms : property._bedrooms,
+                        bathrooms : property._bathrooms,
+                        reception_rooms : property._reception_rooms,
+                        availability : property_availability,
+                        }
+                    %}
+
+                    {% endif %}
+
+                {% endfor %}
+                
             {% endif %}
-            
-        {% endfor %}
-        
-        {% for property in properties %}
-
-            {# set default property_availability #}
-            {% set property_availability = "" %}
-            
-            {% for term in property.terms %}
-                {% if term.taxonomy == "availability" %}
-                    {% set property_availability = term.name %}
-                {% endif %}
-            {% endfor %}
-            
-            {% if property_availability != "For Sale" %}
-
-            {% include "_components/property-card.twig" with {
-                property : property,
-                property_id : property.id,
-                image : property.thumbnail,
-                title : property.post_title,
-                street : property._address_postcode,
-                link: property.link,
-                bedrooms : property._bedrooms,
-                bathrooms : property._bathrooms,
-                reception_rooms : property._reception_rooms,
-                availability : property_availability,
-                }
-            %}
-            
-            {% endif %}
-            
-        {% endfor %}
         
             {% include "_components/pagination.twig" %}
         
