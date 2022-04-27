@@ -26,6 +26,9 @@ if(!$query_string && $paged == 0) {
     $context['featured_properties'] = new Timber\PostQuery($featured_query);
 }
 
+if($query_string) {
+    $context['query'] = true;
+}
 $context['post'] = new Timber\Post(8);
 $context['properties'] = new Timber\PostQuery();
 
