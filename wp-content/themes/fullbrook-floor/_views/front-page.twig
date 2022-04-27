@@ -22,11 +22,15 @@
 
   <main class="container text-center">
   
-    <article class="max-w-lg py-12 lg:py-24 md:mx-auto md:text-lg copy">
-  
-      <h1 class="mb-8 font-normal">{{post.meta('h1') ? post.meta('h1') : post.title}}</h1>
-  
-      {{post.content}}
+    <article class="max-w-lg py-12 lg:py-24 md:mx-auto md:text-lg">
+    
+      <div class="copy">
+
+        <h1 class="mb-8 font-normal">{{post.meta('h1') ? post.meta('h1') : post.title}}</h1>
+
+        {{post.content}}
+
+      </div>
 
       <a href="{{site.url}}/buy-a-home" class="inline-block mt-12 btn btn-primary">Search for your next home</a>
   
