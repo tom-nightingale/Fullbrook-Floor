@@ -102,14 +102,14 @@
 
       <p class="font-bold">Get your property noticed on the most popular platforms</p>
     
-      <div class="flex flex-col sm:flex-row flex-wrap items-center justify-center mt-12 lg:mt-24">
+      <div class="flex flex-col sm:flex-row flex-wrap items-center justify-center mt-12">
         {% for logo in options.mover_logos %}
           <img data-src="{{logo.logo.url}}" alt="{{logo.name}}" class="mx-4 my-2 sm:my-0 max-w-32 lg:max-w-56 object-contain lazyload">
         {% endfor %}
       </div>
 
       {% include "_components/btn-free-valuation.twig" with {
-        classes: "btn btn-secondary mt-8 inline-block",
+        classes: "btn btn-secondary mt-12 inline-block",
       } %}
     
     </div>
