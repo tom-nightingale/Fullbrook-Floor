@@ -27,10 +27,9 @@
     }
 
     function add_to_twig( $twig ) {
-        // Enable debug mode when WP_DEBUG is true
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-          $twig->getEnvironment()->enableDebug();
-          $twig->getEnvironment()->addExtension( new \Twig\Extension\DebugExtension() );
+          $twig->enableDebug();
+          $twig->addExtension( new \Twig\Extension\DebugExtension() );
         }
         
         // Adding a function.
