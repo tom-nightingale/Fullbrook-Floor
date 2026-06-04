@@ -29,7 +29,6 @@
     function add_to_twig( $twig ) {
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
           $twig->enableDebug();
-          $twig->addExtension( new \Twig\Extension\DebugExtension() );
         }
         
         // Adding a function.
