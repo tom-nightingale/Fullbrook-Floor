@@ -1,0 +1,198 @@
+/* Base Form Styles */
+label {
+    @apply block my-4 font-bold text-secondary;
+}
+
+input,
+textarea,
+select {
+    @apply
+    rounded-sm
+    p-2
+    w-full
+    text-sm
+    border border-gray-400
+    text-primary-dark;
+
+    &[aria-invalid="true"] {
+        background-color: #f3e2e2;
+    }
+}
+
+select {
+    -webkit-appearance: none;
+    background-image:
+      linear-gradient(45deg, transparent 50%, gray 50%),
+      linear-gradient(135deg, gray 50%, transparent 50%),
+      linear-gradient(to right, #ccc, #ccc);
+    background-position:
+      calc(100% - 20px) calc(1em + 2px),
+      calc(100% - 15px) calc(1em + 2px),
+      calc(100% - 2.5em) 0.5em;
+    background-size:
+      5px 5px,
+      5px 5px,
+      1px 1.5em;
+    background-repeat: no-repeat;
+}
+
+textarea {
+    height: 150px;
+}
+
+::placeholder,
+input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    @apply text-gray-600;
+}
+
+input[type="button"],
+input[type="submit"],
+button {
+    @apply
+    bg-secondary
+    text-white
+    font-bold
+    outline-none
+    cursor-pointer
+    border-none;    
+    transition: .3s;
+    
+    &:hover {
+        @apply
+        bg-secondary-dark;
+    }
+}
+
+/* CF7 */
+
+.wpcf7-form .wpcf7-not-valid-tip {
+    @apply text-sm font-bold mt-2 text-right;
+}
+
+.wpcf7-form.invalid .wpcf7-response-output,
+.wpcf7-form.failed .wpcf7-response-output {
+    @apply border-0 font-bold p-0 mt-4 text-red-600;
+}
+
+.wpcf7-form {
+    input,
+    select { 
+        @apply rounded-full outline-none;
+    }
+
+    textarea {
+      @apply rounded-md outline-none;
+    }
+}
+
+/* purgecss start ignore */
+#wpcf7-f667-o1 .wpcf7-form,
+#wpcf7-f675-o1 .wpcf7-form {
+  @apply max-w-xs mx-auto;
+
+  .cf7mls_next.action-button, .cf7mls_back.action-button {
+       @apply bg-secondary
+      text-white
+      font-bold
+      outline-none
+      cursor-pointer
+      rounded-full;
+      transition: .3s;
+
+      &:hover {
+        @apply bg-secondary-dark;
+      }
+    }
+
+    .cf7mls_back.action-button {
+      @apply bg-gray-500;
+
+      &:hover {
+        @apply bg-gray-600;
+      }
+    }
+
+    
+    .your-house-name-number,
+    .your-name {
+      input {
+        @apply lg:rounded-r-none;
+      }
+    }
+    .your-postcode,
+    .your-phone-number {
+      input {
+        @apply lg:rounded-l-none;
+      }
+    }
+
+    .wpcf7-submit {
+      @apply lg:p-4;
+    }
+
+    .wpcf7-submit + .ajax-loader + .cf7mls_back {
+      @apply lg:w-1/2 lg:mt-8;
+    }
+}
+/* purgecss end ignore */
+
+
+
+/* Property Hive Search Form */
+
+.property-search-container {
+  
+  .property-search-form, {
+    @apply block sm:flex sm:flex-wrap sm:items-center;
+
+    .control {
+      @apply w-full block p-0 mb-4;
+    }
+
+    label {
+      @apply m-0 p-0 text-primary-dark;
+    }
+
+    input,
+    select { 
+        @apply rounded-full;
+    }
+
+    .control {
+      @apply sm:w-1/2 sm:p-2;
+    }
+    
+    .control {
+      @apply lg:w-1/5;
+    }
+
+    .btn-primary {
+        @apply lg:mt-2 lg:border-none;
+    }
+  }
+}
+.fancybox-container {
+  p {
+    @apply mb-4;
+  }
+}
+
+.property-enquiry-form {
+    label {
+      @apply m-0 mt-4 p-0;
+    }
+
+    input,
+    select { 
+        @apply rounded-full;
+    }
+
+     textarea {
+      @apply rounded-md outline-none;
+    }
+}
+
+.propertyhive-ordering {
+  @apply max-w-xs;
+}
+

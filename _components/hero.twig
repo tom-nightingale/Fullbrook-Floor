@@ -1,0 +1,48 @@
+{% if (front_page or isLandingPage) %}
+
+<div class="relative w-full overflow-hidden bg-primary-darkest min-h-75 lg:pt-32 xl:pt-30">
+
+  {% if front_page %}
+    <img src="{{theme.link}}/images/hero.png" alt="Fullbrook and floor" class="absolute top-0 left-0 z-0 object-cover object-center w-full h-full">
+    <img src="{{theme.link}}/images/house.png" alt="Fullbrook and floor" class="absolute opacity-20 left-[50%] translate-x-[-54%] top-[170px] lg:top-[150px] h-[200px] lg:h-[400px]">
+  {% endif %}
+
+  {% if isLandingPage %}
+    <img src="{{heroImage.url}}" alt="Fullbrook and Floor Hitchin" class="absolute top-0 left-0 z-0 object-cover object-center w-full h-full">
+    <img src="{{theme.link}}/images/house.png" alt="Fullbrook and floor" class="absolute opacity-20 left-[50%] translate-x-[-54%] top-[170px] lg:top-[150px] h-[200px] lg:h-[400px]">
+  {% endif %}
+
+    <div class="relative z-10 flex flex-col items-center justify-center p-4 lg:justify-start min-h-75">
+
+      <div class="max-w-lg 2xl:max-w-3xl mt-16 text-center lg:mt-32">
+
+        {% if top_line %}
+          <p class="text-2xl leading-snug font-bold text-center lg:text-[2.5vw] text-primary-darkest max-w-md 2xl:max-w-3xl">{{top_line}}</p>
+        {% endif %}
+        
+        {% include "_components/btn-free-valuation.twig" with {
+          classes : "block mt-8 text-center md:text-lg  modal-trigger lg:mr-4 btn btn-tertiary inline-flex xl:mt-12",
+        } %}
+
+      </div>
+
+    </div>
+  
+</div> 
+
+{% else %}
+
+  <div class="relative w-full text-white bg-primary lg:mt-[8.7rem] xl:mt-[7.8rem]">
+    <div class="container">
+      <p class="px-6 py-8 text-2xl font-bold text-center lg:p-12 lg:py-16 xl:text-4xl 2xl:text-5xl">{{hero_heading}}</p>
+    </div>
+    {% include "_components/pattern-house.twig" %}
+  </div>
+
+  {% if has_search_bar %}
+    {% include "_components/property-search.twig" %}
+  {% endif %}
+
+</div>
+
+{% endif %}

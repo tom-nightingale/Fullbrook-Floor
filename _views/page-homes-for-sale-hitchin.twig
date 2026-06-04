@@ -1,0 +1,111 @@
+{% extends 'base.twig' %}
+
+{% block header %}
+  {% include "_components/header.twig"  with {
+    front_page: true,
+  }%}
+{% endblock %}
+
+
+{% block hero %}
+
+  {% include "_components/hero.twig" with {
+    front_page : false,
+    isLandingPage: true,
+    top_line : post.meta('hero_top_line'),
+    heroImage: post.meta('hero_image'),
+  } %}  
+
+{% endblock %}
+
+{% block page_content %}
+
+  <div class="container flex-wrap flex-grow my-8 xl:my-24 lg:flex lg:px-8 2xl:px-40">
+  
+    <main class="mb-8 lg:w-1/2 lg:pr-16 lg:mb-0">
+  
+      <article class="copy">
+  
+        <h1>{{post.meta('h1') ? post.meta('h1') : post.title}}</h1>
+  
+        {{post.content}}
+  
+      </article>
+  
+      {% include "_components/cta-bottom.twig" %}
+  
+    </main>
+  
+    <aside class="flex-wrap lg:w-1/2 lg:flex items-start">
+      <div class="lg:sticky lg:top-36">
+      {% include "_components/sidebar.twig" with {
+          cta_padding : 'p-8 xl:p-16 2xl:p-24',
+        }
+      %}
+      </div>
+    </aside>
+  
+  </div>  
+
+  {% if featured_properties %}
+    {% include "_components/landing-page-properties.twig" with {
+        heading: 'Our property listings in Hitchin'
+    } %}
+  {% endif %}
+
+  <div class="flex flex-wrap justify-between max-w-2xl p-8 mx-auto sm:p-12 lg:py-24">
+
+    <div class="w-full sm:w-[47%] bg-primary-darkest mb-8 sm:mb-0 group overflow-hidden">
+
+      <div class="w-full h-auto overflow-hidden">
+        <img src="" data-src="{{theme.link}}/images/how-to-sell.jpg" alt="{{site.title}}" class="object-center w-full h-auto overflow-hidden transition duration-500 lazyload group-hover:scale-110">
+      </div>
+
+      <div class="p-8 text-white md:p-12 lg:w-1/2">
+        <p class="mb-2 text-xl">Sell with us</p>
+        <p class="text-sm">We will support, advise and guide you through the entire moving process</p>
+        <a class="inline-block mt-8 btn btn-white" href="{{site.url}}/how-to-sell-a-home">How to sell a home...</a>
+      </div>
+      
+    </div>
+
+    <div class="w-full sm:w-[47%] bg-secondary group overflow-hidden">
+
+      <div class="w-full h-auto overflow-hidden">
+        <img src="" data-src="{{theme.link}}/images/buy-next-home.jpg" alt="{{site.title}}" class="object-center w-full h-auto overflow-hidden transition duration-500 lazyload group-hover:scale-110">
+      </div>
+    
+    
+      <div class="p-8 text-white md:p-12 lg:w-1/2">
+        <p class="mb-2 text-xl">Find your next home</p>
+        <p class="text-sm">We are St Albans locals and have an unrivalled knowledge of the city and the property market.</p>
+        <a class="inline-block mt-8 btn btn-white text-secondary" href="{{site.url}}/buy-a-home">View properties</a>
+      </div>
+    
+    </div>
+
+  </div>
+
+  {% include "_components/testimonials.twig" with {
+    classes : 'border-none',
+  } %}
+
+  {% if post.meta('show_why_choose_us') %}
+    {% include "_components/why-choose-us.twig" %} 
+  {% endif %}
+
+  {% if post.meta('show_buckets') %}
+    {% include "_components/buckets.twig" %}
+  {% endif %}
+  
+  {% if post.meta('show_team') %}
+    {% include "_components/team.twig" %}
+  {% endif %}
+
+{% endblock %}
+
+{% block footer %}
+  
+  {% include "_components/footer.twig" %}
+
+{% endblock %}

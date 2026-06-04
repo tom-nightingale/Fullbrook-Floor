@@ -1,0 +1,7 @@
+{
+  "require": {
+    "timber/timber": "^1.15",
+    "twig/intl-extra": "^3.0",
+    "twig/extensions": "^1.5"
+  }
+}

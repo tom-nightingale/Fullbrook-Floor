@@ -1,0 +1,77 @@
+{% extends 'base.twig' %}
+
+{% block hero %}
+
+  {% include "_components/hero.twig" with {
+    hero_heading : post.meta('hero_heading')|default(post.title),
+    has_search_bar : post.meta('has_search_bar')|default(false),
+  } %}
+  
+{% endblock %}
+
+{% block page_content %}
+
+  <div class="container flex-wrap flex-grow my-8 lg:justify-between xl:my-24 lg:flex lg:px-8 2xl:px-40">
+  
+    <main class="mb-8 lg:w-1/2 lg:pr-16 lg:mb-0">
+  
+      <article class="copy">
+  
+        <h1>{{post.meta('h1') ? post.meta('h1') : post.title}}</h1>
+  
+        {{post.content}}
+  
+      </article>
+  
+    </main>
+  
+    <aside class="flex-wrap items-start lg:w-1/2 lg:flex">
+
+      <div class="flex-wrap sm:flex lg:w-1/2">
+        <div class="p-4 sm:w-1/2 lg:w-full">
+          <h3>Contact us</h3>
+
+          <p class="mt-8 mb-2 text-sm xl:text-base">{{options.default_location}}: <span class="block">{% include "_components/phone-number.twig" with { classes : 'hover:text-secondary' } %}</span></p>
+          <p class="mt-8 mb-2 text-sm xl:text-base">Hitchin: <span class="block">
+            <a href="tel:01462690525" class="inline-block font-bold hover:text-secondary" onclick="gtag('event', 'Phone Call', {'event_category': 'Phone Call', 'event_label': 'Phone call click to call'});">
+              01462 690525
+            </a>
+          </span></p>
+          <p class="mt-8 text-sm xl:text-base">Email: <a class="block font-bold hover:text-secondary" href="maitlo:{{options.site_email}}">{{options.site_email}}</a></p>
+        </div>
+        
+        <div class="p-4 sm:w-1/2 lg:w-full">
+          <h3 class="mt-8 sm:mt-0 lg:mt-8">Social</h3>
+          {% include "_components/social-links.twig" %}
+        </div>
+      </div>
+
+      <div class="lg:w-1/2">
+        {% include "_components/sidebar.twig" with {
+          cta_padding : 'p-8 pb-16 xl:p-16 lg:mt-0 ',
+        }
+        %}
+      </div>
+      
+    </aside>
+  
+  </div>  
+
+  {% include "_components/testimonials.twig" %}
+
+  {% if post.meta('show_why_choose_us') %}
+    {% include "_components/why-choose-us.twig" %} 
+  {% endif %}
+
+  {% if post.meta('show_buckets') %}
+    {% include "_components/buckets.twig" %}
+  {% endif %}
+
+  {% include "_components/testimonials.twig" %}
+  
+  {% if post.meta('show_team') %}
+    {% include "_components/team.twig" %}
+  {% endif %}
+  
+{% endblock %}
+

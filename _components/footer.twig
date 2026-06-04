@@ -1,0 +1,75 @@
+<footer class="relative p-4 text-sm text-center text-white bg-primary-darkest md:p-8 lg:px-0 lg:text-left">
+
+	<div class="container flex-wrap justify-between lg:flex">
+
+		<div class="w-full p-4 mb-8 lg:w-3/12 xl:p-6">			
+			
+			<a aria-label="Go to homepage" class="block w-full mb-4 lg:inline-block" href="{{site.site_url}}">
+				<img class="w-full min-24 max-w-64" src="{{options.logo_horizontal_white.url}}" alt="Fullbrook &amp; Floor Ltd Logo"/>
+			</a>
+			
+			<p class="mt-4">Fullbrook &amp; Floor is a trading name of Fullbrook and Floor Ltd.</p>
+			<p class="mb-4">Fullbrook and Floor Ltd is a registered company in England &amp; Wales.</p>
+			{% if options.reg_number %}
+				<p><span class="font-semibold">Registered Number:</span> {{options.reg_number}}</p>
+			{% endif %}
+			
+			{% if options.vat_number %}
+				<p><span class="font-semibold">VAT Number:</span> {{options.vat_number}}</p>
+			{% endif %}
+
+			<p><span class="font-semibold">Registered address:</span> 6b Parkway, Porters Wood, St Albans, AL3 6PA</p>
+
+			<p class="mt-4">&copy; Fullbrook and Floor Ltd {{ 'now' | date('Y') }}. All Rights Reserved.</p>
+			<p><a class="hover:text-secondary-light" href="{{site.url}}/cookie-policy">Cookies &amp; Privacy Policy</a></p>
+			
+		</div>
+
+		<div class="w-full p-4 mb-8 lg:w-3/12 xl:p-6">
+			<h3>Navigation</h3>
+			<ul class='grid gap-2'>
+				{% for item in primaryMenu.items %}
+				<li class="{{item.class}}">
+					<a class="transition hover:text-secondary-light" href="{{item.url}}">{{item.name}}</a>
+				</li>
+				{% endfor %}
+				<li>
+					<a href="{{site.url}}/homes-for-sale-hitchin/">Homes For Sale Hitchin</a>
+				</li>
+				<li>
+					<a href="{{site.url}}/complaints-procedure/">Complaints Procedure</a>
+				</li>
+			</ul>
+		</div>
+
+		<div class="w-full p-4 mb-8 lg:w-3/12 xl:p-6">
+			<h3>Contact</h3>
+			<p class="my-2">{{function('icon', 'envelope', 'mr-2')}} <a class="hover:text-secondary-light" href="mailto:{{options.site_email}}">{{options.site_email}}</a></p>
+			<p class="my-2">{{function('icon', 'phone', 'mr-2')}} {{options.default_location}} {% include "_components/phone-number.twig" %}</p>
+			<p class="my-2">{{function('icon', 'phone', 'mr-2')}} Hitchin <a href="tel:01462690525" class='font-bold' onclick="gtag('event', 'Phone Call', {'event_category': 'Phone Call', 'event_label': 'Phone call click to call'});">
+					01462 690525
+				</a>
+			</p>
+		</div>
+
+		<div class="w-full p-4 lg:w-2/12">
+			<h3>Social</h3>
+			{% include "_components/social-links.twig" %}			
+		</div>
+
+	</div>
+
+	{% include "_components/pattern-house.twig" %}
+
+</footer>
+
+<a id="back-top" class="fixed z-50 p-2 -mb-20 text-center transition-all duration-1000 bg-white bg-opacity-50 opacity-0 bottom-12 left-4 rounded-xl hover:bg-opacity-full" href="javascript:">
+	<span class="text-sm text-black no-underline">
+		{{ function('icon', 'angle-up', 'w-6 h-6') }}
+		<span class="block uppercase">Top</span>
+	</span>
+</a>
+
+<div id="pixel-to-watch"></div>
+
+{% include "_components/modal-property-valuation-form.twig" %}

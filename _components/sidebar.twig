@@ -1,0 +1,72 @@
+
+{% if help_advice_categories %}
+  <div class="p-4">
+    <h2>Help & Advice categories</h2>
+    {% for category in help_advice_categories %}
+      <a class="inline-block m-1 opacity-75 btn btn-white hover:opacity-100" href="{{category.link}}">{{category.name}}</a>
+    {% endfor %}
+  </div>
+{% endif %}
+  
+{% if index %}
+  <div class="p-4">
+    <h2>Archives</h2>
+    {{archives}}
+  </div>
+
+
+  <div class="p-4">
+    <h2>Categories</h2>
+    {{categories}}
+  </div>
+{% endif %}
+
+{% if post.meta('sidebar_logos') %}
+  <div class="flex flex-wrap items-center justify-center w-full mb-8 ">
+    <p class="w-full text-lg font-bold text-center lg:text-2xl">Get your property featured on...</p>
+    {% for logo in post.meta('sidebar_logos') %}
+      <a href="{{logo.link}}">
+        <img class="block mx-2 lazyload max-w-36 lg:max-w-48" data-src="{{logo.image.url}}" alt="{{logo.name}} Logo">
+      </a>
+    {% endfor %}
+  </div>
+{% endif %}
+
+
+
+<div class="relative w-full text-center text-white bg-primary-dark {{cta_padding ? cta_padding}}">
+
+  <img class="absolute top-0 left-0 z-0 object-cover object-bottom w-full h-full lazyload opacity-10" data-src="{{options.cta_placeholder.url|resize('800')}}" alt="Get a FREE property Valuation image">
+
+  <div class="relative z-10">
+  
+    <img class="block mx-auto max-w-36 lg:max-w-48 lazyload" data-src="{{options.logo_horizontal_white.url}}" alt="{{site.title}} Logo">
+
+    {% if not front_page %}
+    
+      <p class="my-4 text-lg font-bold leading-snug lg:text-xl">Find out how much your property is worth!</p>
+      
+      <p class="text-sm lg:text-base">Get an accurate market appraisal of your property and find out exactly how much it's worth!</p>
+
+      {% include "_components/btn-free-valuation.twig" with {
+        classes : "inline-block mt-8 text-sm lg:text-base btn btn-white",
+      } %}
+      
+
+    {% else %}
+
+        {% for section in options.ekt_section %}
+
+          <p class="mt-8 text-xl font-bold">{{section.title}}</p>
+          
+          <p>{{section.text}}</p>
+
+        {% endfor %}
+
+    {% endif %}
+
+  </div>
+
+  {% include "_components/pattern-house.twig" %}
+  
+</div>

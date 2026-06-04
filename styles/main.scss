@@ -1,0 +1,198 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+
+@import 'partials/fonts.scss';
+@import 'partials/core.scss';
+@import 'partials/buttons.scss';
+@import 'partials/cookies.scss';
+@import 'partials/desktop-nav.scss';
+@import 'partials/mobile-nav.scss';
+@import 'partials/forms.scss';
+@import 'partials/cf7.scss';
+@import 'partials/leaflet.scss';
+@import 'partials/typography.scss';
+
+@import "tailwindcss/utilities";
+
+/* custom CSS */
+.pattern-house {
+  background-image: url(../images/pattern-house.svg);
+}
+
+.bg-blend-multiply {
+  background-blend-mode: multiply;
+}
+
+.hero-carousel-item {
+  opacity: 0;
+  transition: all .6s;
+
+  &.active {
+      opacity: 1;
+  }
+}
+
+.profile-container img {
+  transition: .3s;
+}
+
+.profile-container:hover img {
+  transform: translateX(-100%);
+}
+
+.modal {
+  top: 0;
+  left: 0;
+  transform: translateY(-100%);
+
+  &.active {
+    transform: translateY(0);    
+  }
+}
+
+.modal-content {
+  @apply w-full transition-all duration-300;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100%);
+
+  &.active {
+    transform: translateY(0) translateX(-50%);
+  }
+}
+
+.flexslider .slides img {
+  height: 100% !important;
+  @apply object-cover object-center;
+}
+
+/* Process steps for valuation page */
+.process-step {
+  @apply relative;
+
+  &:before,
+  &:after {
+    content: '';
+    @apply w-1 h-4 bg-primary-dark;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);    
+  }
+
+  &:before {
+    top: -1rem;
+    @apply h-4;
+  }
+
+  &:after {
+    content: '';    
+    top: 100%;    
+  }
+
+  &:first-of-type:before {
+    content: none;
+  }
+}
+
+/* scroll header classess */
+@screen lg {
+  header .header-container {
+    @apply py-6 transition-all duration-300;
+  }
+  
+  header.active {
+    @apply bg-primary-darkest transition duration-500;
+  }
+}
+
+
+/* Carousel container */
+.carousel-container {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+.carousel-container::-webkit-scrollbar { /* WebKit */
+  display: none;
+}
+
+/* Mailchimp form styles */
+#mc_embed_signup {
+
+  .mc-field-group {
+    @apply w-full mb-4;
+
+    label {
+      @apply text-white mb-2 text-center;
+    }
+
+    ul {
+      @apply w-full mt-2;
+    }
+
+    li {
+      @apply flex items-center;
+
+      input, label {
+        @apply w-auto m-0 font-normal;
+      }
+
+      input {
+        @apply mr-2;
+      }
+    }
+
+    input {
+      @apply rounded-full text-center;
+    }
+
+    input[type=checkbox] {
+      &::checked {
+        @apply bg-secondary-light;
+      }
+    }
+
+    div.mce_inline_error {
+      @apply bg-transparent text-secondary-light text-center text-sm font-normal px-0 mb-0;
+    }
+
+    .date-label {
+      @apply inline w-auto;
+    }
+
+    .datefield {
+      @apply w-full; 
+
+      span {
+        @apply w-auto;
+
+        &.subfield {
+          @apply px-1;
+        }
+
+      }
+
+      input {
+        @apply w-auto;
+      }
+
+      .small-meta {
+        @apply text-xs opacity-50;
+      }
+
+    }
+
+    @apply md:w-1/2 md:p-4;
+    @apply lg:w-1/4;
+
+      &.input-group {
+        @apply md:w-full md:my-0 md:text-center;
+
+        ul {
+          @apply md:flex md:justify-center;
+        }
+
+        li {
+          @apply md:mr-6 md:text-sm;
+        }
+      }
+    }
+  }

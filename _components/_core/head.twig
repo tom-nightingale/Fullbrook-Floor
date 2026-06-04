@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="{{ site.charset }}">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {# <title>{{ site.title }}</title> #}
+  <meta name="msvalidate.01" content="B2CCA34CB7825F5446F6E913ED16670E" />
+
+  {% block htmlheader %}
+  <link rel="stylesheet" href="{{ theme.link ~ '/dist/main.min.css' }}">
+
+  {% endblock %}
+
+  {% if options.google_analytics %}
+    {{ options.google_analytics}}
+  {% endif %}
+
+  {% if options.schema %}
+    {{ options.schema}}
+  {% endif %}
+
+  {{ function('wp_head') }}
+</head>
+
+<body class="{{ body_class }}">
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5223RRJ" height="0" width="0"
+      style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <nav class="mob-nav">
+    <div class="scroll-container">
+    </div>
+  </nav>
+
+  <div class="wrapper">

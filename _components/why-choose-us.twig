@@ -1,0 +1,34 @@
+<div class="p-4 py-8 my-8 lg:py-12 2xl:p-16 bg-primary-light bg-opacity-20">
+
+  <div class="container">
+
+    <h2 class="text-center">Why sell your property with Fullbrook & Floor?</h2>
+
+    <p class="max-w-sm mx-auto text-center">Whether it's in St Albans city centre or its surrounding areas such as Park Street, Chiswell Green, Bricket Wood, we have the knowledge and experience to market your property making sure that you get the sale you need.</p>
+
+    <div class="flex flex-wrap justify-center my-8">
+
+      {% for wcu in options.why_choose_us %}
+
+      <div class="w-full text-center md:w-1/2 lg:w-1/5 p-4">
+
+        <img class="block mx-auto mb-4 lazyload max-w-12" data-src="{{wcu.image.sizes.thumbnail}}" alt="{{site.title}}">
+
+        <p class="mb-2 text-xl font-bold">{{wcu.title}}</p>
+
+        {{wcu.text}}
+
+      </div>
+
+      {% endfor %}
+
+    </div>
+
+    <div class="text-center">
+      <a class="text-sm font-bold" href="{{site.url}}/how-to-sell-a-home">Read our full property sales guide</a>
+      <a href="{{site.url}}/contact-us" class="inline-block mx-2 btn btn-secondary">Start your property sale</a>
+    </div>
+
+  </div>
+
+</div>

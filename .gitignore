@@ -1,0 +1,9 @@
+node_modules/
+vendor/
+.DS_Store
+error_log
+vendor.zip
+dist/
+*.css.map
+package-lock.json
+safelist.txt

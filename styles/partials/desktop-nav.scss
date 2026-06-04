@@ -1,0 +1,114 @@
+/***********************************************************
+Desktop Navs **********************************************/
+
+@screen lg {
+  .menu-primary {
+
+    li {
+      @apply relative;
+    }
+
+    a {
+      @apply
+        relative
+        block
+        p-2
+        text-sm
+        text-white;
+
+        &:hover {
+          @apply text-primary-light;
+            
+
+          & + .sub-menu {
+            @apply
+              block
+              opacity-100
+              visible;
+          }
+        }
+    }
+
+    .icon-angle-down {
+        position: absolute;
+        bottom: -2px;
+        left: 50%;
+        -webkit-transform: translateX(-50%);
+        transform: translateX(-50%);
+        width: .9em;
+        height: .9em;
+        opacity: .5;
+    }
+
+    .current-menu-item > a,
+    .current-menu-parent > a,
+    .current_page_parent > a {
+      @apply
+        text-primary-light;
+
+        &:hover {
+          @apply text-primary-light;
+        }
+    }
+
+    .sub-menu {
+      @apply
+        absolute
+        top-full
+        w-56
+        z-50
+        opacity-0
+        hidden;
+        left: 50%;
+        transform: translateX(-50%);
+        
+
+        &:hover {
+          @apply
+            block
+            opacity-100
+            visible;
+        }
+
+        a {
+          @apply text-center block text-sm w-auto text-primary-darkest px-4 bg-white rounded-full;
+        }
+    }
+  }
+}
+
+.menu-primary.front-page {
+  a {
+    @apply text-primary-darkest transition duration-500;
+  }
+}
+
+header.active .menu-primary.front-page {
+  a {
+    @apply text-white;
+  }
+
+  .sub-menu a {
+    @apply text-primary-darkest bg-opacity-100;
+  }
+}
+
+@screen xl {
+  .menu-primary {
+    a {
+      @apply p-3;
+    }
+  }
+}
+
+@screen 2xl {
+  .menu-primary {
+    a {
+      @apply text-base;
+    }
+
+    .sub-menu a{
+      @apply text-base;
+    }
+  }
+}

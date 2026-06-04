@@ -1,0 +1,77 @@
+/* Cookies */
+
+#wp-notification {
+  @apply
+    fixed
+    bottom-0
+    z-50
+    w-full
+    hidden
+    text-gray-900
+    bg-white
+}
+
+#wp-notification.open {
+    @apply block
+}
+
+.wp-notification-container {
+    @apply
+      mx-auto
+      text-gray-900
+      max-w-6xl
+      text-center
+      p-4
+}
+
+.wp-notification-container p {
+    @apply m-0 text-sm
+}
+
+.wp-notification-container a {
+    @apply
+      block
+      no-underline
+      mt-4
+      px-4
+      py-2
+      rounded
+      font-bold
+      text-sm
+      capitalize
+      text-gray-900;
+}
+
+.wp-notification-container a:hover {
+    @apply no-underline;
+}
+
+#wp-notification-toggle {
+    @apply
+      block
+      mt-4
+      mb-8
+      bg-white
+      px-4
+      py-2
+      rounded
+      font-bold
+      text-sm
+      capitalize
+      bg-primary-light
+      cursor-pointer
+}
+
+#wp-notification-toggle:hover {
+    @apply opacity-75;
+}
+
+@screen md {
+  #wp-notification-toggle,
+  .wp-notification-container a {
+      @apply
+        inline-block
+        m-0
+        ml-4        
+  }
+}

@@ -1,0 +1,45 @@
+{% extends 'base.twig' %}
+
+{% block hero %}
+
+  {% include "_components/hero.twig" with {
+    hero_heading : post.meta('hero_heading')|default(post.title),
+    has_search_bar : post.meta('has_search_bar'),
+  } %}
+
+{% endblock %}
+
+{% block page_content %}
+
+<div class="container flex-wrap justify-center my-8 lg:my-16 lg:flex lg:px-8">
+
+  <main class="lg:w-2/3 xl:w-1/2">
+
+    <picture class="block mb-6 lazyload">
+      <source srcset="{{ post.thumbnail.src|resize(900)|towebp }}" type="image/webp" media="(min-width:1024px)">
+        <source srcset="{{ post.thumbnail.src|resize(1000)|towebp }}" type="image/webp" media="(min-width:640px)">
+      <source srcset="{{ post.thumbnail.src|resize(640)|towebp }}" type="image/webp" media="(min-width:375px)">
+      <source srcset="{{ post.thumbnail.src|resize(640)|tojpg }}" type="image/jpeg">
+      <img src="{{ post.thumbnail.src|resize(640)|tojpg }}" alt="{{ post.title }}">
+    </picture>
+    
+    <small>Posted {{post.post_date|date("jS F Y")}}</small>
+    {% if post.terms %}
+      <p class="mb-6 text-sm">Listed in: {% for term in post.terms %}<a class="font-bold text-secondary hover:text-secondary-dark" href="{{term.link}}">{{term.name}}</a> {% endfor %}</p>
+    {% endif %}
+
+    <article class="copy">
+              
+      <h1>{{post.meta('h1') ? post.meta('h1') : post.title}}</h1>
+
+      {{post.content}}
+
+    </article>  
+    
+  </main>
+  
+  {% include "_components/cta-sell-property.twig" %}
+
+</div>
+
+{% endblock %}

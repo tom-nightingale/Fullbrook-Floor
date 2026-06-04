@@ -1,0 +1,47 @@
+{
+  "name": "fullbrook-floor",
+  "version": "1.0.0",
+  "description": "Fullbrook and floor",
+  "main": "index.js",
+  "scripts": {
+    "dev": "gulp",
+    "build": "gulp build --production",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "League Digital <hello@weareleague.co.uk>",
+  "license": "ISC",
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-multi-entry": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@rollup/stream": "^3.0.0",
+    "autoprefixer": "^10.4.19",
+    "browser-sync": "^2.29.3",
+    "gulp": "^4.0.2",
+    "gulp-postcss": "^10.0.0",
+    "postcss": "^8.4.38",
+    "postcss-nested": "^6.0.0",
+    "postcss-simple-vars": "^7.0.0",
+    "tailwindcss": "^3.4.3"
+  },
+  "dependencies": {
+    "cssnano": "^6.0.0",
+    "gulp-if": "^3.0.0",
+    "gulp-rename": "^2.0.0",
+    "gulp-terser": "^1.4.0",
+    "leaflet": "^1.9.4",
+    "minimist": "^1.2.8",
+    "postcss-import": "^16.0.0",
+    "rollup": "^3.29.4",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0"
+  }
+}

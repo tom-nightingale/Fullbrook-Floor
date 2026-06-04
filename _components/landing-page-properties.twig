@@ -1,0 +1,48 @@
+<div class="py-8 mb-8 lg:py-12 bg-primary-light bg-opacity-20">
+
+  <div class="container">
+
+    <h2 class="text-center">{{ heading ? heading : 'Featured properties'}}</h2>
+    <p class="max-w-md mx-auto text-center">View a selection of our featured properties below. We have a growing portfolio of properties so we're sure you'll find your next dream home right here!</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6 justify-center my-8">
+
+      {% for property in featured_properties|slice(0,8) %}
+
+        {% set property_availability = "" %}
+        
+        {% for term in property.terms %}
+          {% if term.taxonomy == "availability" %}
+            {% set property_availability = term.name %}
+          {% endif %}
+        {% endfor %}
+        
+        {% include "_components/property-card.twig" with {
+            property : property,
+            property_id : property.id,
+            image : property.thumbnail,
+            title : property.post_title,
+            street : property._address_postcode,
+            link: property.link,
+            bedrooms : property._bedrooms,
+            bathrooms : property._bathrooms,
+            reception_rooms : property._reception_rooms,
+            availability : property_availability,
+            }
+        %}
+        
+          
+      {% endfor %}
+      
+
+    </div>
+
+    {% if hide_see_all == false %}
+      <div class="text-center">
+        <a href="{{site.url ~ '/buy-a-home'}}" class="inline-block mx-auto text-sm btn btn-white hover:text-white hover:bg-primary">See all properties</a>
+      </div>
+    {% endif %}
+
+  </div>
+
+</div>

@@ -1,0 +1,188 @@
+@font-face {
+  font-family: 'Source Sans Pro';
+  src: url('../fonts/SourceSansPro-Regular.ttf') format('truetype');
+  font-display: swap;
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Source Sans Pro';
+  src: url('../fonts/SourceSansPro-Bold.ttf') format('truetype');
+  font-display: swap;
+  font-weight: 700;
+  font-style: bold;
+}
+
+/* headings */
+
+h1, .h1,
+h2, .h2,
+h3, .h3,
+h4, .h4,
+h5, .h5,
+h6, .h6 {
+  @apply
+    font-bold
+    leading-snug
+    mb-4;
+}
+
+h1 {
+  @apply text-2xl;
+}
+
+h2 {
+  @apply text-xl;
+}
+
+h3 {
+  @apply text-lg;
+}
+
+@screen lg {
+  h1 {
+    @apply text-4xl;
+  }
+
+  h2 {
+    @apply text-2xl;
+  }
+
+  h3 {
+    @apply text-xl;
+  }
+}
+
+/* Copy */
+
+.copy {
+  h1 + p {
+    @apply font-bold;
+  }
+
+  > p {
+    @apply
+      leading-relaxed;
+  }
+
+  > p:not(:last-of-type) {
+    @apply mb-6;
+  }
+
+  a {
+    @apply
+      inline-block
+      bg-blue-100;
+
+      &:hover {
+        @apply text-secondary;
+      }
+  }
+
+  ol,
+  ul {
+    @apply
+      pl-4
+      mb-8;
+
+    li {
+      @apply
+        leading-relaxed
+        mb-2;
+    }
+  }
+
+  ul {
+    li {
+      @apply list-disc;
+    }
+  }
+
+  ol {
+    li {
+      @apply list-decimal;
+    }
+  }
+
+  blockquote {
+    @apply 
+      p-4
+      mb-8
+      bg-gray-100;
+  }
+
+  iframe {
+    margin: 1rem auto !important;
+  }
+}
+
+@screen md {
+  .copy {
+    img {
+        @apply w-auto;
+    }
+
+    .alignleft {
+      @apply float-left mt-1 mr-1 mb-1;
+    }
+
+    .aligncenter {
+      @apply float-none mx-auto my-4;
+    }
+
+    .alignright {
+      @apply float-right mt-1 ml-1 mb-1;
+    }
+  }
+}
+
+/* WP Generated */
+
+figure {
+  @apply max-w-full;
+}
+
+.wp-caption-text {
+  @apply text-center p-4 text-sm bg-gray-100 mb-8;
+}
+
+.testimonial {
+  @apply relative;
+  &:before,
+  &:after {
+    content: '';
+    @apply text-white absolute text-4xl font-bold opacity-50;
+  }
+
+  &:before {
+    content: open-quote;
+    @apply left-2 top-2;
+  }
+
+  &:after {
+    content: close-quote;
+    @apply bottom-2 right-2;
+  }
+
+
+  @screen lg {
+    &:before {  
+      @apply left-8 top-8;
+    } 
+
+    &:after {
+      @apply bottom-8 right-8;
+    }
+  }
+
+  @screen xl {
+    &:before {  
+      @apply left-12 top-6;
+    } 
+
+    &:after {
+      @apply bottom-6 right-12;
+    }
+  }
+}

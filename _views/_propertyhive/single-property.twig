@@ -1,0 +1,149 @@
+{% extends 'base.twig' %}
+
+{% block hero %}
+
+{% include "_components/hero.twig" with {
+    hero_heading : post.meta('hero_heading')|default(post.title),
+    has_search_bar : post.meta('has_search_bar'),
+    has_accreditations : true,
+} %}
+
+{% endblock %}
+
+{% block page_content %}
+
+<div class="container flex flex-wrap justify-between pt-8">
+    <div class="relative w-full lg:p-8 lg:w-6/12">
+        <span class="absolute top-0 right-0 z-10 p-2 text-sm text-white lg:right-6 lg:top-4 bg-secondary">{% for term in availability %}{{term.name}}{% endfor %}</span>
+        {{function('propertyhive_template_not_on_market')}}
+        {{function('propertyhive_show_property_images')}}
+    </div>
+
+    <div class="w-full lg:p-16 full lg:w-6/12">
+
+        {# {{dump(post)}} #}
+        
+        <p class="text-secondary">{{post._address_street}}, {{post._address_three}}, {{post._address_postcode}}</p>
+        <h1 class="mb-0">{{post.post_title}}</h1>
+
+        {% if post._department == "residential-sales" %}
+            
+            <p>
+                {% for term in availability %}
+                    <span class="font-bold">{{term.name}}</span>
+                {% endfor %}
+                {% for term in property_type %}
+                    &bull; <span class="font-bold text-secondary">{{term.name}}</span>
+                {% endfor %}
+                {% for term in marketing_flag %}
+                    &bull; {{term.name}}
+                {% endfor %}
+                {% for term in tenure %}
+                    &bull; {{term.name}}
+                {% endfor %}
+            </p>
+            <p class="text-sm opacity-50">
+                {% for term in parking %}
+                    {% if not loop.first %} &bull; {% endif %} {{term.name}}
+                {% endfor %}
+                {% for term in outside_space %}
+                    &bull; {{term.name}}
+                {% endfor %}
+            </p>
+            
+            <p class="mt-8 text-xl leading-snug">{{ function('property_price_qualifier', post.id) }} 
+                <span class="block text-3xl font-bold">£{{post._price_actual|number_format}}</span></p>
+
+        {% elseif post._department == "residential-lettings" %}
+
+            <p>{% for term in availability %}
+                <span class="font-bold">{{term.name}}</span>
+            {% endfor %}
+            {% for term in property_type %}
+                &bull; <span class="font-bold text-secondary">{{term.name}}</span>
+            {% endfor %}
+            {% for term in furnished %}
+                &bull; <span class="text-secondary">{{term.name}}</span>
+            {% endfor %}</p>
+
+            
+            <p class="text-sm opacity-50">
+                {% for term in parking %}
+                {{term.name}}
+                {% endfor %}
+                {% for term in outside_space %}
+                &bull; {{term.name}}
+                {% endfor %}
+            </p>
+
+            
+            <p><span class="font-bold">Available from:</span> {{post._available_date|date('F j, Y')}}</p>
+            <p class="mt-8 leading-snug"><span class="font-bold">Deposit:</span> £{{post._deposit|number_format}}</p>
+            <p><span class="block text-3xl font-bold text-secondary">£{{post._price_actual|number_format}} {{post._rent_frequency}}</span></p>
+        {% endif %}
+                
+        <hr class="my-8">
+
+        {% include "_components/room-numbers.twig" with {
+            bedrooms: post._bedrooms,
+            bathrooms: post._bathrooms,
+            reception_rooms: post._reception_rooms,
+        } %}
+
+        {{function('propertyhive_template_single_actions') }}
+
+        <div class="relative items-center p-4 pb-8 text-center bg-primary-light lg:p-8 xl:flex xl:justify-center">
+
+            {% if 'Hitchin' in post._address_two or 'Hitchin' in post._address_three %}
+                {% set location = "Hitchin" %}
+                {% set url = "hitchin-hertfordshire" %}
+            {% elseif 'St. Albans' in post._address_two or 'St. Albans' in post._address_three or 'St Albans' in post._address_two or 'St Albans' in post._address_three %}
+                {% set location = "St. Albans" %}
+                {% set url = "st-albans" %}
+            {% else %}
+                {% set location = "St. Albans" %}
+                {% set url = "st-albans" %}
+            {% endif %}
+
+            <p class="my-4">Read our local guide to <span class="block font-bold lg:inline-block">{{location}}</span></p>
+
+            <a class="inline-block text-sm btn btn-white xl:ml-4" href="{{site.url}}/help-advice/why-live-in-{{url}}/">Read now</a>
+
+            {% include "_components/pattern-house.twig" %}
+        </div>
+        
+    </div>
+
+    <div class="flex-wrap w-full mt-8 lg:flex">
+        <div class="relative flex items-center justify-center p-4 py-12 text-white bg-primary lg:w-1/5 lg:py-16">
+            <p class="text-lg font-bold">Property Features</p>
+            {% include "_components/pattern-house.twig" %}
+        </div>
+        {{function('propertyhive_template_single_features') }}
+    </div>
+
+    <div class="relative flex-wrap w-full mt-8 lg:flex">
+
+        <div class="w-full lg:p-16 lg:w-1/2 copy">
+            <h1>{{post.title}}</h1>
+            {{function('propertyhive_template_single_summary') }}
+
+            <h2>Full details:</h2>
+            {{function('propertyhive_template_single_description') }}
+        </div>
+
+        <div class="w-full lg:p-16 lg:w-1/2">    
+
+            <div class="z-0 flex items-center justify-center w-full mb-4 bg-gray-200 realtive min-h-128" id="leafletmap" data-lat="{{post._latitude}}" data-long="{{post._longitude}}" data-marker-title="{{post.title}}">
+
+            </div>
+            
+            {% include "_components/cta-single-property-book-viewing.twig" %}
+            
+        </div>
+        
+    </div>
+
+</div>
+
+{% endblock %}

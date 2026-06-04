@@ -1,0 +1,63 @@
+{% extends 'base.twig' %}
+
+{% block hero %}
+
+  {% include "_components/hero.twig" with {
+    hero_heading : post.meta('hero_heading')|default(post.title),
+    has_search_bar : post.meta('has_search_bar'),
+  } %}
+
+  {% include "_components/testimonials.twig" with {
+    classes : 'border-b border-gray-200 mb-8',
+  } %}
+  
+{% endblock %}
+
+{% block page_content %}
+
+  {% include "_components/cta-sell-property.twig" %}
+
+  <div class="bg-primary-light bg-opacity-20">
+    
+    <div class="container flex flex-wrap justify-center py-8">
+
+      <p class="w-full text-2xl font-bold text-center">How to sell your home</p>
+
+      {% for step in post.meta('guide_steps') %}
+        <div class="w-full p-4 lg:p-12 text-center md:w-1/2 xl:w-1/3 2xl:p-16 {{step.is_highlighted ? "bg-primary-dark text-white" }}">
+          
+          <img class="block object-cover object-center mx-auto mb-8 bg-gray-500 border-4 border-white rounded-full w-36 h-36 lazyload" data-src="{{step.image.sizes.medium_large}}" alt="{{step.title}}">
+
+          <p class="mb-2 text-lg font-bold">{{loop.index}}. {{step.title}}</p>
+          
+          <div class="copy">
+            {{step.content}}
+          </div>
+          
+          {% if step.is_highlighted %}
+            <a href="{{site.url}}/contact-us" class="inline-block mt-6 text-sm text-white btn btn-secondary">Start selling your home today!</a>
+          {% endif %}
+          
+        </div>
+      {% endfor %}
+      
+    </div>
+
+  </div>
+
+  {% if post.meta('show_why_choose_us') %}
+    {% include "_components/why-choose-us.twig" %} 
+  {% endif %}
+
+  {% if post.meta('show_buckets') %}
+    {% include "_components/buckets.twig" %}
+  {% endif %}
+
+  
+  
+  {% if post.meta('show_team') %}
+    {% include "_components/team.twig" %}
+  {% endif %}
+  
+{% endblock %}
+

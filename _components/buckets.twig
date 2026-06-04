@@ -1,0 +1,45 @@
+
+<div class="container flex flex-wrap p-0 my-8">
+
+  {% for bucket in options.buckets %}
+
+    <div class="{{loop.first ? "" : "flex-grow" }} w-full p-4 md:w-1/2 {{loop.first ? "lg:w-2/5" : "lg:w-1/5" }}">
+      
+      <a href="{{bucket.button_link.url}}" class="relative flex flex-col h-full">
+
+        {% include "_components/picture.twig" with {
+            source: bucket.background_image.url,
+            breakpoints: {
+              "640px" : {
+                w: 800,
+                h: 400,
+                crop: 'top'
+              },
+            },
+            img: {
+              classes: 'block w-full object-cover h-48 lg:h-64 lazyload',
+              alt: bucket.title,
+              w: null,
+              h: 600,
+              crop: 'top',
+            }
+          }
+        %}
+       
+        <div class="h-full p-4 xl:p-6">
+
+          <p class="mb-2 text-lg font-bold xl:text-xl">{{bucket.title}}</p>
+          
+          {% if bucket.intro %}<div class="text-sm">{{bucket.intro}}</div>{% endif %}
+          
+          <span class="inline-block mt-4 mr-auto text-sm btn btn-secondary">{{bucket.button_text}}</span>
+
+        </div>
+        
+      </a>
+
+    </div>
+
+  {% endfor %}
+
+</div>
