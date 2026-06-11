@@ -1,17 +1,26 @@
 <header class="w-full {{ front_page ? 'absolute' : 'bg-primary-darkest' }} z-50 lg:fixed lg:z-20 lg:top-0 lg:left-0 lg:pt-0">
 
   <p class="p-2 text-sm text-center text-white bg-secondary xl:hidden">Find out how much your home is worth today! 
-    <span class="inline-block font-bold">
-      {{options.default_location}}
-      {% include "_components/phone-number.twig" %}
-    </span>
-    |
-    <span class="inline-block font-bold">
-      Hitchin
-      <a href="tel:01462690525" class="inline-block font-bold" onclick="gtag('event', 'Phone Call', {'event_category': 'Phone Call', 'event_label': 'Phone call click to call'});">
-        01462 690525
-      </a>
-    </span>
+    {% if hitchin %}
+      <span class="inline-block font-bold">
+        Hitchin
+        <a href="tel:01462690525" class="inline-block font-bold" onclick="gtag('event', 'Phone Call', {'event_category': 'Phone Call', 'event_label': 'Phone call click to call'});">
+          01462 690525
+        </a>
+      </span>
+    {% else %}
+      <span class="inline-block font-bold">
+        {{options.default_location}}
+        {% include "_components/phone-number.twig" %}
+      </span>
+      |
+      <span class="inline-block font-bold">
+        Hitchin
+        <a href="tel:01462690525" class="inline-block font-bold" onclick="gtag('event', 'Phone Call', {'event_category': 'Phone Call', 'event_label': 'Phone call click to call'});">
+          01462 690525
+        </a>
+      </span>
+    {% endif %}
   </p>
 
   <div class="container items-center justify-between header-container lg:flex">

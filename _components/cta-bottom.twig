@@ -1,4 +1,10 @@
 <div class="flex flex-wrap items-center justify-center mt-8 lg:justify-start">
-  <p class="font-bold">Call us today on {% include "_components/phone-number.twig" %}</p>
+  <p class="font-bold">Call us today on
+    {% if hitchin %}
+      <a href="tel:01462690525" class="inline-block font-bold" onclick="gtag('event', 'Phone Call', {'event_category': 'Phone Call', 'event_label': 'Phone call click to call'});">01462 690525</a>
+    {% else %}
+      {% include "_components/phone-number.twig" %}
+    {% endif %}
+  </p>
   <a href="{{site.url}}/contact-us" class="mx-8 mt-4 lg:mt-0 btn btn-secondary">Get in touch today</a>
 </div>

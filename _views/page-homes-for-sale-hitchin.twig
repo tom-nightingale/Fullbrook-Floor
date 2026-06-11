@@ -3,6 +3,7 @@
 {% block header %}
   {% include "_components/header.twig"  with {
     front_page: true,
+    hitchin: true,
   }%}
 {% endblock %}
 
@@ -32,7 +33,7 @@
   
       </article>
   
-      {% include "_components/cta-bottom.twig" %}
+      {% include "_components/cta-bottom.twig" with { hitchin: true } %}
   
     </main>
   
