@@ -59,4 +59,4 @@ $featured_posts = array_merge($for_sale->get_posts(), $under_offer->get_posts())
 
 $context['featured_properties'] = $featured_posts;
 
-Timber::render( [ 'page-homes-for-sale-hitchin.twig' ], $context );
+Timber::render( [ 'page-estate-agents-hitchin.twig' ], $context );
