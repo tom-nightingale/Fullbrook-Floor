@@ -2,7 +2,7 @@
 
 {% block header %}
   {% include "_components/header.twig"  with {
-    front_page: true,
+    front_page: false,
     hitchin: true,
   }%}
 {% endblock %}
@@ -38,11 +38,14 @@
     </main>
   
     <aside class="flex-wrap lg:w-1/2 lg:flex items-start">
-      <div class="lg:sticky lg:top-36">
-      {% include "_components/sidebar.twig" with {
-          cta_padding : 'p-8 xl:p-16 2xl:p-24',
-        }
-      %}
+      <div class="lg:sticky lg:top-36 p-8 lg:p-12 bg-primary-light/20 rounded-lg">
+        <div class='grid gap-4'>
+          <p class="text-lg font-bold leading-snug lg:text-xl">Find out how much your property is worth!</p>
+          <p class="text-sm">Whether you're looking to buy or sell in Hitchin, we're here to help make your move as smooth as possible.</p>
+          <p class="text-sm">Provide a few details below and we'll get back to you as soon as possible.</p>
+          
+          {{ function('do_shortcode', '[contact-form-7 id="233" title="Property Valuation Form"]') }}
+        </div>
       </div>
     </aside>
   

@@ -130,11 +130,8 @@ gulp.task("styles", function () {
       .pipe(rename("main.min.css"))
       // And place the renamed file into this folder
       .pipe(gulp.dest("dist/"))
-      .pipe(
-        browserSync.reload({
-          stream: true,
-        }),
-      )
+      // Stream the rebuilt CSS into the browser without a full reload
+      .pipe(browserSync.stream())
   );
 });
 
@@ -164,20 +161,39 @@ gulp.task("scripts", function () {
       .pipe(buffer())
       .pipe(gulpIf(argv.production, terser()))
       .pipe(gulp.dest("./dist"))
-      .pipe(
-        browserSync.reload({
-          stream: true,
-        }),
-      )
   );
 });
+
+// Trigger a full page reload (used after JS / PHP / Twig changes)
+function reload(done) {
+  browserSync.reload();
+  done();
+}
 
 /**************************
  * Task Watch
  **************************/
 gulp.task("watch", () => {
+  // Rebuild CSS when SCSS changes (CSS is streamed in by the styles task)
   gulp.watch(`styles/**/*.scss`, gulp.series("styles"));
-  gulp.watch(`js/**/*.js`, gulp.series("scripts"));
+
+  // Rebuild JS and reload the page
+  gulp.watch(`js/**/*.js`, gulp.series("scripts", reload));
+
+  // Rebuild Tailwind whenever Twig / PHP / safelist changes so newly-used
+  // utility classes get picked up by JIT, then reload the page.
+  gulp.watch(
+    [
+      `_views/**/*.twig`,
+      `_components/**/*.twig`,
+      `**/*.php`,
+      `!node_modules/**`,
+      `!vendor/**`,
+      `safelist.txt`,
+      `tailwind.config.js`,
+    ],
+    gulp.series("styles", reload),
+  );
 });
 
 /**************************
@@ -185,9 +201,12 @@ gulp.task("watch", () => {
  **************************/
 gulp.task("serve", () => {
   browserSync.init({
-    proxy: `fullbrook-floor.vm`,
-    files: `**/*`,
+    proxy: `fullbrook-and-floor.local`,
+    // File-watching is handled by the `watch` task above, which gives us
+    // precise control over what triggers a reload vs. a CSS stream.
     ghostMode: false,
+    notify: false,
+    open: false,
   });
 });
 

@@ -1,6 +1,6 @@
 {% if (front_page or isLandingPage) %}
 
-<div class="relative w-full overflow-hidden bg-primary-darkest min-h-75 lg:pt-32 xl:pt-30">
+<div class="relative w-full overflow-hidden {{ isLandingPage ? 'min-h-50 lg:pt-16 xl:pt-15' : 'min-h-75 lg:pt-32 xl:pt-30' }}">
 
   {% if front_page %}
     <img src="{{theme.link}}/images/hero.png" alt="Fullbrook and floor" class="absolute top-0 left-0 z-0 object-cover object-center w-full h-full">
@@ -8,11 +8,11 @@
   {% endif %}
 
   {% if isLandingPage %}
-    <img src="{{heroImage.url}}" alt="Fullbrook and Floor Hitchin" class="absolute top-0 left-0 z-0 object-cover object-center w-full h-full">
+    <img src="{{heroImage.url}}" alt="Fullbrook and Floor Hitchin" class="opacity-50 absolute top-0 left-0 z-0 object-cover object-center w-full h-full">
     <img src="{{theme.link}}/images/house.png" alt="Fullbrook and floor" class="absolute opacity-20 left-[50%] translate-x-[-54%] top-[170px] lg:top-[150px] h-[200px] lg:h-[400px]">
   {% endif %}
 
-    <div class="relative z-10 flex flex-col items-center justify-center p-4 lg:justify-start min-h-75">
+    <div class="relative z-10 flex flex-col items-center justify-center p-4 lg:justify-start {{ isLandingPage ? 'min-h-50' : 'min-h-75' }}">
 
       <div class="max-w-lg 2xl:max-w-3xl mt-16 text-center lg:mt-32">
 
