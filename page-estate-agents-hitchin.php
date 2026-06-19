@@ -2,6 +2,7 @@
 
 $context = Timber::context();
 $context['post'] = new Timber\Post();
+$context['location'] = 'Hitchin';
 
 $for_sale_query = [
     'posts_per_page' => 100,

@@ -28,9 +28,9 @@
        
         <div class="h-full p-4 xl:p-6">
 
-          <p class="mb-2 text-lg font-bold xl:text-xl">{{bucket.title}}</p>
-          
-          {% if bucket.intro %}<div class="text-sm">{{bucket.intro}}</div>{% endif %}
+          <p class="mb-2 text-lg font-bold xl:text-xl">{{ bucket.title|replace({'St. Albans city centre, Park Street, Chiswell Green': location|default('St. Albans city centre, Park Street, Chiswell Green')}) }}</p>
+
+          {% if bucket.intro %}<div class="text-sm">{{ bucket.intro|replace({'St. Albans city centre, Park Street, Chiswell Green': location|default('St. Albans city centre, Park Street, Chiswell Green')}) }}</div>{% endif %}
           
           <span class="inline-block mt-4 mr-auto text-sm btn btn-secondary">{{bucket.button_text}}</span>
 
